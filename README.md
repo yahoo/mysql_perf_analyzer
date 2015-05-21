@@ -57,7 +57,7 @@ Installation and Usage Instructions
   ./stop_myperf.sh
 
 7. Fisrt login and setup
-  After startup, point your bwoser to http://your_host:9002/myperf (or the port number you changed).
+  After startup, point your bwoser to http://your_host:9092/myperf (or the port number you changed).
   The initial login user and credential are myperf/change.
   After login, you will be directed to setup page:
     You can add notification email. The email uses OS "mailx" command. 
