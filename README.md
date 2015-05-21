@@ -3,8 +3,8 @@ MySQL Performance Analyzer
 
 MySQL Performance Analyzer is an open source project for MySQL performance monitoring and analysis. 
 This repository includes two sub projects: 
-Java web application project myperf
-Java web server jetty wrapper
+* Java web application project myperf
+* Java web server jetty wrapper
 
 Build
 ------
