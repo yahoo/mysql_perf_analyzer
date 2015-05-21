@@ -1,0 +1,503 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  Copyright 2015, Yahoo Inc.
+  Copyrights licensed under the Apache License.
+  See the accompanying LICENSE file for terms.
+ -->
+<stats>
+  <stat name="mysql_status_Aborted_clients">The number of connections that were aborted because the client died without closing the connection properly.</stat>
+  <stat name="mysql_status_Aborted_connects">The number of failed attempts to connect to the MySQL server. For additional connection-related information, check the Connection_errors_xxx status variables and the host_cache table.</stat>
+  <stat name="mysql_status_Binlog_cache_disk_use">The number of transactions that used the temporary binary log cache but that exceeded the value of binlog_cache_size and used a temporary file to store statements from the transaction. The number of nontransactional statements that caused the binary log transaction cache to be written to disk is tracked separately in the Binlog_stmt_cache_disk_use status variable.</stat>
+  <stat name="mysql_status_Binlog_cache_use">The number of transactions that used the binary log cache.</stat>
+  <stat name="mysql_status_binlog_commits">This variable shows the total number of transactions committed to the binary log.</stat>
+  <stat name="mysql_status_binlog_group_commits">This variable shows the total number of group commits done to the binary log.</stat>
+  <stat name="mysql_status_Binlog_stmt_cache_disk_use">The number of nontransaction statements that used the binary log statement cache but that exceeded the value of binlog_stmt_cache_size and used a temporary file to store those statements.</stat>
+  <stat name="mysql_status_Binlog_stmt_cache_use">The number of nontransactional statements that used the binary log statement cache.</stat>
+  <stat name="mysql_status_Bytes_received">The number of bytes received from all clients.</stat>
+  <stat name="mysql_status_Bytes_sent">The number of bytes sent to all clients.</stat>
+  <stat name="mysql_status_Com_xxx">The Com_xxx statement counter variables indicate the number of times each xxx statement has been executed. There is one status variable for each type of statement. For example, Com_delete and Com_insert count DELETE and INSERT statements, respectively. 
+      However, if a query result is returned from query cache, the server increments the Qcache_hits status variable, not Com_select.</stat>
+  <stat name="mysql_status_Com_stmt_xxx">All of the Com_stmt_xxx variables are increased even if a prepared statement argument is unknown or an error occurred during execution. In other words, their values correspond to the number of requests issued, not to the number of requests successfully completed. 
+      The Com_stmt_xxx status variables are as follows: 
+      Com_stmt_prepare 
+      Com_stmt_execute 
+      Com_stmt_fetch 
+      Com_stmt_send_long_data 
+      Com_stmt_reset 
+      Com_stmt_close 
+      Those variables stand for prepared statement commands. Their names refer to the COM_xxx command set used in the network layer. 
+      In other words, their values increase whenever prepared statement API calls such as mysql_stmt_prepare(), mysql_stmt_execute(),
+      and so forth are executed. However, Com_stmt_prepare, Com_stmt_execute and Com_stmt_close also increase for PREPARE, EXECUTE, 
+      or DEALLOCATE PREPARE, respectively. Additionally, the values of the older statement counter variables Com_prepare_sql, 
+      Com_execute_sql, and Com_dealloc_sql increase for the PREPARE, EXECUTE, and DEALLOCATE PREPARE statements. 
+      Com_stmt_fetch stands for the total number of network round-trips issued when fetching from cursors.
+      Com_stmt_reprepare indicates the number of times statements were automatically reprepared by the server 
+      after metadata changes to tables or views referred to by the statement. A reprepare operation increments Com_stmt_reprepare, 
+      and also Com_stmt_prepare.</stat>
+  <stat name="mysql_status_Compression">Whether the client connection uses compression in the client/server protocol.</stat>
+  <stat name="mysql_status_Connection_errors_xxx">These variables provide information about errors that occur during the client connection process. 
+      They are global only and represent error counts aggregated across connections from all hosts. 
+      These variables track errors not accounted for by the host cache, 
+      such as errors that are not associated with TCP connections, occur very early in the connection process 
+      (even before an IP address is known), or are not specific to any particular IP address (such as out-of-memory conditions). 
+      These variables were added in MySQL 5.6.5. </stat>
+  <stat name="mysql_status_Connection_errors_accept">The number of errors that occurred during calls to accept() on the listening port.</stat>
+  <stat name="mysql_status_Connection_errors_internal">The number of connections refused due to internal errors in the server, such as failure to start a new thread or an out-of-memory condition.</stat>
+  <stat name="mysql_status_Connection_errors_max_connections">The number of connections refused because the server max_connections limit was reached.</stat>
+  <stat name="mysql_status_Connection_errors_peer_addr">The number of errors that occurred while searching for connecting client IP addresses.</stat>
+  <stat name="mysql_status_Connection_errors_select">The number of errors that occurred during calls to select() or poll() on the listening port. 
+  (Failure of this operation does not necessarily means a client connection was rejected.)</stat>
+  <stat name="mysql_status_Connection_errors_tcpwrap">The number of connections refused by the libwrap library.</stat>
+  <stat name="mysql_status_Connections">The number of connection attempts (successful or not) to the MySQL server.</stat>
+  <stat name="mysql_status_Created_tmp_disk_tables">The number of internal on-disk temporary tables created by the server while executing statements. 
+        If an internal temporary table is created initially as an in-memory table but becomes too large, MySQL automatically converts it to an on-disk table. 
+        The maximum size for in-memory temporary tables is the minimum of the tmp_table_size and max_heap_table_size values. 
+        If Created_tmp_disk_tables is large, you may want to increase the tmp_table_size or max_heap_table_size value to lessen the likelihood that internal temporary tables in memory will be converted to on-disk tables. 
+        You can compare the number of internal on-disk temporary tables created to the total number of internal temporary tables created by comparing the values of the Created_tmp_disk_tables and Created_tmp_tables variables. 
+        </stat>
+  <stat name="mysql_status_Created_tmp_files">How many temporary files mysqld has created.</stat>
+  <stat name="mysql_status_Created_tmp_tables">The number of internal temporary tables created by the server while executing statements. 
+        You can compare the number of internal on-disk temporary tables created to the total number of internal temporary tables created by comparing the values of the Created_tmp_disk_tables and Created_tmp_tables variables.          
+        Each invocation of the SHOW STATUS statement uses an internal temporary table and increments the global Created_tmp_tables value.</stat>
+  <stat name="mysql_status_Delayed_errors">The number of rows written with INSERT DELAYED for which some error occurred (probably duplicate key). 
+        As of MySQL 5.6.7, this status variable is deprecated (because DELAYED inserts are deprecated), and will be removed in a future release.</stat>
+  <stat name="mysql_status_Delayed_insert_threads">The number of INSERT DELAYED handler threads in use for nontransactional tables. 
+        As of MySQL 5.6.7, this status variable is deprecated (because DELAYED inserts are deprecated), and will be removed in a future release.</stat>
+  <stat name="mysql_status_Delayed_writes">The number of INSERT DELAYED rows written to nontransactional tables. 
+        As of MySQL 5.6.7, this status variable is deprecated (because DELAYED inserts are deprecated), and will be removed in a future release.</stat>
+  <stat name="mysql_status_Flush_commands">The number of times the server flushes tables, whether because a user executed a FLUSH TABLES statement or due to internal server operation. It is also incremented by receipt of a COM_REFRESH packet. This is in contrast to Com_flush, which indicates how many FLUSH statements have been executed, whether FLUSH TABLES, FLUSH LOGS, and so forth.</stat>
+  <stat name="mysql_status_Handler_commit">The number of internal COMMIT statements.</stat>
+  <stat name="mysql_status_Handler_delete">The number of times that rows have been deleted from tables.</stat>
+  <stat name="mysql_status_Handler_external_lock">The server increments this variable for each call to its external_lock() function, which generally occurs at the beginning and end of access to a table instance. There might be differences among storage engines. This variable can be used, for example, to discover for a statement that accesses a partitioned table how many partitions were pruned before locking occurred: Check how much the counter increased for the statement, subtract 2 (2 calls for the table itself), then divide by 2 to get the number of partitions locked. This variable was added in MySQL 5.6.2.</stat>
+  <stat name="mysql_status_Handler_mrr_init">The number of times the server uses a storage engine's own Multi-Range Read implementation for table access. This variable was added in MySQL 5.6.1.</stat>
+  <stat name="mysql_status_Handler_prepare">A counter for the prepare phase of two-phase commit operations.</stat>
+  <stat name="mysql_status_Handler_read_first">The number of times the first entry in an index was read. If this value is high, it suggests that the server is doing a lot of full index scans; for example, SELECT col1 FROM foo, assuming that col1 is indexed.</stat>
+  <stat name="mysql_status_Handler_read_key">The number of requests to read a row based on a key. If this value is high, it is a good indication that your tables are properly indexed for your queries.</stat>
+  <stat name="mysql_status_Handler_read_last">The number of requests to read the last key in an index. With ORDER BY, the server will issue a first-key request followed by several next-key requests, whereas with With ORDER BY DESC, the server will issue a last-key request followed by several previous-key requests. This variable was added in MySQL 5.6.1.</stat>
+  <stat name="mysql_status_Handler_read_next">The number of requests to read the next row in key order. This value is incremented if you are querying an index column with a range constraint or if you are doing an index scan.</stat>
+  <stat name="mysql_status_Handler_read_prev">The number of requests to read the previous row in key order. This read method is mainly used to optimize ORDER BY ... DESC.</stat>
+  <stat name="mysql_status_Handler_read_rnd">The number of requests to read a row based on a fixed position. This value is high if you are doing a lot of queries that require sorting of the result. You probably have a lot of queries that require MySQL to scan entire tables or you have joins that do not use keys properly.</stat>
+  <stat name="mysql_status_Handler_read_rnd_next">The number of requests to read the next row in the data file. This value is high if you are doing a lot of table scans. Generally this suggests that your tables are not properly indexed or that your queries are not written to take advantage of the indexes you have.</stat>
+  <stat name="mysql_status_Handler_rollback">The number of requests for a storage engine to perform a rollback operation.</stat>
+  <stat name="mysql_status_Handler_savepoint">The number of requests for a storage engine to place a savepoint.</stat>
+  <stat name="mysql_status_Handler_savepoint_rollback">The number of requests for a storage engine to roll back to a savepoint.</stat>
+  <stat name="mysql_status_Handler_update">The number of requests to update a row in a table.</stat>
+  <stat name="mysql_status_Handler_write">The number of requests to insert a row in a table.</stat>
+  <stat name="mysql_status_Innodb_available_undo_logs">The total number of available InnoDB undo logs. Supplements the innodb_undo_logs system variable, which reports the number of active undo logs.</stat>
+  <stat name="mysql_status_Innodb_buffer_pool_dump_status">The progress of an operation to record the pages held in the InnoDB buffer pool, triggered by the setting of innodb_buffer_pool_dump_at_shutdown or innodb_buffer_pool_dump_now.</stat>
+  <stat name="mysql_status_Innodb_buffer_pool_load_status">The progress of an operation to warm up the InnoDB buffer pool by reading in a set of pages corresponding to an earlier point in time, triggered by the setting of innodb_buffer_pool_load_at_startup or innodb_buffer_pool_load_now. If the operation introduces too much overhead, you can cancel it by setting innodb_buffer_pool_load_abort.</stat>
+  <stat name="mysql_status_Innodb_buffer_pool_bytes_data">The total number of bytes in the InnoDB buffer pool containing data. The number includes both dirty and clean pages. For more accurate memory usage calculations than with Innodb_buffer_pool_pages_data, when compressed tables cause the buffer pool to hold pages of different sizes.</stat>
+  <stat name="mysql_status_Innodb_buffer_pool_pages_data">The number of pages in the InnoDB buffer pool containing data. The number includes both dirty and clean pages.</stat>
+  <stat name="mysql_status_Innodb_buffer_pool_bytes_dirty">The total current number of bytes held in dirty pages in the InnoDB buffer pool. For more accurate memory usage calculations than with Innodb_buffer_pool_pages_dirty, when compressed tables cause the buffer pool to hold pages of different sizes.</stat>
+  <stat name="mysql_status_Innodb_buffer_pool_pages_dirty">The current number of dirty pages in the InnoDB buffer pool.</stat>
+  <stat name="mysql_status_Innodb_buffer_pool_pages_flushed">The number of requests to flush pages from the InnoDB buffer pool.</stat>
+  <stat name="mysql_status_Innodb_buffer_pool_pages_free">The number of free pages in the InnoDB buffer pool.</stat>
+  <stat name="mysql_status_Innodb_buffer_pool_pages_latched">The number of latched pages in the InnoDB buffer pool. These are pages currently being read or written, or that cannot be flushed or removed for some other reason. Calculation of this variable is expensive, so it is available only when the UNIV_DEBUG system is defined at server build time.</stat>
+  <stat name="mysql_status_Innodb_buffer_pool_pages_misc">The number of pages in the InnoDB buffer pool that are busy because they have been allocated for administrative overhead, such as row locks or the adaptive hash index. This value can also be calculated as Innodb_buffer_pool_pages_total – Innodb_buffer_pool_pages_free – Innodb_buffer_pool_pages_data.</stat>
+  <stat name="mysql_status_Innodb_buffer_pool_pages_total">The total size of the InnoDB buffer pool, in pages.</stat>
+  <stat name="mysql_status_Innodb_buffer_pool_read_ahead">The number of pages read into the InnoDB buffer pool by the read-ahead background thread.</stat>
+  <stat name="mysql_status_Innodb_buffer_pool_read_ahead_evicted">The number of pages read into the InnoDB buffer pool by the read-ahead background thread that were subsequently evicted without having been accessed by queries.</stat>
+  <stat name="mysql_status_Innodb_buffer_pool_read_requests">The number of logical read requests made to the InnoDB buffer pool. These requests could be serviced by returning data that was already in memory, or by reading the data from disk into memory first.</stat>
+  <stat name="mysql_status_Innodb_buffer_pool_reads">The number of logical reads that InnoDB could not satisfy from the buffer pool, and had to read directly from disk.</stat>
+  <stat name="mysql_status_Innodb_buffer_pool_wait_free">Normally, writes to the InnoDB buffer pool happen in the background. When InnoDB needs to read or create a page and no clean pages are available, InnoDB flushes some dirty pages first and waits for that operation to finish. This counter counts instances of these waits. If innodb_buffer_pool_size has been set properly, this value should be small.</stat>
+  <stat name="mysql_status_Innodb_buffer_pool_write_requests">The number of writes done to the InnoDB buffer pool.</stat>
+  <stat name="mysql_status_Innodb_data_fsyncs">The number of fsync() operations so far. The frequency of fsync() calls is influenced by the setting of the innodb_flush_method configuration option.</stat>
+  <stat name="mysql_status_Innodb_data_pending_fsyncs">The current number of pending fsync() operations. The frequency of fsync() calls is influenced by the setting of the innodb_flush_method configuration option.</stat>
+  <stat name="mysql_status_Innodb_data_pending_reads">The current number of pending reads.</stat>
+  <stat name="mysql_status_Innodb_data_pending_writes">The current number of pending writes.</stat>
+  <stat name="mysql_status_Innodb_data_read">The amount of data read since the server was started.</stat>
+  <stat name="mysql_status_Innodb_data_reads">The total number of data reads.</stat>
+  <stat name="mysql_status_Innodb_data_writes">The total number of data writes.</stat>
+  <stat name="mysql_status_Innodb_data_written">The amount of data written so far, in bytes.</stat>
+  <stat name="mysql_status_Innodb_dblwr_pages_written">The number of pages that have been written to the doublewrite buffer. See Section 5.3.1, "InnoDB Disk I/O".</stat>
+  <stat name="mysql_status_Innodb_dblwr_writes">The number of doublewrite operations that have been performed. See Section 5.3.1, "InnoDB Disk I/O".</stat>
+  <stat name="mysql_status_Innodb_have_atomic_builtins">Indicates whether the server was built with atomic instructions.</stat>
+  <stat name="mysql_status_Innodb_log_waits">The number of times that the log buffer was too small and a wait was required for it to be flushed before continuing.</stat>
+  <stat name="mysql_status_Innodb_log_write_requests">The number of write requests for the InnoDB redo log.</stat>
+  <stat name="mysql_status_Innodb_log_writes">The number of physical writes to the InnoDB redo log file.</stat>
+  <stat name="mysql_status_Innodb_num_open_files">The number of files InnoDB currently holds open.</stat>
+  <stat name="mysql_status_Innodb_os_log_fsyncs">The number of fsync() writes done to the InnoDB redo log files.</stat>
+  <stat name="mysql_status_Innodb_os_log_pending_fsyncs">The number of pending fsync() operations for the InnoDB redo log files.</stat>
+  <stat name="mysql_status_Innodb_os_log_pending_writes">The number of pending writes to the InnoDB redo log files.</stat>
+  <stat name="mysql_status_Innodb_os_log_written">The number of bytes written to the InnoDB redo log files.</stat>
+  <stat name="mysql_status_Innodb_page_size">The compiled-in InnoDB page size (default 16KB). Many values are counted in pages; the page size enables them to be easily converted to bytes.</stat>
+  <stat name="mysql_status_Innodb_pages_created">The number of pages created by operations on InnoDB tables.</stat>
+  <stat name="mysql_status_Innodb_pages_read">The number of pages read by operations on InnoDB tables.</stat>
+  <stat name="mysql_status_Innodb_pages_written">The number of pages written by operations on InnoDB tables.</stat>
+  <stat name="mysql_status_Innodb_row_lock_current_waits">The number of row locks currently being waited for by operations on InnoDB tables. </stat>
+  <stat name="mysql_status_Innodb_row_lock_time">The total time spent in acquiring row locks for InnoDB tables, in milliseconds.</stat>
+  <stat name="mysql_status_Innodb_row_lock_time_avg">The average time to acquire a row lock for InnoDB tables, in milliseconds.</stat>
+  <stat name="mysql_status_Innodb_row_lock_time_max">The maximum time to acquire a row lock for InnoDB tables, in milliseconds.</stat>
+  <stat name="mysql_status_Innodb_row_lock_waits">The number of times operations on InnoDB tables had to wait for a row lock.</stat>
+  <stat name="mysql_status_Innodb_rows_deleted">The number of rows deleted from InnoDB tables.</stat>
+  <stat name="mysql_status_Innodb_rows_inserted">The number of rows inserted into InnoDB tables.</stat>
+  <stat name="mysql_status_Innodb_rows_read">The number of rows read from InnoDB tables.</stat>
+  <stat name="mysql_status_Innodb_rows_updated">The number of rows updated in InnoDB tables.</stat>
+  <stat name="mysql_status_Innodb_truncated_status_writes">The number of times output from the SHOW ENGINE INNODB STATUS statement has been truncated.</stat>
+  <stat name="mysql_status_Innodb_checkpoint_age">The checkpoint age, as shown in the LOG section of the SHOW ENGINE INNODB STATUS output. (This is equivalent to subtracting "Last checkpoint at" from "Log sequence number".).</stat>
+  <stat name="mysql_status_Innodb_background_log_sync">As shown in the BACKGROUND THREAD section of the SHOW ENGINE INNODB STATUS output.</stat>
+  <stat name="mysql_status_Innodb_current_row_locks">Number of current row locks on InnoDB tables as shown in the TRANSACTIONS section of the SHOW ENGINE INNODB STATUS output. Renamed from InnoDB_row_lock_numbers in XtraDB 5.5.8-20.1.</stat>
+  <stat name="mysql_status_Innodb_history_list_length">History list length as shown in the TRANSACTIONS section of the SHOW ENGINE INNODB STATUS output. This is the count of all database modifications present in the undo logs, in units of undo logs. The variable innodb_max_purge_lag is the highest number we want to have in history list, above which innodb will start to apply an indscriminate delay in pushing the operations.</stat>
+  <stat name="mysql_status_Innodb_ibuf_merged_deletes">As shown in the INSERT BUFFER AND ADAPTIVE HASH INDEX section of the SHOW ENGINE INNODB STATUS output.</stat>
+  <stat name="mysql_status_Innodb_ibuf_merged_delete_marks">As shown in the INSERT BUFFER AND ADAPTIVE HASH INDEX section of the SHOW ENGINE INNODB STATUS output.</stat>
+  <stat name="mysql_status_Innodb_ibuf_merged_inserts">As shown in the INSERT BUFFER AND ADAPTIVE HASH INDEX section of the SHOW ENGINE INNODB STATUS output.</stat>
+  <stat name="mysql_status_Innodb_ibuf_merges">As shown in the INSERT BUFFER AND ADAPTIVE HASH INDEX section of the SHOW ENGINE INNODB STATUS output.</stat>
+  <stat name="mysql_status_Innodb_ibuf_size">As shown in the INSERT BUFFER AND ADAPTIVE HASH INDEX section of the SHOW ENGINE INNODB STATUS output.</stat>
+  <stat name="mysql_status_Innodb_lsn_current">Log sequence number as shown in the LOG section of the SHOW ENGINE INNODB STATUS output.</stat>
+  <stat name="mysql_status_Innodb_lsn_flushed">Flushed up to log sequence number as shown in the LOG section of the SHOW ENGINE INNODB STATUS output.</stat>
+  <stat name="mysql_status_Innodb_lsn_last_checkpoint">Log sequence number last checkpoint as shown in the LOG section of the SHOW ENGINE INNODB STATUS output.</stat>
+  <stat name="mysql_status_Innodb_master_thread_active_loops">As shown in the BACKGROUND THREAD section of the SHOW ENGINE INNODB STATUS output.</stat>
+  <stat name="mysql_status_Innodb_max_trx_id">As shown in the TRANSACTIONS section of the SHOW ENGINE INNODB STATUS output.</stat>
+  <stat name="mysql_status_Innodb_mem_adaptive_hash">As shown in the BUFFER POOL AND MEMORY section of the SHOW ENGINE INNODB STATUS output.</stat>
+  <stat name="mysql_status_Innodb_mutex_os_waits">Mutex OS waits as shown in the SEMAPHORES section of the SHOW ENGINE INNODB STATUS output.</stat>
+  <stat name="mysql_status_Innodb_mutex_spin_rounds">Mutex spin rounds as shown in the SEMAPHORES section of the SHOW ENGINE INNODB STATUS output.</stat>
+  <stat name="mysql_status_Innodb_mutex_spin_waits">Mutex spin waits as shown in the SEMAPHORES section of the SHOW ENGINE INNODB STATUS output.</stat>
+  <stat name="mysql_status_Innodb_oldest_view_low_limit_trx_id">As shown in the TRANSACTIONS section of the SHOW ENGINE INNODB STATUS output.</stat>
+  <stat name="mysql_status_Innodb_s_lock_os_waits">As shown in the SEMAPHORES section of the SHOW ENGINE INNODB STATUS output.</stat>
+  <stat name="mysql_status_Innodb_s_lock_spin_rounds">As shown in the SEMAPHORES section of the SHOW ENGINE INNODB STATUS output.</stat>
+  <stat name="mysql_status_Innodb_s_lock_spin_waits">As shown in the SEMAPHORES section of the SHOW ENGINE INNODB STATUS output</stat>
+  <stat name="mysql_status_Innodb_x_lock_os_waits">As shown in the SEMAPHORES section of the SHOW ENGINE INNODB STATUS output.</stat>
+  <stat name="mysql_status_Innodb_x_lock_spin_rounds">As shown in the SEMAPHORES section of the SHOW ENGINE INNODB STATUS output.</stat>
+  <stat name="mysql_status_Innodb_x_lock_spin_waits">As shown in the SEMAPHORES section of the SHOW ENGINE INNODB STATUS output</stat>
+  <stat name="mysql_status_Key_blocks_not_flushed">The number of key blocks in the MyISAM key cache that have changed but have not yet been flushed to disk.</stat>
+  <stat name="mysql_status_Key_blocks_unused">The number of unused blocks in the MyISAM key cache. You can use this value to determine how much of the key cache is in use; see the discussion of key_buffer_size in Section 5.1.4, "Server System Variables".</stat>
+  <stat name="mysql_status_Key_blocks_used">The number of used blocks in the MyISAM key cache. This value is a high-water mark that indicates the maximum number of blocks that have ever been in use at one time.</stat>
+  <stat name="mysql_status_Key_read_requests">The number of requests to read a key block from the MyISAM key cache.</stat>
+  <stat name="mysql_status_Key_reads">The number of physical reads of a key block from disk into the MyISAM key cache. If Key_reads is large, then your key_buffer_size value is probably too small. The cache miss rate can be calculated as Key_reads/Key_read_requests.</stat>
+  <stat name="mysql_status_Key_write_requests">The number of requests to write a key block to the MyISAM key cache.</stat>
+  <stat name="mysql_status_Key_writes">The number of physical writes of a key block from the MyISAM key cache to disk.</stat>
+  <stat name="mysql_status_Last_query_cost">The total cost of the last compiled query as computed by the query optimizer. This is useful for comparing the cost of different query plans for the same query. The default value of 0 means that no query has been compiled yet. The default value is 0. Last_query_cost has session scope. 
+       The Last_query_cost value can be computed accurately only for simple "flat" queries, not complex queries such as those with subqueries or UNION. For the latter, the value is set to 0.</stat>
+  <stat name="mysql_status_Last_query_partial_plans">The number of iterations the query optimizer made in execution plan construction for the previous query. Last_query_cost has session scope. This variable was added in MySQL 5.6.5.</stat>
+  <stat name="mysql_status_Max_used_connections">The maximum number of connections that have been in use simultaneously since the server started.</stat>
+  <stat name="mysql_status_Not_flushed_delayed_rows">The number of rows waiting to be written to nontransactional tables in INSERT DELAYED queues. 
+      As of MySQL 5.6.7, this status variable is deprecated (because DELAYED inserts are deprecated), and will be removed in a future release.</stat>
+  <stat name="mysql_status_Open_files">The number of files that are open. This count includes regular files opened by the server. It does not include other types of files such as sockets or pipes. Also, the count does not include files that storage engines open using their own internal functions rather than asking the server level to do so.</stat>
+  <stat name="mysql_status_Open_streams">The number of streams that are open (used mainly for logging).</stat>
+  <stat name="mysql_status_Open_table_definitions">The number of cached .frm files.</stat>
+  <stat name="mysql_status_Open_tables">The number of tables that are open.</stat>
+  <stat name="mysql_status_Opened_files">The number of files that have been opened with my_open() (a mysys library function). Parts of the server that open files without using this function do not increment the count.</stat>
+  <stat name="mysql_status_Opened_table_definitions">The number of .frm files that have been cached.</stat>
+  <stat name="mysql_status_Opened_tables">The number of tables that have been opened. If Opened_tables is big, your table_open_cache value is probably too small.</stat>
+  <stat name="mysql_status_Performance_schema_xxx">Performance Schema status variables are listed in Section 20.12, "Performance Schema Status Variables".</stat>
+  <stat name="mysql_status_Prepared_stmt_count">The current number of prepared statements. (The maximum number of statements is given by the max_prepared_stmt_count system variable.)</stat>
+  <stat name="mysql_status_Qcache_free_blocks">The number of free memory blocks in the query cache.</stat>
+  <stat name="mysql_status_Qcache_free_memory">The amount of free memory for the query cache.</stat>
+  <stat name="mysql_status_Qcache_hits">The number of query cache hits.</stat>
+  <stat name="mysql_status_Qcache_inserts">The number of queries added to the query cache.</stat>
+  <stat name="mysql_status_Qcache_lowmem_prunes">The number of queries that were deleted from the query cache because of low memory.</stat>
+  <stat name="mysql_status_Qcache_not_cached">The number of noncached queries (not cacheable, or not cached due to the query_cache_type setting).</stat>
+  <stat name="mysql_status_Qcache_queries_in_cache">The number of queries registered in the query cache.</stat>
+  <stat name="mysql_status_Qcache_total_blocks">The total number of blocks in the query cache.</stat>
+  <stat name="mysql_status_Queries">The number of statements executed by the server. This variable includes statements executed within stored programs, unlike the Questions variable. It does not count COM_PING or COM_STATISTICS commands.</stat>
+  <stat name="mysql_status_Questions">The number of statements executed by the server. This includes only statements sent to the server by clients and not statements executed within stored programs, unlike the Queries variable. This variable does not count COM_PING, COM_STATISTICS, COM_STMT_PREPARE, COM_STMT_CLOSE, or COM_STMT_RESET commands.</stat>
+  <stat name="mysql_status_Rpl_semi_sync_master_clients">The number of semisynchronous slaves. 
+      This variable is available only if the master-side semisynchronous replication plugin is installed.</stat>
+  <stat name="mysql_status_Rpl_semi_sync_master_net_avg_wait_time">The average time in microseconds the master waited for a slave reply. 
+      This variable is available only if the master-side semisynchronous replication plugin is installed.</stat>
+  <stat name="mysql_status_Rpl_semi_sync_master_net_wait_time">The total time in microseconds the master waited for slave replies. 
+      This variable is available only if the master-side semisynchronous replication plugin is installed.</stat>
+  <stat name="mysql_status_Rpl_semi_sync_master_net_waits">The total number of times the master waited for slave replies. 
+     This variable is available only if the master-side semisynchronous replication plugin is installed.</stat>
+  <stat name="mysql_status_Rpl_semi_sync_master_no_times">The number of times the master turned off semisynchronous replication. 
+     This variable is available only if the master-side semisynchronous replication plugin is installed.</stat>
+  <stat name="mysql_status_Rpl_semi_sync_master_no_tx">The number of commits that were not acknowledged successfully by a slave. 
+     This variable is available only if the master-side semisynchronous replication plugin is installed.</stat>
+  <stat name="mysql_status_Rpl_semi_sync_master_status">Whether semisynchronous replication currently is operational on the master. The value is ON if the plugin has been enabled and a commit acknowledgment has occurred. It is OFF if the plugin is not enabled or the master has fallen back to asynchronous replication due to commit acknowledgment timeout. 
+     This variable is available only if the master-side semisynchronous replication plugin is installed.</stat>
+  <stat name="mysql_status_Rpl_semi_sync_master_timefunc_failures">The number of times the master failed when calling time functions such as gettimeofday(). 
+     This variable is available only if the master-side semisynchronous replication plugin is installed.</stat>
+  <stat name="mysql_status_Rpl_semi_sync_master_tx_avg_wait_time">The average time in microseconds the master waited for each transaction. 
+     This variable is available only if the master-side semisynchronous replication plugin is installed.</stat>
+  <stat name="mysql_status_Rpl_semi_sync_master_tx_wait_time">The total time in microseconds the master waited for transactions. 
+     This variable is available only if the master-side semisynchronous replication plugin is installed.</stat>
+  <stat name="mysql_status_Rpl_semi_sync_master_tx_waits">The total number of times the master waited for transactions. 
+     This variable is available only if the master-side semisynchronous replication plugin is installed.</stat>
+  <stat name="mysql_status_Rpl_semi_sync_master_wait_pos_backtraverse">The total number of times the master waited for an event with binary coordinates lower than events waited for previously. This can occur when the order in which transactions start waiting for a reply is different from the order in which their binary log events are written. 
+    This variable is available only if the master-side semisynchronous replication plugin is installed.</stat>
+  <stat name="mysql_status_Rpl_semi_sync_master_wait_sessions">The number of sessions currently waiting for slave replies. 
+    This variable is available only if the master-side semisynchronous replication plugin is installed.</stat>
+  <stat name="mysql_status_Rpl_semi_sync_master_yes_tx">The number of commits that were acknowledged successfully by a slave. 
+    This variable is available only if the master-side semisynchronous replication plugin is installed.</stat>
+  <stat name="mysql_status_Rpl_semi_sync_slave_status">Whether semisynchronous replication currently is operational on the slave. This is ON if the plugin has been enabled and the slave I/O thread is running, OFF otherwise. 
+    This variable is available only if the slave-side semisynchronous replication plugin is installed.</stat>
+  <stat name="mysql_status_Rsa_public_key">The RSA public key value used by the sha256_password authentication plugin. The value is nonempty only if the server successfully initializes the private and public keys in the files named by the sha256_password_private_key_path and sha256_password_public_key_path system variables. The value of Rsa_public_key comes from the latter file.  
+    This variable is available only if MySQL was built using OpenSSL. It was added in MySQL 5.6.6.</stat>
+  <stat name="mysql_status_Select_full_join">The number of joins that perform table scans because they do not use indexes. If this value is not 0, you should carefully check the indexes of your tables.</stat>
+  <stat name="mysql_status_Select_full_range_join">The number of joins that used a range search on a reference table.</stat>
+  <stat name="mysql_status_Select_range">The number of joins that used ranges on the first table. This is normally not a critical issue even if the value is quite large.</stat>
+  <stat name="mysql_status_Select_range_check">The number of joins without keys that check for key usage after each row. If this is not 0, you should carefully check the indexes of your tables.</stat>
+  <stat name="mysql_status_Select_scan">The number of joins that did a full scan of the first table.</stat>
+  <stat name="mysql_status_Slave_heartbeat_period">Shows the replication heartbeat interval (in seconds) on a replication slave.</stat>
+  <stat name="mysql_status_Slave_last_heartbeat">Shows when the most recent heartbeat signal was received by a replication slave, as a TIMESTAMP value.</stat>
+  <stat name="mysql_status_Slave_open_temp_tables">The number of temporary tables that the slave SQL thread currently has open. If the value is greater than zero, it is not safe to shut down the slave.</stat>
+  <stat name="mysql_status_Slave_received_heartbeats">This counter increments with each replication heartbeat received by a replication slave since the last time that the slave was restarted or reset, or a CHANGE MASTER TO statement was issued.</stat>
+  <stat name="mysql_status_Slave_retried_transactions">The total number of times since startup that the replication slave SQL thread has retried transactions.</stat>
+  <stat name="mysql_status_Slave_running">This is ON if this server is a replication slave that is connected to a replication master, and both the I/O and SQL threads are running; otherwise, it is OFF.</stat>
+  <stat name="mysql_status_Slow_launch_threads">The number of threads that have taken more than slow_launch_time seconds to create.</stat>
+  <stat name="mysql_status_Slow_queries">The number of queries that have taken more than long_query_time seconds.</stat>
+  <stat name="mysql_status_Sort_merge_passes">The number of merge passes that the sort algorithm has had to do. If this value is large, you should consider increasing the value of the sort_buffer_size system variable.</stat>
+  <stat name="mysql_status_Sort_range">The number of sorts that were done using ranges.</stat>
+  <stat name="mysql_status_Sort_rows">The number of sorted rows.</stat>
+  <stat name="mysql_status_Sort_scan">The number of sorts that were done by scanning the table.</stat>
+  <stat name="mysql_status_Ssl_accept_renegotiates">The number of negotiates needed to establish the connection.</stat>
+  <stat name="mysql_status_Ssl_accepts">The number of accepted SSL connections.</stat>
+  <stat name="mysql_status_Ssl_callback_cache_hits">The number of callback cache hits.</stat>
+  <stat name="mysql_status_Ssl_cipher">The current SSL cipher (empty for non-SSL connections).</stat>
+  <stat name="mysql_status_Ssl_cipher_list">The list of possible SSL ciphers.</stat>
+  <stat name="mysql_status_Ssl_client_connects">The number of SSL connection attempts to an SSL-enabled master.</stat>
+  <stat name="mysql_status_Ssl_connect_renegotiates">The number of negotiates needed to establish the connection to an SSL-enabled master.</stat>
+  <stat name="mysql_status_Ssl_ctx_verify_depth">The SSL context verification depth (how many certificates in the chain are tested).</stat>
+  <stat name="mysql_status_Ssl_ctx_verify_mode">The SSL context verification mode.</stat>
+  <stat name="mysql_status_Ssl_default_timeout">The default SSL timeout.</stat>
+  <stat name="mysql_status_Ssl_finished_accepts">The number of successful SSL connections to the server.</stat>
+  <stat name="mysql_status_Ssl_finished_connects">The number of successful slave connections to an SSL-enabled master.</stat>
+  <stat name="mysql_status_Ssl_server_not_after">The last date for which the SSL certificate is valid. This variable was added in MySQL 5.6.3.</stat>
+  <stat name="mysql_status_Ssl_server_not_before">The first date for which the SSL certificate is valid. This variable was added in MySQL 5.6.3.</stat>
+  <stat name="mysql_status_Ssl_session_cache_hits">The number of SSL session cache hits.</stat>
+  <stat name="mysql_status_Ssl_session_cache_misses">The number of SSL session cache misses.</stat>
+  <stat name="mysql_status_Ssl_session_cache_mode">The SSL session cache mode.</stat>
+  <stat name="mysql_status_Ssl_session_cache_overflows">The number of SSL session cache overflows.</stat>
+  <stat name="mysql_status_Ssl_session_cache_size">The SSL session cache size.</stat>
+  <stat name="mysql_status_Ssl_session_cache_timeouts">The number of SSL session cache timeouts.</stat>
+  <stat name="mysql_status_Ssl_sessions_reused">How many SSL connections were reused from the cache.</stat>
+  <stat name="mysql_status_Ssl_used_session_cache_entries">How many SSL session cache entries were used.</stat>
+  <stat name="mysql_status_Ssl_verify_depth">The verification depth for replication SSL connections.</stat>
+  <stat name="mysql_status_Ssl_verify_mode">The verification mode for replication SSL connections.</stat>
+  <stat name="mysql_status_Ssl_version">The SSL protocol version of the connection.</stat>
+  <stat name="mysql_status_Table_locks_immediate">The number of times that a request for a table lock could be granted immediately.</stat>
+  <stat name="mysql_status_Table_locks_waited">The number of times that a request for a table lock could not be granted immediately and a wait was needed. If this is high and you have performance problems, you should first optimize your queries, and then either split your table or tables or use replication.</stat>
+  <stat name="mysql_status_Table_open_cache_hits">The number of hits for open tables cache lookups. This variable was added in MySQL 5.6.6.</stat>
+  <stat name="mysql_status_Table_open_cache_misses">The number of misses for open tables cache lookups. This variable was added in MySQL 5.6.6.</stat>
+  <stat name="mysql_status_Table_open_cache_overflows">The number of overflows for the open tables cache. This is the number of times, after a table is opened or closed, a cache instance has an unused entry and the size of the instance is larger than table_open_cache / table_open_cache_instances. This variable was added in MySQL 5.6.6</stat>
+  <stat name="mysql_status_Tc_log_max_pages_used">For the memory-mapped implementation of the log that is used by mysqld when it acts as the transaction coordinator for recovery of internal XA transactions, this variable indicates the largest number of pages used for the log since the server started. If the product of Tc_log_max_pages_used and Tc_log_page_size is always significantly less than the log size, the size is larger than necessary and can be reduced. (The size is set by the --log-tc-size option. Currently, this variable is unused: It is unneeded for binary log-based recovery, and the memory-mapped recovery log method is not used unless the number of storage engines capable of two-phase commit is greater than one. (InnoDB is the only applicable engine.)</stat>
+  <stat name="mysql_status_Tc_log_page_size">The page size used for the memory-mapped implementation of the XA recovery log. The default value is determined using getpagesize(). Currently, this variable is unused for the same reasons as described for Tc_log_max_pages_used.</stat>
+  <stat name="mysql_status_Tc_log_page_waits">For the memory-mapped implementation of the recovery log, this variable increments each time the server was not able to commit a transaction and had to wait for a free page in the log. If this value is large, you might want to increase the log size (with the --log-tc-size option). For binary log-based recovery, this variable increments each time the binary log cannot be closed because there are two-phase commits in progress. (The close operation waits until all such transactions are finished.)</stat>
+  <stat name="mysql_status_Threads_cached">The number of threads in the thread cache.</stat>
+  <stat name="mysql_status_Threads_connected">The number of currently open connections.</stat>
+  <stat name="mysql_status_Threads_created">The number of threads created to handle connections. If Threads_created is big, you may want to increase the thread_cache_size value. The cache miss rate can be calculated as Threads_created/Connections.</stat>
+  <stat name="mysql_status_Threads_running">The number of threads that are not sleeping.</stat>
+  <stat name="mysql_status_Uptime">The number of seconds that the server has been up.</stat>
+  <stat name="mysql_status_Uptime_since_flush_status">The number of seconds since the most recent FLUSH STATUS statement.</stat>
+  <stat name="mysql_status_wsrep_evs_repl_latency">The variable tells group communication replication latency. The latency is measured from the time point when message is sent to the time point when message is delivered. Fields are min/average/max/standard deviation/sample size. Their units are second. They are reset periodically. The interval is controlled by variable 'evs.stats_report_period' and default value is 1 min.</stat>
+  <stat name="mysql_status_wsrep_local_state_uuid">The UUID of the state stored on this node.</stat>
+  <stat name="mysql_status_wsrep_last_committed">Sequence number of the last committed transaction.</stat>
+  <stat name="mysql_status_wsrep_replicated">Total number of writesets replicated (sent to other nodes).</stat>
+  <stat name="mysql_status_wsrep_replicated_bytes">Total size of writesets replicated.</stat>
+  <stat name="mysql_status_wsrep_received">Total number of writesets received from other nodes.</stat>
+  <stat name="mysql_status_wsrep_received_bytes">Total size of writesets received from other nodes.</stat>
+  <stat name="mysql_status_wsrep_local_commits">Total number of local transactions committed.</stat>
+  <stat name="mysql_status_wsrep_local_cert_failures">Total number of local transactions that failed certification test.</stat>
+  <stat name="mysql_status_wsrep_local_bf_aborts">Total number of local transactions that were aborted by slave transactions while in execution.</stat>
+  <stat name="mysql_status_wsrep_local_replays">Total number of transaction replays due to asymmetric lock granularity.</stat>
+  <stat name="mysql_status_wsrep_local_send_queue">Current (instantaneous) length of the send queue.</stat>
+  <stat name="mysql_status_wsrep_local_send_queue_avg">Send queue length averaged over interval since the last status query. Values considerably larger than 0.0 indicate replication throttling or network throughput issue.</stat>
+  <stat name="mysql_status_wsrep_local_recv_queue">Current (instantaneous) length of the recv queue.</stat>
+  <stat name="mysql_status_wsrep_local_recv_queue_avg">Recv queue length averaged over interval since the last status query. Values considerably larger than 0.0 mean that the node cannot apply writesets as fast as they are received and will generate a lot of replication throttling.</stat>
+  <stat name="mysql_status_wsrep_flow_control_paused">The fraction of time since the last status query that replication was paused due to flow control. In other words, how much the slave lag is slowing down the cluster.</stat>
+  <stat name="mysql_status_wsrep_flow_control_sent">Number of FC_PAUSE events sent since the last status query.</stat>
+  <stat name="mysql_status_wsrep_flow_control_recv">Number of FC_PAUSE events received since the last status query (counts the events sent).</stat>
+  <stat name="mysql_status_wsrep_cert_deps_distance">Average distance between highest and lowest seqno that can be possibly applied in parallel (potential degree of parallelization).</stat>
+  <stat name="mysql_status_wsrep_apply_oooe">How often applier started writeset applying out-of-order (parallelization efficiency).</stat>
+  <stat name="mysql_status_wsrep_apply_oool">How often writeset was so slow to apply that writeset with higher seqno’s were applied earlier. Values closer to 0 refer to a greater gap between slow and fast writesets.</stat>
+  <stat name="mysql_status_wsrep_apply_window">Average distance between highest and lowest concurrently applied seqno.</stat>
+  <stat name="mysql_status_wsrep_commit_oooe">How often a transaction was committed out of order.</stat>
+  <stat name="mysql_status_wsrep_commit_oool">No meaning.</stat>
+  <stat name="mysql_status_wsrep_commit_window">Average distance between highest and lowest concurrently committed seqno</stat>
+  <stat name="mysql_status_wsrep_local_state">Internal Galera Cluster FSM state number. 1: Joining (requesting/receiving State Transfer) - node is joining the cluster, 2: Donor/Desynced - node is the donor to the node joining the cluster, 3: Joined - node has joined the cluster, 4: Synced - node is synced with the cluster</stat>
+  <stat name="mysql_status_wsrep_local_state_comment">Human-readable explanation of the state.</stat>
+  <stat name="mysql_status_wsrep_incoming_addresses">Comma-separated list of incoming server addresses in the cluster component.</stat>
+  <stat name="mysql_status_wsrep_cluster_conf_id">Total number of cluster membership changes happened.</stat>
+  <stat name="mysql_status_wsrep_cluster_size">Current number of members in the cluster.</stat>
+  <stat name="mysql_status_wsrep_cluster_status">Status of this cluster component: PRIMARY or NON_PRIMARY.</stat>
+  <stat name="mysql_status_wsrep_local_index">This node index in the cluster (base 0).</stat>
+  <stat name="mysql_status_wsrep_ready">Whether the server is ready to accept queries. If this status is OFF, almost all of the queries fill fail with: ERROR 1047 (08S01) Unknown Command, unless the wsrep_on session variable is set to 0.</stat>
+  <stat name="mysql_status_wsrep_cert_index_size">The number of entries in the certification index.</stat>
+  <stat name="mysql_status_wsrep_protocol_version">The version of the wsrep protocol used.</stat>
+  <stat name="mysql_status_wsrep_connected">If the value is OFF, the node has not yet connected to any of the cluster components. This may be due to misconfiguration. Check the error log for proper diagnostics.</stat>
+  <stat name="After create">This occurs when the thread creates a table (including internal temporary tables), at the end of the function that creates the table. This state is used even if the table could not be created due to some error.</stat>
+  <stat name="Analyzing">The thread is calculating a MyISAM table key distributions (for example, for ANALYZE TABLE).</stat>
+  <stat name="checking permissions">The thread is checking whether the server has the required privileges to execute the statement.</stat>
+  <stat name="Checking table">The thread is performing a table check operation.</stat>
+  <stat name="cleaning up">The thread has processed one command and is preparing to free memory and reset certain state variables.</stat>
+  <stat name="closing tables">The thread is flushing the changed table data to disk and closing the used tables. This should be a fast operation. If not, verify that you do not have a full disk and that the disk is not in very heavy use.</stat>
+  <stat name="converting HEAP to MyISAM">The thread is converting an internal temporary table from a MEMORY table to an on-disk MyISAM table.</stat>
+  <stat name="copy to tmp table">The thread is processing an ALTER TABLE statement. This state occurs after the table with the new structure has been created but before rows are copied into it.</stat>
+  <stat name="Copying to group table">If a statement has different ORDER BY and GROUP BY criteria, the rows are sorted by group and copied to a temporary table.</stat>
+  <stat name="Copying to tmp table">The server is copying to a temporary table in memory.</stat>
+  <stat name="altering table">The server is in the process of executing an in-place ALTER TABLE.</stat>
+  <stat name="Copying to tmp table on disk">The server is copying to a temporary table on disk. The temporary result set has become too large (see Section 8.4.3.3, “How MySQL Uses Internal Temporary Tables”). Consequently, the thread is changing the temporary table from in-memory to disk-based format to save memory.</stat>
+  <stat name="Creating index">The thread is processing ALTER TABLE ... ENABLE KEYS for a MyISAM table.</stat>
+  <stat name="Creating sort index">The thread is processing a SELECT that is resolved using an internal temporary table.</stat>
+  <stat name="creating table">The thread is creating a table. This includes creation of temporary tables.</stat>
+  <stat name="Creating tmp table">The thread is creating a temporary table in memory or on disk. If the table is created in memory but later is converted to an on-disk table, the state during that operation will be Copying to tmp table on disk.</stat>
+  <stat name="committing alter table to storage engine">The server has finished an in-place ALTER TABLE and is committing the result.</stat>
+  <stat name="deleting from main table">The server is executing the first part of a multiple-table delete. It is deleting only from the first table, and saving columns and offsets to be used for deleting from the other (reference) tables.</stat>
+  <stat name="deleting from reference tables">The server is executing the second part of a multiple-table delete and deleting the matched rows from the other tables.</stat>
+  <stat name="discard_or_import_tablespace">The thread is processing an ALTER TABLE ... DISCARD TABLESPACE or ALTER TABLE ... IMPORT TABLESPACE statement.</stat>
+  <stat name="end">This occurs at the end but before the cleanup of ALTER TABLE, CREATE VIEW, DELETE, INSERT, SELECT, or UPDATE statements.</stat>
+  <stat name="executing">The thread has begun executing a statement.</stat>
+  <stat name="Execution of init_command">The thread is executing statements in the value of the init_command system variable.</stat>
+  <stat name="freeing items">The thread has executed a command. Some freeing of items done during this state involves the query cache. This state is usually followed by cleaning up.</stat>
+  <stat name="Flushing tables">The thread is executing FLUSH TABLES and is waiting for all threads to close their tables.</stat>
+  <stat name="FULLTEXT initialization">The server is preparing to perform a natural-language full-text search.</stat>
+  <stat name="init">This occurs before the initialization of ALTER TABLE, DELETE, INSERT, SELECT, or UPDATE statements. Actions taken by the server in this state include flushing the binary log, the InnoDB log, and some query cache cleanup operations. For the end state, the following operations could be happening: Removing query cache entries after data in a table is changed. Writing an event to the binary log. Freeing memory buffers, including for blobs</stat>
+  <stat name="Killed">Someone has sent a KILL statement to the thread and it should abort next time it checks the kill flag. The flag is checked in each major loop in MySQL, but in some cases it might still take a short time for the thread to die. If the thread is locked by some other thread, the kill takes effect as soon as the other thread releases its lock.</stat>
+  <stat name="logging slow query">The thread is writing a statement to the slow-query log.</stat>
+  <stat name="NULL">This state is used for the SHOW PROCESSLIST state.</stat>
+  <stat name="login">The initial state for a connection thread until the client has been authenticated successfully.</stat>
+  <stat name="manage keys">The server is enabling or disabling a table index.</stat>
+  <stat name="Opening tables">The thread is trying to open a table. This is should be very fast procedure, unless something prevents opening. For example, an ALTER TABLE or a LOCK TABLE statement can prevent opening a table until the statement is finished. It is also worth checking that your table_open_cache value is large enough.</stat>
+  <stat name="Opening table">The thread is trying to open a table. This is should be very fast procedure, unless something prevents opening. For example, an ALTER TABLE or a LOCK TABLE statement can prevent opening a table until the statement is finished. It is also worth checking that your table_open_cache value is large enough.</stat>
+  <stat name="optimizing">The server is performing initial optimizations for a query.</stat>
+  <stat name="preparing">This state occurs during query optimization.</stat>
+  <stat name="Purging old relay logs">The thread is removing unneeded relay log files.</stat>
+  <stat name="query end">This state occurs after processing a query but before the freeing items state.</stat>
+  <stat name="Reading from net">The server is reading a packet from the network.</stat>
+  <stat name="Removing duplicates">The query was using SELECT DISTINCT in such a way that MySQL could not optimize away the distinct operation at an early stage. Because of this, MySQL requires an extra stage to remove all duplicated rows before sending the result to the client.</stat>
+  <stat name="removing tmp table">The thread is removing an internal temporary table after processing a SELECT statement. This state is not used if no temporary table was created.</stat>
+  <stat name="rename">The thread is renaming a table.</stat>
+  <stat name="rename result table">The thread is processing an ALTER TABLE statement, has created the new table, and is renaming it to replace the original table.</stat>
+  <stat name="Reopen tables">The thread got a lock for the table, but noticed after getting the lock that the underlying table structure changed. It has freed the lock, closed the table, and is trying to reopen it.</stat>
+  <stat name="Repair by sorting">The repair code is using a sort to create indexes.</stat>
+  <stat name="preparing for alter table">The server is preparing to execute an in-place ALTER TABLE.</stat>
+  <stat name="Repair done">The thread has completed a multi-threaded repair for a MyISAM table.</stat>
+  <stat name="Repair with keycache">The repair code is using creating keys one by one through the key cache. This is much slower than Repair by sorting.</stat>
+  <stat name="Rolling back">The thread is rolling back a transaction.</stat>
+  <stat name="Saving state">For MyISAM table operations such as repair or analysis, the thread is saving the new table state to the .MYI file header. State includes information such as number of rows, the AUTO_INCREMENT counter, and key distributions.</stat>
+  <stat name="Searching rows for update">The thread is doing a first phase to find all matching rows before updating them. This has to be done if the UPDATE is changing the index that is used to find the involved rows.</stat>
+  <stat name="Sending data">The thread is reading and processing rows for a SELECT statement, and sending data to the client. Because operations occurring during this this state tend to perform large amounts of disk access (reads), it is often the longest-running state over the lifetime of a given query.</stat>
+  <stat name="setup">The thread is beginning an ALTER TABLE operation.</stat>
+  <stat name="Sorting for group">The thread is doing a sort to satisfy a GROUP BY.</stat>
+  <stat name="Sorting for order">The thread is doing a sort to satisfy a ORDER BY.</stat>
+  <stat name="Sorting index">The thread is sorting index pages for more efficient access during a MyISAM table optimization operation.</stat>
+  <stat name="Sorting result">For a SELECT statement, this is similar to Creating sort index, but for nontemporary tables.</stat>
+  <stat name="statistics">The server is calculating statistics to develop a query execution plan. If a thread is in this state for a long time, the server is probably disk-bound performing other work.</stat>
+  <stat name="System lock">The thread is going to request or is waiting for an internal or external system lock for the table. If this state is being caused by requests for external locks and you are not using multiple mysqld servers that are accessing the same MyISAM tables, you can disable external system locks with the --skip-external-locking option. However, external locking is disabled by default, so it is likely that this option will have no effect. For SHOW PROFILE, this state means the thread is requesting the lock (not waiting for it).</stat>
+  <stat name="update">The thread is getting ready to start updating the table.</stat>
+  <stat name="Updating">The thread is searching for rows to update and is updating them.</stat>
+  <stat name="updating main table">The server is executing the first part of a multiple-table update. It is updating only the first table, and saving columns and offsets to be used for updating the other (reference) tables.</stat>
+  <stat name="updating reference tables">The server is executing the second part of a multiple-table update and updating the matched rows from the other tables.</stat>
+  <stat name="User lock">The thread is going to request or is waiting for an advisory lock requested with a GET_LOCK() call. For SHOW PROFILE, this state means the thread is requesting the lock (not waiting for it).</stat>
+  <stat name="User sleep">The thread has invoked a SLEEP() call.</stat>
+  <stat name="Waiting for commit lock">FLUSH TABLES WITH READ LOCK) is waiting for a commit lock.</stat>
+  <stat name="Waiting for global read lock">FLUSH TABLES WITH READ LOCK) is waiting for a global read lock.</stat>
+  <stat name="Waiting for tables">The thread got a notification that the underlying structure for a table has changed and it needs to reopen the table to get the new structure. However, to reopen the table, it must wait until all other threads have closed the table in question. This notification takes place if another thread has used FLUSH TABLES or one of the following statements on the table in question: FLUSH TABLES tbl_name, ALTER TABLE, RENAME TABLE, REPAIR TABLE, ANALYZE TABLE, or OPTIMIZE TABLE.</stat>
+  <stat name="Waiting for table">The thread got a notification that the underlying structure for a table has changed and it needs to reopen the table to get the new structure. However, to reopen the table, it must wait until all other threads have closed the table in question. This notification takes place if another thread has used FLUSH TABLES or one of the following statements on the table in question: FLUSH TABLES tbl_name, ALTER TABLE, RENAME TABLE, REPAIR TABLE, ANALYZE TABLE, or OPTIMIZE TABLE.</stat>
+  <stat name="Waiting for table flush">The thread got a notification that the underlying structure for a table has changed and it needs to reopen the table to get the new structure. However, to reopen the table, it must wait until all other threads have closed the table in question. This notification takes place if another thread has used FLUSH TABLES or one of the following statements on the table in question: FLUSH TABLES tbl_name, ALTER TABLE, RENAME TABLE, REPAIR TABLE, ANALYZE TABLE, or OPTIMIZE TABLE.</stat>
+  <stat name="Waiting for event metadata lock">The server is waiting to acquire a lock, where lock_type indicates the type of lock:</stat>
+  <stat name="Waiting for global read lock">The server is waiting to acquire a lock, where lock_type indicates the type of lock:</stat>
+  <stat name="Waiting for schema metadata lock">The server is waiting to acquire a lock, where lock_type indicates the type of lock:</stat>
+  <stat name="Waiting for stored function metadata lock">The server is waiting to acquire a lock, where lock_type indicates the type of lock:</stat>
+  <stat name="Waiting for stored procedure metadata lock">The server is waiting to acquire a lock, where lock_type indicates the type of lock:</stat>
+  <stat name="Waiting for table level lock">The server is waiting to acquire a lock, where lock_type indicates the type of lock:</stat>
+  <stat name="Waiting for table metadata lock">The server is waiting to acquire a lock, where lock_type indicates the type of lock:</stat>
+  <stat name="Waiting for trigger metadata lock">The server is waiting to acquire a lock, where lock_type indicates the type of lock:</stat>
+  <stat name="Waiting on cond">A generic state in which the thread is waiting for a condition to become true. No specific state information is available.</stat>
+  <stat name="Writing to net">The server is writing a packet to the network.</stat>
+  <stat name="Clearing">The scheduler thread or a thread that was executing an event is terminating and is about to end.</stat>
+  <stat name="Initialized">The scheduler thread or a thread that will execute an event has been initialized.</stat>
+  <stat name="Waiting for next activation">The scheduler has a nonempty event queue but the next activation is in the future.</stat>
+  <stat name="Waiting for scheduler to stop">The thread issued SET GLOBAL event_scheduler=OFF and is waiting for the scheduler to stop.</stat>
+  <stat name="Initialized">The scheduler thread or a thread that will execute an event has been initialized.</stat>
+  <stat name="Waiting on empty queue">The scheduler's event queue is empty and it is sleeping.</stat>
+  <stat name="checking query cache for query">The server is checking whether the current query is present in the query cache.</stat>
+  <stat name="invalidating query cache entries">Query cache entries are being marked invalid because the underlying tables have changed.</stat>
+  <stat name="sending cached result to client">The server is taking the result of a query from the query cache and sending it to the client.</stat>
+  <stat namne="storing result in query cache">The server is storing the result of a query in the query cache.</stat>
+  <stat name="Waiting for query cache lock">This state occurs while a session is waiting to take the query cache lock. This can happen for any statement that needs to perform some query cache operation, such as an INSERT or DELETE that invalidates the query cache, a SELECT that looks for a cached entry, RESET QUERY CACHE, and so forth.</stat>
+  <stat name="Sending binlog event to slave">Binary logs consist of events, where an event is usually an update plus some other information. The thread has read an event from the binary log and is now sending it to the slave.</stat>
+  <stat name="Finished reading one binlog; switching to next binlog">The thread has finished reading a binary log file and is opening the next one to send to the slave.</stat>
+  <stat name="Master has sent all binlog to slave; waiting for binlog to be updated">The thread has read all outstanding updates from the binary logs and sent them to the slave. The thread is now idle, waiting for new events to appear in the binary log resulting from new updates occurring on the master.</stat>
+  <stat name="Has sent all binlog to slave; waiting for binlog to be updated">The thread has read all outstanding updates from the binary logs and sent them to the slave. The thread is now idle, waiting for new events to appear in the binary log resulting from new updates occurring on the master.</stat>
+  <stat name="Waiting to finalize termination">A very brief state that occurs as the thread is stopping.</stat>
+  <stat name="Waiting for master update">The initial state before Connecting to master.</stat>
+  <stat name="Connecting to master">The thread is attempting to connect to the master.</stat> 
+  <stat name="Checking master version">A state that occurs very briefly, after the connection to the master is established.</stat>
+  <stat name="Registering slave on master">A state that occurs very briefly after the connection to the master is established.</stat>
+  <stat name="Requesting binlog dump">A state that occurs very briefly, after the connection to the master is established. The thread sends to the master a request for the contents of its binary logs, starting from the requested binary log file name and position.</stat>
+  <stat name="Waiting to reconnect after a failed binlog dump request">If the binary log dump request failed (due to disconnection), the thread goes into this state while it sleeps, then tries to reconnect periodically. The interval between retries can be specified using the CHANGE MASTER TO statement.</stat>
+  <stat name="Reconnecting after a failed binlog dump request">The thread is trying to reconnect to the master.</stat>
+  <stat name="Waiting for master to send event">The thread has connected to the master and is waiting for binary log events to arrive. This can last for a long time if the master is idle. If the wait lasts for slave_net_timeout seconds, a timeout occurs. At that point, the thread considers the connection to be broken and makes an attempt to reconnect.</stat>
+  <stat name="Queueing master event to the relay log">The thread has read an event and is copying it to the relay log so that the SQL thread can process it.</stat>
+  <stat name="Waiting to reconnect after a failed master event read">An error occurred while reading (due to disconnection). The thread is sleeping for the number of seconds set by the CHANGE MASTER TO statement (default 60) before attempting to reconnect.</stat>
+  <stat name="Reconnecting after a failed master event read">The thread is trying to reconnect to the master. When connection is established again, the state becomes Waiting for master to send event.</stat>
+  <stat name="Waiting for the slave SQL thread to free enough relay log space">You are using a nonzero relay_log_space_limit value, and the relay logs have grown large enough that their combined size exceeds this value. The I/O thread is waiting until the SQL thread frees enough space by processing relay log contents so that it can delete some relay log files.</stat>
+  <stat name="Waiting for slave mutex on exit">A state that occurs briefly as the thread is stopping.</stat>
+  <stat name="Waiting for the next event in relay log">The initial state before Reading event from the relay log.</stat>
+  <stat name="Reading event from the relay log">The thread has read an event from the relay log so that the event can be processed.</stat>
+  <stat name="Making temp file">The thread is executing a LOAD DATA INFILE statement and is creating a temporary file containing the data from which the slave will read rows.</stat>
+  <stat name="Slave has read all relay log; waiting for the slave I/O thread to update it">The thread has processed all events in the relay log files, and is now waiting for the I/O thread to write new events to the relay log.</stat>
+  <stat name="Waiting for slave mutex on exit">A very brief state that occurs as the thread is stopping.</stat>
+  <stat name="Waiting until MASTER_DELAY seconds after master executed event">The SQL thread has read an event but is waiting for the slave delay to lapse. This delay is set with the MASTER_DELAY option of CHANGE MASTER TO.</stat>
+  <stat name="Changing master">The thread is processing a CHANGE MASTER TO statement.</stat>
+  <stat name="Killing slave">The thread is processing a STOP SLAVE statement.</stat>
+  <stat name="Opening master dump table">This state occurs after Creating table from master dump.</stat>
+  <stat name="Reading master dump table data">This state occurs after Opening master dump table.</stat>
+  <stat name="Rebuilding the index on master dump table">This state occurs after Reading master dump table data</stat>
+  <stat name="plan.select_type.SIMPLE">Simple SELECT (not using UNION or subqueries)</stat>
+  <stat name="plan.select_type.PRIMARY">Outermost SELECT</stat>
+  <stat name="plan.select_type.UNION">Second or later SELECT statement in a UNION</stat>
+  <stat name="plan.select_type.DEPENDENT UNION">Second or later SELECT statement in a UNION, dependent on outer query</stat>
+  <stat name="plan.select_type.UNION RESULT">Result of a UNION.</stat>
+  <stat name="plan.select_type.SUBQUERY">First SELECT in subquery</stat>
+  <stat name="plan.select_type.DEPENDENT SUBQUERY">First SELECT in subquery, dependent on outer query</stat>
+  <stat name="plan.select_type.DERIVED">Derived table SELECT (subquery in FROM clause)</stat>
+  <stat name="plan.select_type.MATERIALIZED">Materialized subquery</stat>
+  <stat name="plan.select_type.UNCACHEABLE SUBQUERY">A subquery for which the result cannot be cached and must be re-evaluated for each row of the outer query</stat>
+  <stat name="plan.select_type.UNCACHEABLE UNION">The second or later select in a UNION that belongs to an uncacheable subquery (see UNCACHEABLE SUBQUERY)</stat>
+  <stat name="plan.join_type.system">The table has only one row (= system table). This is a special case of the const join type.</stat>
+  <stat name="plan.join_type.const">The table has at most one matching row, which is read at the start of the query. Because there is only one row, values from the column in this row can be regarded as constants by the rest of the optimizer. const tables are very fast because they are read only once. const is used when you compare all parts of a PRIMARY KEY or UNIQUE index to constant values.</stat>
+  <stat name="plan.join_type.eq_ref">One row is read from this table for each combination of rows from the previous tables. Other than the system and const types, this is the best possible join type. It is used when all parts of an index are used by the join and the index is a PRIMARY KEY or UNIQUE NOT NULL index. eq_ref can be used for indexed columns that are compared using the = operator. The comparison value can be a constant or an expression that uses columns from tables that are read before this table.</stat>
+  <stat name="plan.join_type.ref">All rows with matching index values are read from this table for each combination of rows from the previous tables. ref is used if the join uses only a leftmost prefix of the key or if the key is not a PRIMARY KEY or UNIQUE index (in other words, if the join cannot select a single row based on the key value). If the key that is used matches only a few rows, this is a good join type. ref can be used for indexed columns that are compared using the = or &lt;=&gt; operator.</stat>
+  <stat name="plan.join_type.fulltext">The join is performed using a FULLTEXT index.</stat>
+  <stat name="plan.join_type.ref_or_null">This join type is like ref, but with the addition that MySQL does an extra search for rows that contain NULL values. This join type optimization is used most often in resolving subqueries.</stat>
+  <stat name="plan.join_type.index_merge">This join type indicates that the Index Merge optimization is used. In this case, the key column in the output row contains a list of indexes used, and key_len contains a list of the longest key parts for the indexes used.</stat>
+  <stat name="plan.join_type.unique_subquery">This type replaces ref for some IN subqueries of the following form: "value IN (SELECT primary_key FROM single_table WHERE some_expr)". unique_subquery is just an index lookup function that replaces the subquery completely for better efficiency.</stat>
+  <stat name="plan.join_type.index_subquery">This join type is similar to unique_subquery. It replaces IN subqueries, but it works for nonunique indexes in subqueries of the following form: "value IN (SELECT key_column FROM single_table WHERE some_expr)".</stat> 
+  <stat name="plan.join_type.range">Only rows that are in a given range are retrieved, using an index to select the rows. The key column in the output row indicates which index is used. The key_len contains the longest key part that was used. The ref column is NULL for this type. range can be used when a key column is compared to a constant using any of the =, &lt;&gt;, &gt;, &gt;=, &lt;, &lt;=, IS NULL, &lt;=&gt;, BETWEEN, or IN() operators.</stat> 
+  <stat name="plan.join_type.index">The index join type is the same as ALL, except that the index tree is scanned. This occurs two ways: 1. If the index is a covering index for the queries and can be used to satisfy all data required from the table, only the index tree is scanned. In this case, the Extra column says Using index. An index-only scan usually is faster than ALL because the size of the index usually is smaller than the table data. 2. A full table scan is performed using reads from the index to look up data rows in index order. Uses index does not appear in the Extra column. MySQL can use this join type when the query uses only columns that are part of a single index.</stat>
+  <stat name="plan.join_type.ALL">A full table scan is done for each combination of rows from the previous tables. This is normally not good if the table is the first table not marked const, and usually very bad in all other cases. Normally, you can avoid ALL by adding indexes that enable row retrieval from the table based on constant values or column values from earlier tables.  </stat>
+  <stat name="plan.extra.Child of 'table' pushed join@1">This table is referenced as the child of table in a join that can be pushed down to the NDB kernel. Applies only in MySQL Cluster, when pushed-down joins are enabled. See the description of the ndb_join_pushdown server system variable for more information and examples.</stat>
+  <stat name="plan.extra.const row not found">For a query such as SELECT ... FROM tbl_name, the table was empty.</stat>
+  <stat name="plan.extra.Deleting all rows">For DELETE, some storage engines (such as MyISAM) support a handler method that removes all table rows in a simple and fast way. This Extra value is displayed if the engine uses this optimization.</stat>
+  <stat name="plan.extra.Distinct">MySQL is looking for distinct values, so it stops searching for more rows for the current row combination after it has found the first matching row.</stat>
+  <stat name="plan.extra.FirstMatch">The semi-join FirstMatch join shortcutting strategy is used for the table specified.</stat>
+  <stat name="plan.extra.Full scan on NULL key">This occurs for subquery optimization as a fallback strategy when the optimizer cannot use an index-lookup access method.</stat>
+  <stat name="plan.extra.Impossible HAVING">The HAVING clause is always false and cannot select any rows.</stat>
+  <stat name="plan.extra.Impossible WHERE">The WHERE clause is always false and cannot select any rows.</stat>
+  <stat name="plan.extra.Impossible WHERE noticed after reading const tables">MySQL has read all const (and system) tables and notice that the WHERE clause is always false.</stat>
+  <stat name="plan.extra.LooseScan">The semi-join LooseScan strategy is used. m and n are key part numbers.</stat>
+  <stat name="plan.extra.Materialize, Scan">Before MySQL 5.6.7, this indicates use of a single materialized temporary table. If Scan is present, no temporary table index is used for table reads. Otherwise, an index lookup is used. See also the Start materialize entry. As of MySQL 5.6.7, materialization is indicated by rows with a select_type value of MATERIALIZED and rows with a table value of &lt;subqueryN&gt;.</stat>
+  <stat name="plan.extra.No matching min/max row">No row satisfies the condition for a query such as SELECT MIN(...) FROM ... WHERE condition.</stat>
+  <stat name="plan.extra.no matching row in const table">For a query with a join, there was an empty table or a table with no rows satisfying a unique index condition.</stat>
+  <stat name="plan.extra.No matching rows after partition pruning">For DELETE or UPDATE, the optimizer found nothing to delete or update after partition pruning. It is similar in meaning to Impossible WHERE for SELECT statements.</stat>
+  <stat name="plan.extra.No tables used">The query has no FROM clause, or has a FROM DUAL clause. For INSERT or REPLACE statements, EXPLAIN displays this value when there is no SELECT part. For example, it appears for EXPLAIN INSERT INTO t VALUES(10) because that is equivalent to EXPLAIN INSERT INTO t SELECT 10 FROM DUAL.</stat>
+  <stat name="plan.extra.Not exists">MySQL was able to do a LEFT JOIN optimization on the query and does not examine more rows in this table for the previous row combination after it finds one row that matches the LEFT JOIN criteria.</stat>
+  <stat name="plan.extra.Range checked for each record">MySQL found no good index to use, but found that some of indexes might be used after column values from preceding tables are known. For each row combination in the preceding tables, MySQL checks whether it is possible to use a range or index_merge access method to retrieve rows. This is not very fast, but is faster than performing a join with no index at all. The applicability criteria are as described in Section 8.2.1.3, “Range Optimization”, and Section 8.2.1.4, “Index Merge Optimization”, with the exception that all column values for the preceding table are known and considered to be constants. Indexes are numbered beginning with 1, in the same order as shown by SHOW INDEX for the table. The index map value N is a bitmask value that indicates which indexes are candidates. For example, a value of 0x19 (binary 11001) means that indexes 1, 4, and 5 will be considered.</stat>
+  <stat name="plan.extra.Scanned N databases" comment="TODO">This indicates how many directory scans the server performs when processing a query for INFORMATION_SCHEMA tables, as described in Section 8.2.4, “Optimizing INFORMATION_SCHEMA Queries”. The value of N can be 0, 1, or all.</stat>
+  <stat name="plan.extra.Select tables optimized away">The query contained only aggregate functions (MIN(), MAX()) that were all resolved using an index, or COUNT(*) for MyISAM, and no GROUP BY clause. The optimizer determined that only one row should be returned.</stat>
+  <stat name="plan.extra.Skip_open_table">These values indicate file-opening optimizations that apply to queries for INFORMATION_SCHEMA tables. Table files do not need to be opened. The information has already become available within the query by scanning the database directory.</stat>
+  <stat name="plan.extra.Open_frm_only">These values indicate file-opening optimizations that apply to queries for INFORMATION_SCHEMA tables. Only the table's .frm file need be opened.</stat>
+  <stat name="plan.extra.Open_trigger_only">These values indicate file-opening optimizations that apply to queries for INFORMATION_SCHEMA tables. Only the table's .TRG file need be opened.</stat>
+  <stat name="plan.extra.Open_full_table">These values indicate file-opening optimizations that apply to queries for INFORMATION_SCHEMA tables. The unoptimized information lookup. The .frm, .MYD, and .MYI files must be opened.</stat>
+  <stat name="plan.extra.Start materialize">Before MySQL 5.6.7, this indicates use of multiple materialized temporary tables. If Scan is present, no temporary table index is used for table reads. Otherwise, an index lookup is used. See also the Materialize entry. As of MySQL 5.6.7, materialization is indicated by rows with a select_type value of MATERIALIZED and rows with a table value of &lt;subqueryN&gt;.</stat>
+  <stat name="plan.extra.End materialize">Before MySQL 5.6.7, this indicates use of multiple materialized temporary tables. If Scan is present, no temporary table index is used for table reads. Otherwise, an index lookup is used. See also the Materialize entry. As of MySQL 5.6.7, materialization is indicated by rows with a select_type value of MATERIALIZED and rows with a table value of &lt;subqueryN&gt;.</stat>
+  <stat name="plan.extra.Scan">Before MySQL 5.6.7, this indicates use of multiple materialized temporary tables. If Scan is present, no temporary table index is used for table reads. Otherwise, an index lookup is used. See also the Materialize entry. As of MySQL 5.6.7, materialization is indicated by rows with a select_type value of MATERIALIZED and rows with a table value of &lt;subqueryN&gt;.</stat>
+  <stat name="plan.extra.Start temporary">This indicates temporary table use for the semi-join Duplicate Weedout strategy.</stat> 
+  <stat name="plan.extra.End temporary">This indicates temporary table use for the semi-join Duplicate Weedout strategy.</stat>
+  <stat name="plan.extra.unique row not found">For a query such as SELECT ... FROM tbl_name, no rows satisfy the condition for a UNIQUE index or PRIMARY KEY on the table.</stat>
+  <stat name="plan.extra.Using filesort">MySQL must do an extra pass to find out how to retrieve the rows in sorted order. The sort is done by going through all rows according to the join type and storing the sort key and pointer to the row for all rows that match the WHERE clause. The keys then are sorted and the rows are retrieved in sorted order.</stat>
+  <stat name="plan.extra.Using index">The column information is retrieved from the table using only information in the index tree without having to do an additional seek to read the actual row. This strategy can be used when the query uses only columns that are part of a single index. If the Extra column also says Using where, it means the index is being used to perform lookups of key values. Without Using where, the optimizer may be reading the index to avoid reading data rows but not using it for lookups. For example, if the index is a covering index for the query, the optimizer may scan it without using it for lookups. For InnoDB tables that have a user-defined clustered index, that index can be used even when Using index is absent from the Extra column. This is the case if type is index and key is PRIMARY.</stat>
+  <stat name="plan.extra.Using index condition">Tables are read by accessing index tuples and testing them first to determine whether to read full table rows. In this way, index information is used to defer (“push down”) reading full table rows unless it is necessary.</stat>
+  <stat name="plan.extra.Using index for group-by">Similar to the Using index table access method, Using index for group-by indicates that MySQL found an index that can be used to retrieve all columns of a GROUP BY or DISTINCT query without any extra disk access to the actual table. Additionally, the index is used in the most efficient way so that for each group, only a few index entries are read.</stat>
+  <stat name="plan.extra.Using join buffer">Tables from earlier joins are read in portions into the join buffer, and then their rows are used from the buffer to perform the join with the current table. (Block Nested Loop) indicates use of the Block Nested-Loop algorithm and (Batched Key Access) indicates use of the Batched Key Access algorithm. That is, the keys from the table on the preceding line of the EXPLAIN output will be buffered, and the matching rows will be fetched in batches from the table represented by the line in which Using join buffer appears.</stat>
+  <stat name="plan.extra.Using MRR">Tables are read using the Multi-Range Read optimization strategy.</stat>
+  <stat name="plan.extra.Using sort_union">These indicate how index scans are merged for the index_merge join type.</stat>
+  <stat name="plan.extra.Using union">These indicate how index scans are merged for the index_merge join type.</stat>
+  <stat name="plan.extra.Using intersect">These indicate how index scans are merged for the index_merge join type.</stat>
+  <stat name="plan.extra.Using temporary">To resolve the query, MySQL needs to create a temporary table to hold the result. This typically happens if the query contains GROUP BY and ORDER BY clauses that list columns differently.</stat>
+  <stat name="plan.extra.Using where">A WHERE clause is used to restrict which rows to match against the next table or send to the client. Unless you specifically intend to fetch or examine all rows from the table, you may have something wrong in your query if the Extra value is not Using where and the table join type is ALL or index.</stat>
+  <stat name="plan.extra.Using where with pushed condition">This item applies to NDB tables only. It means that MySQL Cluster is using the Condition Pushdown optimization to improve the efficiency of a direct comparison between a nonindexed column and a constant. In such cases, the condition is “pushed down” to the cluster's data nodes and is evaluated on all data nodes simultaneously. This eliminates the need to send nonmatching rows over the network, and can speed up such queries by a factor of 5 to 10 times over cases where Condition Pushdown could be but is not used. </stat>
+  <stat name="plan.extra.Cost">The estimated query plan cost grabbed from session status variable Last_query_cost.</stat>
+</stats>

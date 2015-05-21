@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   Copyright 2015, Yahoo Inc.
+   Copyrights licensed under the Apache License.
+   See the accompanying LICENSE file for terms.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="frameworkContext" class="com.yahoo.dba.perf.myperf.common.MyPerfContext">
+      <property name="connectionIdleTime" value="600000" />
+      <property name="connectionTimeout" value="60000" />
+      <property name="connectionReadTimeout" value="300000" />
+      <property name="queryTimeout" value="300" />
+      <property name="queryFetchSize" value="5000" />
+      <property name="logLevel" value="INFO" />
+      <property name="logPath" value="myperf.log" />
+      <property name="configRepKey" value="myperfmetadb" />
+      <property name="jdbcDriver">
+        <map>
+          <entry key="mysql" value="com.mysql.jdbc.Driver"/>
+        </map>
+      </property>
+    </bean>
+    
+    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping" >
+      <property name="mappings">
+          <value>
+            /metrics/**/*.html=metricsController
+            /report/**/*.html=reportController
+          </value>
+      </property>
+    </bean>
+    <bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping" />
+	<bean id="viewResolver"
+          class="org.springframework.web.servlet.view.InternalResourceViewResolver" >
+        <property name="prefix">
+            <value>/WEB-INF/jsp/</value>
+        </property>
+        <property name="suffix">
+            <value>.jsp</value>
+        </property>
+    </bean>
+    <bean class="com.yahoo.dba.perf.myperf.springmvc.UdmController" >
+        <property name="frameworkContext" ref="frameworkContext" />
+        <property name="formView" value="udm" />
+        <property name="nosessView" value="signin.htm" />
+        <property name="jsonView" value="jsonresult" />
+    </bean>
+    <bean class="com.yahoo.dba.perf.myperf.springmvc.SigninController" >
+        <property name="frameworkContext" ref="frameworkContext" />
+        <property name="loginFormView" value="signin" />
+        <property name="loginSuccessView" value="perf.htm?pg=st" />
+        <property name="setupView" value="perf.htm?pg=settings" />
+    </bean>
+    <bean class="com.yahoo.dba.perf.myperf.springmvc.UserController" >
+        <property name="frameworkContext" ref="frameworkContext" />
+        <property name="formView" value="userinfo" />
+        <property name="nosessView" value="signin.htm" />
+        <property name="jsonView" value="jsonresult" />
+        <property name="requireLogin" value="false" />
+    </bean>
+    <bean class="com.yahoo.dba.perf.myperf.springmvc.DbController" >
+        <property name="frameworkContext" ref="frameworkContext" />
+        <property name="formView" value="dbinfo" />
+        <property name="nosessView" value="signin.htm" />
+        <property name="jsonView" value="jsonresult" />
+    </bean>
+    <bean class="com.yahoo.dba.perf.myperf.springmvc.DbsearchController" >
+        <property name="frameworkContext" ref="frameworkContext" />
+        <property name="jsonView" value="jsonresult" />
+    </bean>
+    <bean id="reportController" class="com.yahoo.dba.perf.myperf.springmvc.ReportController" >
+        <property name="frameworkContext" ref="frameworkContext" />
+        <property name="jsonView" value="jsonresult" />
+        <property name="nosessView" value="signin.htm" />
+    </bean>
+    <bean class="com.yahoo.dba.perf.myperf.springmvc.StatusController" >
+        <property name="frameworkContext" ref="frameworkContext" />
+        <property name="jsonView" value="jsonresult" />
+        <property name="requireLogin" value="false" />
+    </bean>
+    <bean class="com.yahoo.dba.perf.myperf.springmvc.AlertsController" >
+        <property name="frameworkContext" ref="frameworkContext" />
+        <property name="jsonView" value="jsonresult" />
+        <property name="requireLogin" value="false" />
+    </bean>
+    <bean class="com.yahoo.dba.perf.myperf.springmvc.CredController" >
+        <property name="frameworkContext" ref="frameworkContext" />
+        <property name="formView" value="cred" />
+        <property name="nosessView" value="signin.htm" />
+        <property name="jsonView" value="jsonresult" />
+    </bean>
+    <bean class="com.yahoo.dba.perf.myperf.springmvc.LogoutController" >
+        <property name="frameworkContext" ref="frameworkContext" />
+        <property name="nosessView" value="signin.htm" />
+        <property name="requireLogin" value="false" />
+    </bean>
+    <bean class="com.yahoo.dba.perf.myperf.springmvc.QueryController" >
+        <property name="frameworkContext" ref="frameworkContext" />
+        <property name="jsonView" value="jsonresult" />
+    </bean>
+    <bean class="com.yahoo.dba.perf.myperf.springmvc.VardiffController" >
+        <property name="frameworkContext" ref="frameworkContext" />
+        <property name="jsonView" value="jsonresult" />
+    </bean>
+    <bean class="com.yahoo.dba.perf.myperf.springmvc.VarhistoryController" >
+        <property name="frameworkContext" ref="frameworkContext" />
+        <property name="jsonView" value="jsonresult" />
+    </bean>
+    <bean class="com.yahoo.dba.perf.myperf.springmvc.InnoController" >
+        <property name="frameworkContext" ref="frameworkContext" />
+        <property name="jsonView" value="jsonresult" />
+    </bean>
+    <bean id="metricsController" class="com.yahoo.dba.perf.myperf.springmvc.MetricsController" >
+        <property name="frameworkContext" ref="frameworkContext" />
+        <property name="jsonView" value="jsonresult" />
+    </bean>
+    <bean class="com.yahoo.dba.perf.myperf.springmvc.SettingsController" >
+        <property name="frameworkContext" ref="frameworkContext" />
+        <property name="formView" value="settings" />
+        <property name="jsonView" value="jsonresult" />
+        <property name="nosessView" value="signin.htm" />
+    </bean>
+    <bean class="com.yahoo.dba.perf.myperf.springmvc.PerfController" >
+        <property name="frameworkContext" ref="frameworkContext" />
+        <property name="defaultView" value="signin" />
+        <property name="nosessView" value="signin.htm" />
+        <property name="requireLogin" value="false" />
+        <property name="pageMap">
+          <map>
+            <entry key="rt" value="realtime"/>
+            <entry key="top" value="realtop"/>
+            <entry key="ps" value="ps"/>
+            <entry key="pf" value="profile"/>
+            <entry key="m" value="chart"/>
+            <entry key="mt" value="meta"/>
+            <entry key="snmp" value="snmp"/>
+            <entry key="alerts" value="alerts"/>
+            <entry key="settings" value="settings"/>
+            <entry key="test" value="test"/>
+          </map>
+      </property>        
+        <property name="noSessionPageMap">
+          <map>
+            <entry key="st" value="dashboard"/>
+          </map>
+      </property>        
+    </bean>
+    <bean class="com.yahoo.dba.perf.myperf.springmvc.DatalistController" >
+        <property name="frameworkContext" ref="frameworkContext" />
+        <property name="xmlView" value="datalist" />
+        <property name="jsonView" value="jsonresult" />
+        <property name="requireLogin" value="false" />
+    </bean>
+    <bean class="com.yahoo.dba.perf.myperf.springmvc.TermController" >
+        <property name="frameworkContext" ref="frameworkContext" />
+        <property name="jsonView" value="jsonresult" />
+        <property name="requireLogin" value="false" />
+    </bean>
+    <bean class="com.yahoo.dba.perf.myperf.springmvc.ProfileController" >
+        <property name="frameworkContext" ref="frameworkContext" />
+        <property name="jsonView" value="jsonresult" />
+    </bean>
+    <bean class="com.yahoo.dba.perf.myperf.springmvc.HelpController" >
+    </bean>
+
+
+</beans>

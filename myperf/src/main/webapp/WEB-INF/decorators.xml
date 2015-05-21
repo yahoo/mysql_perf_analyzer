@@ -1,0 +1,16 @@
+<!--
+   Copyright 2015, Yahoo Inc.
+   Copyrights licensed under the Apache License.
+   See the accompanying LICENSE file for terms.
+-->
+<decorators defaultdir="/decorators">
+    <excludes>
+      <pattern>/service/*</pattern>
+      <pattern>/image/*</pattern>
+      <pattern>/img/*</pattern>
+    </excludes>
+    <decorator name="main" page="main.jsp">
+          <pattern>/*</pattern>
+    </decorator>
+    <decorator name="printable" page="printable.jsp" />
+</decorators>

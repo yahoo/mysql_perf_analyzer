@@ -1,0 +1,1 @@
+This project is a simple Jetty server used to serve the WAR files of oracle performance analyzer and mysql performance analyzer

@@ -1,0 +1,49 @@
+<!--
+   Copyright 2015, Yahoo Inc.
+   Copyrights licensed under the Apache License.
+   See the accompanying LICENSE file for terms.
+ -->
+ <assembly>
+	<id>server</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+
+	<fileSets>
+		<fileSet>
+			<directory>target</directory>
+			<outputDirectory></outputDirectory>
+			<includes>
+				<include>myperfserver-executable-jar-with-dependencies.jar</include>
+         		</includes>
+		</fileSet>
+	</fileSets>
+
+	<files>
+        <file>
+             <source>src/main/assemble/scripts/start_myperf.sh</source>
+             <outputDirectory></outputDirectory>
+             <lineEnding>lf</lineEnding>
+             <filtered>true</filtered>
+             <fileMode>0755</fileMode>
+        </file>
+        <file>
+             <source>src/main/assemble/scripts/stop_myperf.sh</source>
+             <outputDirectory></outputDirectory>
+             <lineEnding>lf</lineEnding>
+             <filtered>true</filtered>
+             <fileMode>0755</fileMode>
+        </file>
+        <file>
+             <source>../myperf/target/myperf.war</source>
+             <outputDirectory>webapps</outputDirectory>
+             <filtered>true</filtered>
+        </file>
+        <!-- file>
+             <source>../framework-1.0/src/README.TXT</source>
+             <outputDirectory></outputDirectory>
+             <filtered>true</filtered>
+        </file -->
+	</files>
+</assembly>

@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  Copyright 2015, Yahoo Inc.
+  Copyrights licensed under the Apache License.
+  See the accompanying LICENSE file for terms.
+ -->
+<metrics comments="Performance metrics definitions">
+  <metricsGroup name="status" dbType="mysql" multipleMetricsPerRow="n" nameColumn="VARIABLE_NAME" valueColumn="VARIABLE_VALUE" sql="mysql_global_status">
+    <subgroup name="STATUS_COMMON">
+      <metric name="ABORTED_CLIENTS" sourceName="ABORTED_CLIENTS" dataType="LONG" incremental="y"  />
+      <metric name="ABORTED_CONNECTS" sourceName="ABORTED_CONNECTS" dataType="LONG" incremental="y" />
+	  <metric name="BINLOG_CACHE_DISK_USE" sourceName="BINLOG_CACHE_DISK_USE" dataType="LONG" incremental="y" />
+	  <metric name="BINLOG_CACHE_USE" sourceName="BINLOG_CACHE_USE" dataType="LONG" incremental="y" />
+	  <metric name="BINLOG_SNAPSHOT_POSITION" sourceName="BINLOG_SNAPSHOT_POSITION" dataType="LONG" incremental="y" />
+	  <metric name="BINLOG_STMT_CACHE_DISK_USE" sourceName="BINLOG_STMT_CACHE_DISK_USE" dataType="LONG" incremental="y" />
+	  <metric name="BINLOG_STMT_CACHE_USE" sourceName="BINLOG_STMT_CACHE_USE" dataType="LONG" incremental="y" />
+      <metric name="BYTES_RECEIVED" sourceName="BYTES_RECEIVED" dataType="LONG" incremental="y" />
+      <metric name="BYTES_SENT" sourceName="BYTES_SENT" dataType="LONG" incremental="y" />
+      <metric name="CONNECTIONS" sourceName="CONNECTIONS" dataType="LONG" incremental="y" />
+      <metric name="CONN_ERRORS_ACCEPT" sourceName="CONNECTION_ERRORS_ACCEPT" dataType="LONG" incremental="y" />
+      <metric name="CONN_ERRORS_INTERNAL" sourceName="CONNECTION_ERRORS_INTERNAL" dataType="LONG" incremental="y" />
+      <metric name="CONN_ERRORS_MAX_CONN" sourceName="CONNECTION_ERRORS_MAX_CONNECTIONS" dataType="LONG" incremental="y" />
+      <metric name="CONN_ERRORS_PEER_ADDRESS" sourceName="CONNECTION_ERRORS_PEER_ADDRESS" dataType="LONG" incremental="y" />
+      <metric name="CONN_ERRORS_SELECT" sourceName="CONNECTION_ERRORS_SELECT" dataType="LONG" incremental="y" />
+      <metric name="CONN_ERRORS_TCPWRAP" sourceName="CONNECTION_ERRORS_TCPWRAP" dataType="LONG" incremental="y" />
+      <metric name="CREATED_TMP_DISK_TABLES" sourceName="CREATED_TMP_DISK_TABLES" dataType="LONG" incremental="y" />
+      <metric name="CREATED_TMP_FILES" sourceName="CREATED_TMP_FILES" dataType="LONG" incremental="y" />
+      <metric name="CREATED_TMP_TABLES" sourceName="CREATED_TMP_TABLES" dataType="LONG" incremental="y" />
+      <metric name="FLUSH_COMMANDS" sourceName="FLUSH_COMMANDS" dataType="LONG" incremental="y" />
+      <metric name="HANDLER_COMMIT" sourceName="HANDLER_COMMIT" dataType="LONG" incremental="y" />
+      <metric name="HANDLER_DELETE" sourceName="HANDLER_DELETE" dataType="LONG" incremental="y" />
+      <metric name="HANDLER_DISCOVER" sourceName="HANDLER_DISCOVER" dataType="LONG" incremental="y" />
+      <metric name="HANDLER_EXTERNAL_LOCK" sourceName="HANDLER_EXTERNAL_LOCK" dataType="LONG" incremental="y" />
+      <metric name="HANDLER_MRR_INIT" sourceName="HANDLER_MRR_INIT" dataType="LONG" incremental="y" />
+      <metric name="HANDLER_PREPARE" sourceName="HANDLER_PREPARE" dataType="LONG" incremental="y" />
+      <metric name="HANDLER_READ_FIRST" sourceName="HANDLER_READ_FIRST" dataType="LONG" incremental="y" />
+      <metric name="HANDLER_READ_KEY" sourceName="HANDLER_READ_KEY" dataType="LONG" incremental="y" />
+      <metric name="HANDLER_READ_LAST" sourceName="HANDLER_READ_LAST" dataType="LONG" incremental="y" />
+      <metric name="HANDLER_READ_PREV" sourceName="HANDLER_READ_PREV" dataType="LONG" incremental="y" />
+      <metric name="HANDLER_READ_RND" sourceName="HANDLER_READ_RND" dataType="LONG" incremental="y" />
+      <metric name="HANDLER_READ_RND_NEXT" sourceName="HANDLER_READ_RND_NEXT" dataType="LONG" incremental="y" />
+      <metric name="HANDLER_ROLLBACK" sourceName="HANDLER_ROLLBACK" dataType="LONG" incremental="y" />
+      <metric name="HANDLER_SAVEPOINT" sourceName="HANDLER_SAVEPOINT" dataType="LONG" incremental="y" />
+      <metric name="HANDLER_SAVEPOINT_ROLLBACK" sourceName="HANDLER_SAVEPOINT_ROLLBACK" dataType="LONG" incremental="y" />
+      <metric name="HANDLER_UPDATE" sourceName="HANDLER_UPDATE" dataType="LONG" incremental="y" />
+      <metric name="HANDLER_WRITE" sourceName="HANDLER_WRITE" dataType="LONG" incremental="y" />
+      <metric name="KEY_BLOCKS_NOT_FLUSHED" sourceName="KEY_BLOCKS_NOT_FLUSHED" dataType="LONG" incremental="y" />
+      <metric name="KEY_BLOCKS_UNUSED" sourceName="KEY_BLOCKS_UNUSED" dataType="INT" incremental="n" />
+      <metric name="KEY_BLOCKS_USED" sourceName="KEY_BLOCKS_USED" dataType="INT" incremental="n" />
+      <metric name="KEY_READS" sourceName="KEY_READS" dataType="LONG" incremental="y" />
+      <metric name="KEY_READ_REQUESTS" sourceName="KEY_READ_REQUESTS" dataType="LONG" incremental="y" />
+      <metric name="KEY_WRITES" sourceName="KEY_WRITES" dataType="LONG" incremental="y" />
+      <metric name="KEY_WRITE_REQUESTS" sourceName="KEY_WRITE_REQUESTS" dataType="LONG" incremental="y" />
+      <metric name="MAX_STMT_TIME_EXCEEDED" sourceName="MAX_STATEMENT_TIME_EXCEEDED" dataType="LONG" incremental="y" />
+      <metric name="MAX_STMT_TIME_SET" sourceName="MAX_STATEMENT_TIME_EXCEEDED" dataType="LONG" incremental="y" />
+      <metric name="MAX_STMT_TIME_SET_FAILED" sourceName="MAX_STMT_TIME_EXCEEDED" dataType="LONG" incremental="y" />
+      <metric name="MAX_USED_CONNECTIONS" sourceName="MAX_USED_CONNECTIONS" dataType="INT" incremental="n" />
+      <metric name="OPENED_FILES" sourceName="OPENED_FILES" dataType="LONG" incremental="y" />
+      <metric name="OPENED_TABLES" sourceName="OPENED_TABLES" dataType="LONG" incremental="y" />
+      <metric name="OPENED_TABLE_DEFINITIONS" sourceName="OPENED_TABLE_DEFINITIONS" dataType="LONG" incremental="y" />
+      <metric name="OPEN_FILES" sourceName="OPEN_FILES" dataType="INT" incremental="n" />
+      <metric name="OPEN_STREAMS" sourceName="OPEN_STREAMS" dataType="INT" incremental="n" />
+      <metric name="OPEN_TABLES" sourceName="OPEN_TABLES" dataType="INT" incremental="n" />
+      <metric name="OPEN_TABLE_DEFINITIONS" sourceName="OPEN_TABLE_DEFINITIONS" dataType="INT" incremental="n" />
+      <metric name="PREPARED_STMT_COUNT" sourceName="PREPARED_STMT_COUNT" dataType="LONG" incremental="y" />
+      <metric name="QCACHE_FREE_BLOCKS" sourceName="QCACHE_FREE_BLOCKS" dataType="INT" incremental="n" />
+      <metric name="QCACHE_FREE_MEMORY" sourceName="QCACHE_FREE_MEMORY" dataType="LONG" incremental="n" />
+      <metric name="QCACHE_HITS" sourceName="QCACHE_HITS" dataType="LONG" incremental="y" />
+      <metric name="QCACHE_INSERTS" sourceName="QCACHE_INSERTS" dataType="LONG" incremental="y" />
+      <metric name="QCACHE_LOWMEM_PRUNES" sourceName="QCACHE_LOWMEM_PRUNES" dataType="LONG" incremental="y" />
+      <metric name="QCACHE_NOT_CACHED" sourceName="QCACHE_NOT_CACHED" dataType="LONG" incremental="y" />
+      <metric name="QCACHE_QUERIES_IN_CACHE" sourceName="QCACHE_QUERIES_IN_CACHE" dataType="INT" incremental="n" />
+      <metric name="QCACHE_TOTAL_BLOCKS" sourceName="QCACHE_TOTAL_BLOCKS" dataType="INT" incremental="n" />
+      <metric name="QUERIES" sourceName="QUERIES" dataType="LONG" incremental="y" />
+      <metric name="QUESTIONS" sourceName="QUESTIONS" dataType="LONG" incremental="y" />
+      <metric name="SELECT_FULL_JOIN" sourceName="SELECT_FULL_JOIN" dataType="LONG" incremental="y" />
+      <metric name="SELECT_FULL_RANGE_JOIN" sourceName="SELECT_FULL_RANGE_JOIN" dataType="LONG" incremental="y" />
+      <metric name="SELECT_RANGE" sourceName="SELECT_RANGE" dataType="LONG" incremental="y" />
+      <metric name="SELECT_RANGE_CHECK" sourceName="SELECT_RANGE_CHECK" dataType="LONG" incremental="y" />
+      <metric name="SELECT_SCAN" sourceName="SELECT_SCAN" dataType="LONG" incremental="y" />
+      <metric name="SLAVE_OPEN_TEMP_TABLES" sourceName="SLAVE_OPEN_TEMP_TABLES" dataType="LONG" incremental="y" />
+      <metric name="SLAVE_RECEIVED_HEARTBEATS" sourceName="SLAVE_RECEIVED_HEARTBEATS" dataType="LONG" incremental="y" />
+      <metric name="SLAVE_RETRIED_TRANSACTIONS" sourceName="SLAVE_RETRIED_TRANSACTIONS" dataType="LONG" incremental="y" />
+      <metric name="SLOW_LAUNCH_THREADS" sourceName="SLOW_LAUNCH_THREADS" dataType="LONG" incremental="y" />
+      <metric name="SLOW_QUERIES" sourceName="SLOW_QUERIES" dataType="LONG" incremental="y" />
+      <metric name="SORT_MERGE_PASSES" sourceName="SORT_MERGE_PASSES" dataType="LONG" incremental="y" />
+      <metric name="SORT_RANGE" sourceName="SORT_RANGE" dataType="LONG" incremental="y" />
+      <metric name="SORT_ROWS" sourceName="SORT_ROWS" dataType="LONG" incremental="y" />
+      <metric name="SORT_SCAN" sourceName="SORT_SCAN" dataType="LONG" incremental="y" />
+      <metric name="TABLE_LOCKS_IMMEDIATE" sourceName="TABLE_LOCKS_IMMEDIATE" dataType="LONG" incremental="y" />
+      <metric name="TABLE_LOCKS_WAITED" sourceName="TABLE_LOCKS_WAITED" dataType="LONG" incremental="y" />
+      <metric name="TABLE_OPEN_CACHE_HITS" sourceName="TABLE_OPEN_CACHE_HITS" dataType="LONG" incremental="y" />
+      <metric name="TABLE_OPEN_CACHE_MISSES" sourceName="TABLE_OPEN_CACHE_MISSES" dataType="LONG" incremental="y" />
+      <metric name="TABLE_OPEN_CACHE_OVERFLOWS" sourceName="TABLE_OPEN_CACHE_OVERFLOWS" dataType="LONG" incremental="y" />
+      <metric name="THREADPOOL_IDLE_THREADS" sourceName="THREADPOOL_IDLE_THREADS" dataType="INT" incremental="n" />
+      <metric name="THREADPOOL_THREADS" sourceName="THREADPOOL_THREADS" dataType="INT" incremental="n" />
+      <metric name="THREADS_CACHED" sourceName="THREADS_CACHED" dataType="INT" incremental="n" />
+      <metric name="THREADS_CONNECTED" sourceName="THREADS_CONNECTED" dataType="INT" incremental="n" />
+      <metric name="THREADS_CREATED" sourceName="THREADS_CREATED" dataType="LONG" incremental="y" />
+      <metric name="THREADS_RUNNING" sourceName="THREADS_RUNNING" dataType="INT" incremental="n" />
+      <metric name="UPTIME" sourceName="UPTIME" dataType="LONG" incremental="y" />
+      <metric name="UPTIME_SINCE_FLUSH_STATUS" sourceName="UPTIME_SINCE_FLUSH_STATUS" dataType="LONG" incremental="y" />
+    </subgroup>
+    <subgroup name="STATUS_COMMAND">  
+	  <metric name="COM_ADMIN_COMMANDS" sourceName="COM_ADMIN_COMMANDS" dataType="LONG"  incremental="y" />
+	  <metric name="COM_ALTER_DB" sourceName="COM_ALTER_DB" dataType="INT"  incremental="y" />
+	  <metric name="COM_ALTER_EVENT" sourceName="COM_ALTER_EVENT" dataType="INT"  incremental="y" />
+	  <metric name="COM_ALTER_FUNCTION" sourceName="COM_ALTER_FUNCTION" dataType="INT"  incremental="y" />
+	  <metric name="COM_ALTER_PROCEDURE" sourceName="COM_ALTER_PROCEDURE" dataType="INT"  incremental="y" />
+	  <metric name="COM_ALTER_SERVER" sourceName="COM_ALTER_SERVER" dataType="INT"  incremental="y" />
+	  <metric name="COM_ALTER_TABLE" sourceName="COM_ALTER_TABLE" dataType="INT"  incremental="y" />
+	  <metric name="COM_ALTER_TABLESPACE" sourceName="COM_ALTER_TABLESPACE" dataType="INT"  incremental="y" />
+	  <metric name="COM_ALTER_USER" sourceName="COM_ALTER_USER" dataType="INT"  incremental="y" />
+	  <metric name="COM_ANALYZE" sourceName="COM_ANALYZE" dataType="INT"  incremental="y" />
+	  <metric name="COM_BEGIN" sourceName="COM_BEGIN" dataType="LONG"  incremental="y" />
+	  <metric name="COM_BINLOG" sourceName="COM_BINLOG" dataType="LONG"  incremental="y" />
+	  <metric name="COM_CALL_PROCEDURE" sourceName="COM_CALL_PROCEDURE" dataType="LONG"  incremental="y" />
+	  <metric name="COM_CHANGE_DB" sourceName="COM_CHANGE_DB" dataType="LONG"  incremental="y" />
+	  <metric name="COM_CHANGE_MASTER" sourceName="COM_CHANGE_MASTER" dataType="INT"  incremental="y" />
+	  <metric name="COM_COMMIT" sourceName="COM_COMMIT" dataType="LONG"  incremental="y" />
+	  <metric name="COM_CREATE_DB" sourceName="COM_CREATE_DB" dataType="INT"  incremental="y" />
+	  <metric name="COM_CREATE_EVENT" sourceName="COM_CREATE_EVENT" dataType="INT"  incremental="y" />
+	  <metric name="COM_CREATE_FUNCTION" sourceName="COM_CREATE_FUNCTION" dataType="INT"  incremental="y" />
+	  <metric name="COM_CREATE_INDEX" sourceName="COM_CREATE_INDEX" dataType="INT"  incremental="y" />
+	  <metric name="COM_CREATE_PROCEDURE" sourceName="COM_CREATE_PROCEDURE" dataType="INT"  incremental="y" />
+	  <metric name="COM_CREATE_SERVER" sourceName="COM_CREATE_SERVER" dataType="INT"  incremental="y" />
+	  <metric name="COM_CREATE_TABLE" sourceName="COM_CREATE_TABLE" dataType="INT"  incremental="y" />
+	  <metric name="COM_CREATE_TRIGGER" sourceName="COM_CREATE_TRIGGER" dataType="INT"  incremental="y" />
+	  <metric name="COM_CREATE_UDF" sourceName="COM_CREATE_UDF" dataType="INT"  incremental="y" />
+	  <metric name="COM_CREATE_USER" sourceName="COM_CREATE_USER" dataType="INT"  incremental="y" />
+	  <metric name="COM_CREATE_VIEW" sourceName="COM_CREATE_VIEW" dataType="INT"  incremental="y" />
+	  <metric name="COM_DEALLOC_SQL" sourceName="COM_DEALLOC_SQL" dataType="LONG"  incremental="y" />
+	  <metric name="COM_DELETE" sourceName="COM_DELETE" dataType="LONG"  incremental="y" />
+	  <metric name="COM_DELETE_MULTI" sourceName="COM_DELETE_MULTI" dataType="LONG"  incremental="y" />
+	  <metric name="COM_DO" sourceName="COM_DO" dataType="LONG"  incremental="y" />
+	  <metric name="COM_DROP_DB" sourceName="COM_DROP_DB" dataType="INT"  incremental="y" />
+	  <metric name="COM_DROP_EVENT" sourceName="COM_DROP_EVENT" dataType="INT"  incremental="y" />
+	  <metric name="COM_DROP_FUNCTION" sourceName="COM_DROP_FUNCTION" dataType="INT"  incremental="y" />
+	  <metric name="COM_DROP_INDEX" sourceName="COM_DROP_INDEX" dataType="INT"  incremental="y" />
+	  <metric name="COM_DROP_PROCEDURE" sourceName="COM_DROP_PROCEDURE" dataType="INT"  incremental="y" />
+	  <metric name="COM_DROP_SERVER" sourceName="COM_DROP_SERVER" dataType="INT"  incremental="y" />
+	  <metric name="COM_DROP_TABLE" sourceName="COM_DROP_TABLE" dataType="INT"  incremental="y" />
+	  <metric name="COM_DROP_TRIGGER" sourceName="COM_DROP_TRIGGER" dataType="INT"  incremental="y" />
+	  <metric name="COM_DROP_USER" sourceName="COM_DROP_USER" dataType="INT"  incremental="y" />
+	  <metric name="COM_DROP_VIEW" sourceName="COM_DROP_VIEW" dataType="INT"  incremental="y" />
+	  <metric name="COM_EMPTY_QUERY" sourceName="COM_EMPTY_QUERY" dataType="LONG"  incremental="y" />
+	  <metric name="COM_EXECUTE_SQL" sourceName="COM_EXECUTE_SQL" dataType="LONG"  incremental="y" />
+	  <metric name="COM_FLUSH" sourceName="COM_FLUSH" dataType="LONG"  incremental="y" />
+	  <metric name="COM_GRANT" sourceName="COM_GRANT" dataType="INT"  incremental="y" />
+	  <metric name="COM_INSERT" sourceName="COM_INSERT" dataType="LONG"  incremental="y" />
+	  <metric name="COM_INSERT_SELECT" sourceName="COM_INSERT_SELECT" dataType="LONG"  incremental="y" />
+	  <metric name="COM_INSTALL_PLUGIN" sourceName="COM_INSTALL_PLUGIN" dataType="INT"  incremental="y" />
+	  <metric name="COM_KILL" sourceName="COM_KILL" dataType="INT"  incremental="y" />
+	  <metric name="COM_LOAD" sourceName="COM_LOAD" dataType="INT"  incremental="y" />
+	  <metric name="COM_LOCK_BINLOG_FOR_BACKUP" sourceName="COM_LOCK_BINLOG_FOR_BACKUP" dataType="INT"  incremental="y" />
+	  <metric name="COM_LOCK_TABLES" sourceName="COM_LOCK_TABLES" dataType="INT"  incremental="y" />
+	  <metric name="COM_LOCK_TABLES_FOR_BACKUP" sourceName="COM_LOCK_TABLES_FOR_BACKUP" dataType="INT"  incremental="y" />
+	  <metric name="COM_OPTIMIZE" sourceName="COM_OPTIMIZE" dataType="INT"  incremental="y" />
+	  <metric name="COM_PRELOAD_KEYS" sourceName="COM_PRELOAD_KEYS" dataType="INT"  incremental="y" />
+	  <metric name="COM_PREPARE_SQL" sourceName="COM_PREPARE_SQL" dataType="LONG"  incremental="y" />
+	  <metric name="COM_PURGE" sourceName="COM_PURGE" dataType="INT"  incremental="y" />
+	  <metric name="COM_PURGE_ARCHIVED" sourceName="COM_PURGE_ARCHIVED" dataType="INT"  incremental="y" />
+	  <metric name="COM_PURGE_ARCHIVED_BEFORE_DATE" sourceName="COM_PURGE_ARCHIVED_BEFORE_DATE" dataType="INT"  incremental="y" />
+	  <metric name="COM_PURGE_BEFORE_DATE" sourceName="COM_PURGE_BEFORE_DATE" dataType="INT"  incremental="y" />
+	  <metric name="COM_RELEASE_SAVEPOINT" sourceName="COM_RELEASE_SAVEPOINT" dataType="INT"  incremental="y" />
+	  <metric name="COM_RENAME_TABLE" sourceName="COM_RENAME_TABLE" dataType="INT"  incremental="y" />
+	  <metric name="COM_RENAME_USER" sourceName="COM_RENAME_USER" dataType="INT"  incremental="y" />
+	  <metric name="COM_REPAIR" sourceName="COM_REPAIR" dataType="INT"  incremental="y" />
+	  <metric name="COM_REPLACE" sourceName="COM_REPLACE" dataType="LONG"  incremental="y" />
+	  <metric name="COM_REPLACE_SELECT" sourceName="COM_REPLACE_SELECT" dataType="LONG"  incremental="y" />
+	  <metric name="COM_RESET" sourceName="COM_RESET" dataType="INT"  incremental="y" />
+	  <metric name="COM_RESIGNAL" sourceName="COM_RESIGNAL" dataType="INT"  incremental="y" />
+	  <metric name="COM_REVOKE" sourceName="COM_REVOKE" dataType="INT"  incremental="y" />
+	  <metric name="COM_REVOKE_ALL" sourceName="COM_REVOKE_ALL" dataType="INT"  incremental="y" />
+	  <metric name="COM_ROLLBACK" sourceName="COM_ROLLBACK" dataType="LONG"  incremental="y" />
+	  <metric name="COM_ROLLBACK_TO_SAVEPOINT" sourceName="COM_ROLLBACK_TO_SAVEPOINT" dataType="LONG"  incremental="y" />
+	  <metric name="COM_SAVEPOINT" sourceName="COM_SAVEPOINT" dataType="LONG"  incremental="y" />
+	  <metric name="COM_SELECT" sourceName="COM_SELECT" dataType="LONG"  incremental="y" />
+	  <metric name="COM_SET_OPTION" sourceName="COM_SET_OPTION" dataType="LONG"  incremental="y" />
+	  <metric name="COM_SHOW_SLAVE_STATUS" sourceName="COM_SHOW_SLAVE_STATUS" dataType="INT"  incremental="y" />
+	  <metric name="COM_SHOW_TABLES" sourceName="COM_SHOW_TABLES" dataType="INT"  incremental="y" />
+	  <metric name="COM_SIGNAL" sourceName="COM_SIGNAL" dataType="INT"  incremental="y" />
+	  <metric name="COM_SLAVE_START" sourceName="COM_SLAVE_START" dataType="INT"  incremental="y" />
+	  <metric name="COM_SLAVE_STOP" sourceName="COM_SLAVE_STOP" dataType="INT"  incremental="y" />
+	  <metric name="COM_STMT_CLOSE" sourceName="COM_STMT_CLOSE" dataType="LONG"  incremental="y" />
+	  <metric name="COM_STMT_EXECUTE" sourceName="COM_STMT_EXECUTE" dataType="LONG"  incremental="y" />
+	  <metric name="COM_STMT_FETCH" sourceName="COM_STMT_FETCH" dataType="LONG"  incremental="y" />
+	  <metric name="COM_STMT_PREPARE" sourceName="COM_STMT_PREPARE" dataType="LONG"  incremental="y" />
+	  <metric name="COM_STMT_REPREPARE" sourceName="COM_STMT_REPREPARE" dataType="LONG"  incremental="y" />
+	  <metric name="COM_STMT_RESET" sourceName="COM_STMT_RESET" dataType="LONG"  incremental="y" />
+	  <metric name="COM_STMT_SEND_LONG_DATA" sourceName="COM_STMT_SEND_LONG_DATA" dataType="LONG"  incremental="y" />
+	  <metric name="COM_TRUNCATE" sourceName="COM_TRUNCATE" dataType="LONG"  incremental="y" />
+	  <metric name="COM_UNINSTALL_PLUGIN" sourceName="COM_UNINSTALL_PLUGIN" dataType="INT"  incremental="y" />
+	  <metric name="COM_UNLOCK_BINLOG" sourceName="COM_UNLOCK_BINLOG" dataType="INT"  incremental="y" />
+	  <metric name="COM_UNLOCK_TABLES" sourceName="COM_UNLOCK_TABLES" dataType="INT"  incremental="y" />
+	  <metric name="COM_UPDATE" sourceName="COM_UPDATE" dataType="LONG"  incremental="y" />
+	  <metric name="COM_UPDATE_MULTI" sourceName="COM_UPDATE_MULTI" dataType="LONG"  incremental="y" />
+    </subgroup>
+    <subgroup name="STATUS_INNODB">	
+	  <metric name="AVAILABLE_UNDO_LOGS" sourceName="INNODB_AVAILABLE_UNDO_LOGS" dataType="INT"  incremental="n" />
+	  <metric name="BACKGROUND_LOG_SYNC" sourceName="INNODB_BACKGROUND_LOG_SYNC" dataType="LONG"  incremental="y" />
+	  <metric name="BUFFER_POOL_BYTES_DATA" sourceName="INNODB_BUFFER_POOL_BYTES_DATA" dataType="LONG"  incremental="n" />
+	  <metric name="BUFFER_POOL_BYTES_DIRTY" sourceName="INNODB_BUFFER_POOL_BYTES_DIRTY" dataType="LONG"  incremental="n" />
+	  <metric name="BUFFER_POOL_PAGES_DATA" sourceName="INNODB_BUFFER_POOL_PAGES_DATA" dataType="INT"  incremental="n" />
+	  <metric name="BUFFER_POOL_PAGES_DIRTY" sourceName="INNODB_BUFFER_POOL_PAGES_DIRTY" dataType="INT"  incremental="n" />
+	  <metric name="BUFFER_POOL_PAGES_FLUSHED" sourceName="INNODB_BUFFER_POOL_PAGES_FLUSHED" dataType="LONG"  incremental="y" />
+	  <metric name="BUFFER_POOL_PAGES_FREE" sourceName="INNODB_BUFFER_POOL_PAGES_FREE" dataType="INT"  incremental="n" />
+	  <metric name="BUFFER_POOL_PAGES_LRU_FLUSHED" sourceName="INNODB_BUFFER_POOL_PAGES_LRU_FLUSHED" dataType="LONG"  incremental="y" />
+	  <metric name="BUFFER_POOL_PAGES_MADE_NOT_YOUNG" sourceName="INNODB_BUFFER_POOL_PAGES_MADE_NOT_YOUNG" dataType="LONG"  incremental="y" />
+	  <metric name="BUFFER_POOL_PAGES_MADE_YOUNG" sourceName="INNODB_BUFFER_POOL_PAGES_MADE_YOUNG" dataType="LONG"  incremental="y" />
+	  <metric name="BUFFER_POOL_PAGES_MISC" sourceName="INNODB_BUFFER_POOL_PAGES_MISC" dataType="INT"  incremental="n" />
+	  <metric name="BUFFER_POOL_PAGES_OLD" sourceName="INNODB_BUFFER_POOL_PAGES_OLD" dataType="INT"  incremental="n" />
+	  <metric name="BUFFER_POOL_PAGES_TOTAL" sourceName="INNODB_BUFFER_POOL_PAGES_TOTAL" dataType="INT"  incremental="n" />
+	  <metric name="BUFFER_POOL_READS" sourceName="INNODB_BUFFER_POOL_READS" dataType="LONG"  incremental="y" />
+	  <metric name="BUFFER_POOL_READ_AHEAD" sourceName="INNODB_BUFFER_POOL_READ_AHEAD" dataType="LONG"  incremental="y" />
+	  <metric name="BUFFER_POOL_READ_AHEAD_EVICTED" sourceName="INNODB_BUFFER_POOL_READ_AHEAD_EVICTED" dataType="LONG"  incremental="y" />
+	  <metric name="BUFFER_POOL_READ_AHEAD_RND" sourceName="INNODB_BUFFER_POOL_READ_AHEAD_RND" dataType="LONG"  incremental="y" />
+	  <metric name="BUFFER_POOL_READ_REQUESTS" sourceName="INNODB_BUFFER_POOL_READ_REQUESTS" dataType="LONG"  incremental="y" />
+	  <metric name="BUFFER_POOL_WAIT_FREE" sourceName="INNODB_BUFFER_POOL_WAIT_FREE" dataType="LONG"  incremental="y" />
+	  <metric name="BUFFER_POOL_WRITE_REQUESTS" sourceName="INNODB_BUFFER_POOL_WRITE_REQUESTS" dataType="LONG"  incremental="y" />
+	  <metric name="CHECKPOINT_AGE" sourceName="INNODB_CHECKPOINT_AGE" dataType="LONG"  incremental="n" />
+	  <metric name="CHECKPOINT_MAX_AGE" sourceName="INNODB_CHECKPOINT_MAX_AGE" dataType="LONG"  incremental="n" />
+	  <metric name="CURRENT_ROW_LOCKS" sourceName="INNODB_CURRENT_ROW_LOCKS" dataType="LONG"  incremental="n" />
+	  <metric name="DATA_FSYNCS" sourceName="INNODB_DATA_FSYNCS" dataType="LONG"  incremental="y" />
+	  <metric name="DATA_PENDING_FSYNCS" sourceName="INNODB_DATA_PENDING_FSYNCS" dataType="INT"  incremental="n" />
+	  <metric name="DATA_PENDING_READS" sourceName="INNODB_DATA_PENDING_READS" dataType="INT"  incremental="n" />
+	  <metric name="DATA_PENDING_WRITES" sourceName="INNODB_DATA_PENDING_WRITES" dataType="INT"  incremental="n" />
+	  <metric name="DATA_READ" sourceName="INNODB_DATA_READ" dataType="LONG"  incremental="y" />
+	  <metric name="DATA_READS" sourceName="INNODB_DATA_READS" dataType="LONG"  incremental="y" />
+	  <metric name="DATA_WRITES" sourceName="INNODB_DATA_WRITES" dataType="LONG"  incremental="y" />
+	  <metric name="DATA_WRITTEN" sourceName="INNODB_DATA_WRITTEN" dataType="LONG"  incremental="y" />
+	  <metric name="DBLWR_PAGES_WRITTEN" sourceName="INNODB_DBLWR_PAGES_WRITTEN" dataType="LONG"  incremental="y" />
+	  <metric name="DBLWR_WRITES" sourceName="INNODB_DBLWR_WRITES" dataType="LONG"  incremental="y" />
+	  <metric name="DEADLOCKS" sourceName="INNODB_DEADLOCKS" dataType="LONG"  incremental="y" />
+	  <metric name="DESCRIPTORS_MEMORY" sourceName="INNODB_DESCRIPTORS_MEMORY" dataType="LONG"  incremental="n" />
+	  <metric name="HISTORY_LIST_LENGTH" sourceName="INNODB_HISTORY_LIST_LENGTH" dataType="LONG"  incremental="y" />
+	  <metric name="IBUF_DISCARDED_DELETES" sourceName="INNODB_IBUF_DISCARDED_DELETES" dataType="LONG"  incremental="y" />
+	  <metric name="IBUF_DISCARDED_DELETE_MARKS" sourceName="INNODB_IBUF_DISCARDED_DELETE_MARKS" dataType="LONG"  incremental="y" />
+	  <metric name="IBUF_DISCARDED_INSERTS" sourceName="INNODB_IBUF_DISCARDED_INSERTS" dataType="LONG"  incremental="y" />
+	  <metric name="IBUF_FREE_LIST" sourceName="INNODB_IBUF_FREE_LIST" dataType="INT"  incremental="n" />
+	  <metric name="IBUF_MERGED_DELETES" sourceName="INNODB_IBUF_MERGED_DELETES" dataType="LONG"  incremental="y" />
+	  <metric name="IBUF_MERGED_DELETE_MARKS" sourceName="IBUF_MERGED_DELETE_MARKS" dataType="LONG"  incremental="y" />
+	  <metric name="IBUF_MERGED_INSERTS" sourceName="INNODB_IBUF_MERGED_INSERTS" dataType="LONG"  incremental="y" />
+	  <metric name="IBUF_MERGES" sourceName="INNODB_IBUF_MERGES" dataType="LONG"  incremental="y" />
+	  <metric name="IBUF_SEGMENT_SIZE" sourceName="INNODB_IBUF_SEGMENT_SIZE" dataType="INT"  incremental="n" />
+	  <metric name="IBUF_SIZE" sourceName="INNODB_IBUF_SIZE" dataType="INT"  incremental="n" />
+	  <metric name="LOG_WAITS" sourceName="INNODB_LOG_WAITS" dataType="LONG"  incremental="y" />
+	  <metric name="LOG_WRITES" sourceName="INNODB_LOG_WRITES" dataType="LONG"  incremental="y" />
+	  <metric name="LOG_WRITE_REQUESTS" sourceName="INNODB_LOG_WRITE_REQUESTS" dataType="LONG"  incremental="y" />
+	  <metric name="LSN_CURRENT" sourceName="INNODB_LSN_CURRENT" dataType="LONG"  incremental="n" />
+	  <metric name="LSN_FLUSHED" sourceName="INNODB_LSN_FLUSHED" dataType="LONG"  incremental="n" />
+	  <metric name="LSN_LAST_CHECKPOINT" sourceName="INNODB_LSN_LAST_CHECKPOINT" dataType="LONG"  incremental="n" />
+	  <metric name="MASTER_THREAD_ACTIVE_LOOPS" sourceName="INNODB_MASTER_THREAD_ACTIVE_LOOPS" dataType="LONG"  incremental="y" />
+	  <metric name="MASTER_THREAD_IDLE_LOOPS" sourceName="INNODB_MASTER_THREAD_IDLE_LOOPS" dataType="LONG"  incremental="y" />
+	  <metric name="MAX_TRX_ID" sourceName="INNODB_MAX_TRX_ID" dataType="LONG"  incremental="n" />
+	  <metric name="MEM_ADAPTIVE_HASH" sourceName="INNODB_MEM_ADAPTIVE_HASH" dataType="LONG"  incremental="n" />
+	  <metric name="MEM_DICTIONARY" sourceName="INNODB_MEM_DICTIONARY" dataType="LONG"  incremental="n" />
+	  <metric name="MEM_TOTAL" sourceName="INNODB_MEM_TOTAL" dataType="LONG"  incremental="n" />
+	  <metric name="MUTEX_OS_WAITS" sourceName="INNODB_MUTEX_OS_WAITS" dataType="LONG"  incremental="y" />
+	  <metric name="MUTEX_SPIN_ROUNDS" sourceName="INNODB_MUTEX_SPIN_ROUNDS" dataType="LONG"  incremental="y" />
+	  <metric name="MUTEX_SPIN_WAITS" sourceName="INNODB_MUTEX_SPIN_WAITS" dataType="LONG"  incremental="y" />
+	  <metric name="NUM_OPEN_FILES" sourceName="INNODB_NUM_OPEN_FILES" dataType="LONG"  incremental="n" />
+	  <metric name="OLDEST_VIEW_LOW_LIMIT_TRX_ID" sourceName="INNODB_OLDEST_VIEW_LOW_LIMIT_TRX_ID" dataType="LONG"  incremental="n" />
+	  <metric name="OS_LOG_FSYNCS" sourceName="INNODB_OS_LOG_FSYNCS" dataType="LONG"  incremental="y" />
+	  <metric name="OS_LOG_PENDING_FSYNCS" sourceName="INNODB_OS_LOG_PENDING_FSYNCS" dataType="INT"  incremental="n" />
+	  <metric name="OS_LOG_PENDING_WRITES" sourceName="INNODB_OS_LOG_PENDING_WRITES" dataType="INT"  incremental="n" />
+	  <metric name="OS_LOG_WRITTEN" sourceName="INNODB_OS_LOG_WRITTEN" dataType="LONG"  incremental="y" />
+	  <metric name="PAGES_CREATED" sourceName="INNODB_PAGES_CREATED" dataType="LONG"  incremental="y" />
+	  <metric name="PAGES_READ" sourceName="INNODB_PAGES_READ" dataType="LONG"  incremental="y" />
+	  <metric name="PAGES_WRITTEN" sourceName="INNODB_PAGES_WRITTEN" dataType="LONG"  incremental="y" />
+	  <metric name="PURGE_TRX_ID" sourceName="INNODB_PURGE_TRX_ID" dataType="LONG"  incremental="n" />
+	  <metric name="PURGE_UNDO_NO" sourceName="INNODB_PURGE_UNDO_NO" dataType="LONG"  incremental="n" />
+	  <metric name="READ_VIEWS_MEMORY" sourceName="INNODB_READ_VIEWS_MEMORY" dataType="LONG"  incremental="n" />
+	  <metric name="ROWS_DELETED" sourceName="INNODB_ROWS_DELETED" dataType="LONG"  incremental="y" />
+	  <metric name="ROWS_INSERTED" sourceName="INNODB_ROWS_INSERTED" dataType="LONG"  incremental="y" />
+	  <metric name="ROWS_READ" sourceName="INNODB_ROWS_READ" dataType="LONG"  incremental="y" />
+	  <metric name="ROWS_UPDATED" sourceName="INNODB_ROWS_UPDATED" dataType="LONG"  incremental="y" />
+	  <metric name="ROW_LOCK_CURRENT_WAITS" sourceName="INNODB_ROW_LOCK_CURRENT_WAITS" dataType="LONG"  incremental="n" />
+	  <metric name="ROW_LOCK_TIME" sourceName="INNODB_ROW_LOCK_TIME" dataType="LONG"  incremental="y" />
+	  <metric name="ROW_LOCK_TIME_AVG" sourceName="INNODB_ROW_LOCK_TIME_AVG" dataType="LONG"  incremental="n" />
+	  <metric name="ROW_LOCK_TIME_MAX" sourceName="INNODB_ROW_LOCK_TIME_MAX" dataType="LONG"  incremental="n" />
+	  <metric name="ROW_LOCK_WAITS" sourceName="INNODB_ROW_LOCK_WAITS" dataType="LONG"  incremental="y" />
+	  <metric name="S_LOCK_OS_WAITS" sourceName="INNODB_S_LOCK_OS_WAITS" dataType="LONG"  incremental="y" />
+	  <metric name="S_LOCK_SPIN_ROUNDS" sourceName="INNODB_S_LOCK_SPIN_ROUNDS" dataType="LONG"  incremental="y" />
+	  <metric name="S_LOCK_SPIN_WAITS" sourceName="INNODB_S_LOCK_SPIN_WAITS" dataType="LONG"  incremental="y" />
+	  <metric name="TRUNCATED_STATUS_WRITES" sourceName="INNODB_TRUNCATED_STATUS_WRITES" dataType="LONG"  incremental="y" />
+	  <metric name="X_LOCK_OS_WAITS" sourceName="INNODB_X_LOCK_OS_WAITS" dataType="LONG"  incremental="y" />
+	  <metric name="X_LOCK_SPIN_ROUNDS" sourceName="INNODB_X_LOCK_SPIN_ROUNDS" dataType="LONG"  incremental="y" />
+	  <metric name="X_LOCK_SPIN_WAITS" sourceName="INNODB_X_LOCK_SPIN_WAITS" dataType="LONG"  incremental="y" />
+    </subgroup>
+  </metricsGroup> 
+  <!--  metricsGroup name="generic" dbType="mysql" singleRow="n" collapse="y" nameColumn="VARIABLE_NAME" valueColumn="VARIABLE_VALUE" sql="mysql_global_status">
+  </metricsGroup -->
+  <metricsGroup name="snmp" dbType="mysql" multipleMetricsPerRow="n" nameColumn="OID_NAME" valueColumn="OID_VALUE" sql="mysql_snmp">
+    <metric name="MEMTOTALSWAP" sourceName="memTotalSwap" dataType="LONG" subGroup="mem" unit="kbytes" description="total swap space" incremental="n" adjustment="1024" chartDisplayUnit="BYTES"/>
+    <metric name="MEMAVAILSWAP" sourceName="memAvailSwap" dataType="LONG" subGroup="mem" unit="kbytes" description="total available swap space" incremental="n" adjustment="1024" chartDisplayUnit="BYTES"/>
+    <metric name="MEMTOTALREAL" sourceName="memTotalReal" dataType="LONG" subGroup="mem" unit="kbytes" description="total memory" incremental="n" adjustment="1024" chartDisplayUnit="BYTES"/>
+    <metric name="MEMAVAILREAL" sourceName="memAvailReal" dataType="LONG" subGroup="mem" unit="kbytes" description="total available memory" incremental="n" adjustment="1024" chartDisplayUnit="BYTES"/>
+    <metric name="MEMTOTALFREE" sourceName="memTotalFree" dataType="LONG" subGroup="mem" unit="kbytes" description="total free memory including swap space" incremental="n" adjustment="1024" chartDisplayUnit="BYTES"/>
+    <metric name="MEMBUFFER" sourceName="memBuffer" dataType="LONG" subGroup="mem" unit="bytes" description="total buffer memory" incremental="n" adjustment="1024" chartDisplayUnit="BYTES"/>
+    <metric name="MEMCACHED" sourceName="memCached" dataType="LONG" subGroup="mem" unit="bytes" description="total cached memory" incremental="n" adjustment="1024" chartDisplayUnit="BYTES"/>
+    <metric name="SSSWAPIN" sourceName="ssSwapIn" dataType="LONG" subGroup="mem" unit="bytes" description="The average amount of memory swapped in from disk, calculated over the last minute" incremental="n" />
+    <metric name="SSSWAPOUT" sourceName="ssSwapOut" dataType="LONG" subGroup="mem" unit="bytes" description="The average amount of memory swapped out to disk, calculated over the last minute" incremental="n" />
+    <metric name="SSRAWSWAPIN" sourceName="ssRawSwapIn" dataType="LONG" subGroup="sys" unit="blocks" description="The number of blocks swapped in" incremental="y" averageTimeUnit="sec" adjustment="1" chartDisplayUnit="BLOCKS/SEC"/>
+    <metric name="SSRAWSWAPOUT" sourceName="ssRawSwapOut" dataType="LONG" subGroup="sys" unit="blocks" description="The number of blocks swapped out" incremental="y" averageTimeUnit="sec" adjustment="1" chartDisplayUnit="BLOCKS/SEC"/>
+    <metric name="SSIOSENT" sourceName="ssIOSent" dataType="LONG" subGroup="io" unit="bytes" description="The average amount of data written to disk or other block device, calculated over the last minute" incremental="n" />
+    <metric name="SSIORECEIVE" sourceName="ssIOReceive" dataType="LONG" subGroup="io" unit="blocks" description="The average amount of data read from disk or other block device, calculated over the last minute" incremental="n" />
+    <metric name="SSIORAWSENT" sourceName="ssIORawSent" dataType="LONG" subGroup="io" unit="blocks" description="The number of blocks sent to a block device" incremental="y" averageTimeUnit="sec" adjustment="1" chartDisplayUnit="BLOCKS/SEC"/>
+    <metric name="SSIORAWRECEIVED" sourceName="ssIORawReceived" dataType="LONG" subGroup="io" unit="bytes" description="The number of blocks received from a block device" incremental="y" averageTimeUnit="sec" adjustment="1" chartDisplayUnit="BLOCKS/SEC"/>
+    <metric name="SSCPUUSER" sourceName="ssCpuUser" dataType="INT" subGroup="sys" unit="%" description="The percentage of cpu time spent processing user-level code, calculated over the last minute" incremental="n" />
+    <metric name="SSCPUSYSTEM" sourceName="ssCpuSystem" dataType="INT" subGroup="sys" unit="%" description="The percentage of cpu time spent processing system-level code, calculated over the last minute" incremental="n" />
+    <metric name="SSCPUIDLE" sourceName="ssCpuIdle" dataType="INT" subGroup="sys" unit="%" description="The percentage of cpu time spent idle, calculated over the last minute" incremental="n" />
+    <metric name="SSSYSCONTEXT" sourceName="ssSysContext" dataType="INT" subGroup="sys" unit="count" description="The average rate of context switches, calculated over the last minute" incremental="n" />
+    <metric name="SSSYSINTERRUPTS" sourceName="ssSysInterrupts" dataType="INT" subGroup="sys" unit="count" description="The average rate of interrupts processed (including the clock), calculated over the last minute" incremental="n" />
+    <metric name="SSCPURAWUSER" sourceName="ssCpuRawUser" dataType="LONG" subGroup="sys" unit="tick" description="The number of ticks spent processing user code" incremental="y" averageTimeUnit="sec" adjustment="0.01" chartDisplayUnit="SEC/SEC"/>
+    <metric name="SSCPURAWSYSTEM" sourceName="ssCpuRawSystem" dataType="LONG" subGroup="sys" unit="tick" description="The number of ticks spent processing system code" incremental="y" averageTimeUnit="sec" adjustment="0.01" chartDisplayUnit="SEC/SEC"/>
+    <metric name="SSCPURAWNICE" sourceName="ssCpuRawNice" dataType="LONG" subGroup="sys" unit="tick" description="The number of ticks spent processing reduced priority code" incremental="y" averageTimeUnit="sec" adjustment="0.01" chartDisplayUnit="SEC/SEC"/>
+    <metric name="SSCPURAWIDLE" sourceName="ssCpuRawIdle" dataType="LONG" subGroup="sys" unit="tick" description="The number of ticks spent idle" incremental="y" averageTimeUnit="sec" adjustment="0.01" chartDisplayUnit="SEC/SEC"/>
+    <metric name="SSCPURAWWAIT" sourceName="ssCpuRawWait" dataType="LONG" subGroup="sys" unit="tick" description="The number of ticks spent waiting for IO" incremental="y" averageTimeUnit="sec" adjustment="0.01" chartDisplayUnit="SEC/SEC"/>
+    <metric name="SSCPURAWKERNEL" sourceName="ssCpuRawKernel" dataType="LONG" subGroup="sys" unit="tick" description="The number of ticks spent processing kernel code" incremental="y" averageTimeUnit="sec" adjustment="0.01" chartDisplayUnit="SEC/SEC"/>
+    <metric name="SSCPURAWINTERRUPT" sourceName="ssCpuRawInterrupt" dataType="LONG" subGroup="sys" unit="tick" description="The number of ticks spent processing hardware interrupts" incremental="y" averageTimeUnit="sec" adjustment="0.01" chartDisplayUnit="SEC/SEC"/>
+    <metric name="SSRAWCPUSOFTIRQ" sourceName="ssRawCpuSoftIRQ" dataType="LONG" subGroup="sys" unit="tick" description="The number of ticks spent processing software interrupts" incremental="y" />
+    <metric name="SSRAWINTERRUPTS" sourceName="ssRawInterrupts" dataType="LONG" subGroup="sys" unit="count" description="The number of interrupts processed" incremental="y" averageTimeUnit="sec" adjustment="1" chartDisplayUnit="INTERRUPTS/SEC"/>
+    <metric name="SSRAWCONTEXTS" sourceName="ssRawContexts" dataType="LONG" subGroup="sys" unit="count" description="The number of context switches" incremental="y" chartDisplayUnit="/MIN" />
+    <metric name="LALOAD1M" sourceName="laLoad1m" dataType="FLOAT" subGroup="sys" unit="count" description="1 minute load average" incremental="n" chartDisplayUnit=" " />
+    <metric name="LALOAD5M" sourceName="laLoad5m" dataType="FLOAT" subGroup="sys" unit="count" description="5 minute load average" incremental="n" chartDisplayUnit=" " />
+    <metric name="LALOAD15M" sourceName="laLoad15m" dataType="FLOAT" subGroup="sys" unit="count" description="15 minute load average" incremental="n" chartDisplayUnit=" " />
+    <metric name="TCPATTEMPTFAILS" sourceName="tcpAttemptFails" dataType="LONG" subGroup="sys" unit="count" description="tcp attempt failure" incremental="y" chartDisplayUnit=" " />
+  </metricsGroup>
+  <metricsGroup name="repl" dbType="mysql" multipleMetricsPerRow="n" nameColumn="NAME" valueColumn="VALUE" sql="mysql_repl">
+    <metric name="SECONDS_BEHIND_MASTER" sourceName="Seconds_Behind_Master" dataType="INT" subGroup="repl" unit="sec" description="Replication lag in seconds" incremental="n" adjustment="1" chartDisplayUnit="SEC"/>
+    <metric name="SLAVE_IO_RUNNING" sourceName="Slave_IO_Running" dataType="INT" subGroup="repl" unit="" description="1 if IO thread running, 0 otherwise" incremental="n" adjustment="1" chartDisplayUnit=""/>
+    <metric name="SALVE_SQL_RUNNING" sourceName="Slave_SQL_Running" dataType="INT" subGroup="repl" unit="" description="1 if SQL thread running, 0 otherwise" incremental="n" adjustment="1" chartDisplayUnit=""/>
+  </metricsGroup>
+  <metricsGroup name="innodb_mutex" dbType="mysql" multipleMetricsPerRow="n"  auto="n"
+    nameColumn="NAME" valueColumn="VALUE" sql="mysql_innodb_mutex">
+    <metric name="LRU_LIST_MUTEX" sourceName="InnoDB/&amp;LRU_list_mutex/os_wait" altName="InnoDB/&amp;buf_pool->LRU_list_mutex/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec" description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <metric name="BTR_SEARCH_LATCH" sourceName="InnoDB/&amp;btr_search_latch/os_waits" altName="InnoDB/&amp;btr_search_latch_arr[i]/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <metric name="BUFFER_POOL_MUTEX" sourceName="InnoDB/&amp;buf_pool_mutex/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <metric name="DICT_SYS_MUTEX" sourceName="InnoDB/&amp;dict_sys->mutex/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <metric name="DICT_TABLE_STATS_LATCHES" sourceName="InnoDB/&amp;dict_table_stats_latches[i]/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <metric name="FIL_SYSTEM_MUTEX" sourceName="InnoDB/&amp;fil_system->mutex/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <metric name="FLUSH_LIST_MUTEX" sourceName="InnoDB/&amp;flush_list_mutex/os_waits" altName="InnoDB/&amp;buf_pool->flush_list_mutex/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <!-- metric name="FREE_LIST_MUTEX" sourceName="InnoDB/&amp;free_list_mutex/os_waits" dataType="LONG" subGroup="mutex" unit="sec" description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/ -->
+    <metric name="IBUF_MUTEX" sourceName="InnoDB/&amp;ibuf_mutex/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <metric name="IBUF_PESSIMISTIC_INSERT_MUTEX" sourceName="InnoDB/&amp;ibuf_pessimistic_insert_mutex/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <!-- metric name="IOS_MUTEX" sourceName="InnoDB/&amp;ios_mutex/os_waits" dataType="LONG" subGroup="mutex" unit="sec" description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/ -->
+    <metric name="KERNEL_MUTEX" sourceName="InnoDB/&amp;kernel_mutex/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <metric name="LOG_SYS_CHECKPOINT_LOCK" sourceName="InnoDB/&amp;log_sys->checkpoint_lock/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <metric name="LOG_SYS_MUTEX" sourceName="InnoDB/&amp;log_sys->mutex/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <metric name="NEW_INDEX_LOCK" sourceName="InnoDB/&amp;new_index->lock/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <metric name="PAGE_HASH_LATCH" sourceName="InnoDB/&amp;page_hash_latch/os_waits" altName="InnoDB/&amp;buf_pool->page_hash_latch/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <metric name="PURGE_SYS_LATCH" sourceName="InnoDB/&amp;purge_sys->latch/os_waits" altName="InnoDB/&amp;purge_sys->bh_mutex/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <metric name="RSEG_MUTEX" sourceName="InnoDB/&amp;rseg->mutex/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <metric name="SPACE_LATCH" sourceName="InnoDB/&amp;space->latch/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <!--  metric name="SRV_INNODB_MONITOR_MUTEX" sourceName="InnoDB/&amp;srv_innodb_monitor_mutex/os_waits" dataType="LONG" subGroup="mutex" unit="sec" description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/ -->
+    <!--  metric name="THR_LOCAL_MUTEX" sourceName="InnoDB/&amp;thr_local_mutex/os_waits" dataType="LONG" subGroup="mutex" unit="sec" description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/ -->
+    <metric name="TRX_DOUBLEWRITE_MUTEX" sourceName="InnoDB/&amp;trx_doublewrite->mutex/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <metric name="COMBINED_BLOCK_LOCK" sourceName="InnoDB/combined &amp;block->lock/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <metric name="COMBINED_BLOCK_MUTEX" sourceName="InnoDB/combined &amp;block->mutex/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <metric name="LOCK_SYS_MUTEX" sourceName="InnoDB/&amp;lock_sys->mutex/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <metric name="SRV_SYS_MUTEX" sourceName="InnoDB/&amp;srv_sys->mutex/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <metric name="TRX_SYS_MUTEX" sourceName="InnoDB/&amp;trx_sys->mutex/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <metric name="BUF_DBLWR_MUTEX" sourceName="InnoDB/&amp;buf_dblwr->mutex/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <metric name="FLUSH_STATE_MUTEX" sourceName="InnoDB/&amp;buf_pool->flush_state_mutex/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <metric name="DICT_OPERATION_LOCK" sourceName="InnoDB/&amp;dict_operation_lock/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+    <!--  metric name="TABLE_SYNC_OBJ_RW_LOCK" sourceName="InnoDB/table->sync_obj.rw_locks + i/os_waits" dataType="LONG" subGroup="mutex" unit="sec" description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/ -->
+    <metric name="LOG_SYS_LOG_FLUSH_ORDER_MUTEX" sourceName="InnoDB/&amp;log_sys->log_flush_order_mutex/os_waits" dataType="LONG" subGroup="mutex" unit="waits" averageTimeUnit="sec"  description="os_waits in seconds" incremental="y" adjustment="1" chartDisplayUnit="WAITS/SEC"/>
+  </metricsGroup>
+  <metricsGroup name="snmp_disk_sda" dbType="mysql" multipleMetricsPerRow="n" keyColumn="DISK" 
+  nameColumn="OID_NAME" valueColumn="OID_VALUE" sql="mysql_snmp_sda">
+    <metric name="DISKIONREADX" sourceName="diskIONReadX" dataType="LONG" subGroup="disk" unit="bytes" averageTimeUnit="sec" description="number of bytes read from device since boot" incremental="y" adjustment="1" chartDisplayUnit="BYTES/SEC"/>
+    <metric name="DISKIONWRITTENX" sourceName="diskIONWrittenX" dataType="LONG" subGroup="disk" unit="bytes" averageTimeUnit="sec" description="number of bytes written to device since boot" incremental="y" adjustment="1" chartDisplayUnit="BYTES/SEC"/>
+    <metric name="DISKIOREADS" sourceName="diskIOReads" dataType="LONG" subGroup="disk" unit="reads" averageTimeUnit="sec" description="number of read access from the device since boot" incremental="y" adjustment="1" chartDisplayUnit="IOPS"/>
+    <metric name="DISKIOWRITES" sourceName="diskIOWrites" dataType="LONG" subGroup="disk" unit="writes" averageTimeUnit="sec" description="number of write access to the device since boot" incremental="y" adjustment="1" chartDisplayUnit="IOPS"/>
+    <metric name="DISKIOLA1" sourceName="diskIOLA1" dataType="BYTE" subGroup="disk" unit="%" description="The 1 minute average load of disk %" incremental="n" adjustment="1" chartDisplayUnit="%"/>
+    <metric name="DISKIOLA5" sourceName="diskIOLA5" dataType="BYTE" subGroup="disk" unit="%" description="The 5 minute average load of disk %" incremental="n" adjustment="1" chartDisplayUnit="%"/>
+    <metric name="DISKIOLA15" sourceName="diskIOLA15" dataType="BYTE" subGroup="disk" unit="%" description="The 15 minute average load of disk %" incremental="n" adjustment="1" chartDisplayUnit="%"/>
+  </metricsGroup> 
+  <metricsGroup name="snmp_net_eth0" dbType="mysql" multipleMetricsPerRow="n" keyColumn="NETIF"
+   nameColumn="OID_NAME" valueColumn="OID_VALUE" sql="snmp_net_eth0">
+    <metric name="IFINMULTICASTPKTS" sourceName="ifInMulticastPkts" dataType="LONG" subGroup="net" unit="counter" averageTimeUnit="sec" description="The number of packets, delivered by this sub-layer to a higer (sub-)layer, which were addressed to a multicast address at this sub-layer.  For a MAC layer protocol, this includes both Group and Functional addresses." incremental="y" adjustment="1" chartDisplayUnit="PKTS/SEC"/>
+    <metric name="IFINBROADCASTPKTS" sourceName="ifInBroadcastPkts" dataType="LONG" subGroup="net" unit="counter" averageTimeUnit="sec" description="The number of packets, delivered by this sub-layer to a higher (sub-)layer, which were addressed to a broadcast address at this sub-layer." incremental="y" adjustment="1" chartDisplayUnit="PKTS/SEC"/>
+    <metric name="IFOUTMULTICASTPKTS" sourceName="ifOutMulticastPkts" dataType="LONG" subGroup="net" unit="counter" averageTimeUnit="sec" description="" incremental="y" adjustment="1" chartDisplayUnit="PKTS/SEC"/>
+    <metric name="IFOUTBROADCASTPKTS" sourceName="ifOutBroadcastPkts" dataType="LONG" subGroup="net" unit="counter" averageTimeUnit="sec" description="" incremental="y" adjustment="1" chartDisplayUnit="PKTS/SEC"/>
+    <metric name="IFHCINOCTETS" sourceName="ifHCInOctets" dataType="LONG" subGroup="net" unit="bytes" averageTimeUnit="sec" description="" incremental="y" adjustment="1" chartDisplayUnit="BYTES/SEC"/>
+    <metric name="IFHCINUCASTPKTS" sourceName="ifHCInUcastPkts" dataType="LONG" subGroup="net" unit="counter" averageTimeUnit="sec" description="" incremental="y" adjustment="1" chartDisplayUnit="PKTS/SEC"/>
+    <metric name="IFHCINMULTICASTPKTS" sourceName="ifHCInMulticastPkts" dataType="LONG" subGroup="net" unit="counter" averageTimeUnit="sec" description="" incremental="y" adjustment="1" chartDisplayUnit="PKTS/SEC"/>
+    <metric name="IFHCINBROADCASTPKTS" sourceName="ifHCInBroadcastPkts" dataType="LONG" subGroup="net" unit="counter" averageTimeUnit="sec" description="" incremental="y" adjustment="1" chartDisplayUnit="PKTS/SEC"/>
+    <metric name="IFHCOUTOCTETS" sourceName="ifHCOutOctets" dataType="LONG" subGroup="net" unit="bytes" averageTimeUnit="sec" description="" incremental="y" adjustment="1" chartDisplayUnit="BYTES/SEC"/>
+    <metric name="IFHCOUTUCASTPKTS" sourceName="ifHCOutUcastPkts" dataType="LONG" subGroup="net" unit="counter" averageTimeUnit="sec" description="" incremental="y" adjustment="1" chartDisplayUnit="PKTS/SEC"/>
+    <metric name="IFHCOUTMULTICASTPKTS" sourceName="ifHCOutMulticastPkts" dataType="LONG" subGroup="net" unit="counter" averageTimeUnit="sec" description="" incremental="y" adjustment="1" chartDisplayUnit="PKTS/SEC"/>
+    <metric name="IFHCOUTBROADCASTPKTS" sourceName="ifHCOutBroadcastPkts" dataType="LONG" subGroup="net" unit="counter" averageTimeUnit="sec" description="" incremental="y" adjustment="1" chartDisplayUnit="PKTS/SEC"/>
+  </metricsGroup>
+  <metricsGroup name="snmp_storage" dbType="mysql" multipleMetricsPerRow="n" keyColumn="STORAGE" 
+  nameColumn="OID_NAME" valueColumn="OID_VALUE" sql="snmp_storage">
+    <metric name="HRSTORAGEALLOCATIONUNITS" sourceName="hrStorageAllocationUnits" dataType="SHORT" subGroup="storage" unit="bytes" incremental="n" />
+    <metric name="HRSTORAGESIZE" sourceName="hrStorageSize" dataType="LONG" subGroup="storage" unit="counter" />
+    <metric name="HRSTORAGEUSED" sourceName="hrStorageUsed" dataType="LONG" subGroup="storage" unit="counter" />
+    <metric name="USED_PCT" sourceName="USED_PCT" dataType="SHORT" subGroup="storage" unit="counter" />
+  </metricsGroup>
+  <metricsGroup name="snmp_mysqld" dbType="mysql" multipleMetricsPerRow="n" nameColumn="OID_NAME" valueColumn="OID_VALUE" 
+  sql="mysql_snmp_mysqld" auto="n">
+    <metric name="MEM" sourceName="hrSWRunPerfMem" dataType="LONG" subGroup="mysqld" unit="kbytes" description="total swap space" incremental="n" adjustment="1024" chartDisplayUnit="BYTES"/>
+    <metric name="CPU" sourceName="hrSWRunPerfCPU" dataType="LONG" subGroup="mysqld" unit="centisecond" 
+        description="The number of centi-seconds of the total system's CPU resources consumed by this proces" incremental="y" averageTimeUnit="sec" adjustment="0.01" chartDisplayUnit="SEC/SEC"/>
+  </metricsGroup>
+</metrics>

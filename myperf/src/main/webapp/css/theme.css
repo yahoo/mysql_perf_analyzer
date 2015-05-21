@@ -1,0 +1,126 @@
+/*
+ * Copyright 2015, Yahoo Inc.
+ * Copyrights licensed under the Apache License.
+ * See the accompanying LICENSE file for terms.
+ */
+body {margin:0; padding:0; background-color: #FFFFFF;}
+body, td, th, select, input, li, p, span, div{
+  font-family: "Segoe WP", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Verdana,  Arial, sans-serif;
+  font-size: 12px;
+}
+code{font-family: Courier, monospace; font-size: 12px;}
+a {text-decoration: none;}
+a:link {color:#36a;}
+a:visited  {color:#47a;}
+a:active, a:hover {color:#69c;}
+h2 {color: #000;font-weight:900;font-size: x-large;}
+h3 {color: #000;font-weight: normal;font-size: large;}
+h4 {color: #000;font-weight: normal;font-size: large;}
+h5 {color: #000;}
+p {line-height: 1em;}
+strong {font-weight: bold;}
+
+table.bodyTable th {
+  color: white;
+  background-color: #bbb;
+  text-align: left;
+  font-weight: bold;
+  font-size: 1em;
+  background-color: #EAEAEA;
+  font-weight: bold;
+  color: #000000;
+}
+
+table.bodyTable td {font-size: 1em; background-color: #FFFFFF;}
+
+.bodyTableSection {
+  font-size: larger;
+  background-color: #EAEAEA;
+  font-weight: bolder;
+  color: #000000;
+  padding: 5px;
+}
+
+table.bodyTable tr.a {  background-color: #ddd;}
+
+table.bodyTable tr.b {  background-color: #eee;}
+
+.source {  border: 1px solid #999;}
+
+.hide {	display: none;}
+
+/* This class sets the width and position for all rows */
+.inside{
+  position: relative;
+	width:600px;
+	max-width:85em;
+}
+
+#copyright {
+	margin-top: 0px;
+	margin-bottom: 0px;
+	padding: 2px;
+	text-align: center;
+	font-size: x-small;
+	font-style: italic;
+}
+
+.page-header-area {
+    position:absolute;
+	margin-bottom: 1px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 2px;
+	border: 0px solid black;
+	height:24px;
+}
+
+.divScroll {
+	padding-top: 1px;
+	padding-bottom: 1px;
+	border-top-width: 1px;
+	border-left-width: 1px;
+	border-bottom-width: 1px;
+	border-top-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	border-top-color: #22527A;
+	border-left-color: #22527A;
+	overflow: auto;
+	width: 100%;
+	margin-top: 1px;
+	margin-bottom: 1px;
+	height: 240px;
+	text-align: left;
+}
+.axis path, .axis line {fill: none;stroke: #000; shape-rendering: crispEdges;}
+.line {fill: none;stroke: blue;stroke-width: 1px;}
+div.tooltip {   
+  position: absolute;           
+  text-align: center;         
+  width: 120px;
+  font: 12px "Helvetica Neue", Helvetica, sans-serif; 
+  font-weight: bold;       
+  background-color:lightsteelblue;
+  border: solid 1px #aa8;
+  padding: 0.2em 0.5em 0.3em;
+  pointer-events: none;
+}
+
+.legend {padding: 5px;font: 10px sans-serif;background: yellow;box-shadow: 2px 2px 1px #888;}
+.grid .tick{stroke:lightgrey;opacity:0.4;}
+.grid path {stroke-width:0;opacity:0.4;}
+.area {fill: steelblue;opacity:0.4;}
+.rightbtn{float:right;text-decoration:underline;}
+.clip_button {text-align: center; text-decoration:underline; background-color: #ccc; marging-left:20px; padding-left:10px;padding-right:10px;}
+.clip_button.zeroclipboard-is-hover { background-color: #eee; }
+.clip_button.zeroclipboard-is-active { background-color: #aaa; }
+.nav{margin:0px;padding:0px;list-style:none;}
+.nav li{float:left;position:relative;border-right:1px solid #4BACC6;}
+.nav li:last-child{border-right:none}
+.nav li:first-child{width:200px;}
+.nav li a{display:block;padding:7px 8px;text-decoration:none;}
+.nav li a:hover{background-color:#036;color:#fff;}
+.nav ul{display:none;position:absolute;margin:0px;list-style:none;padding:0px;z-index:10000;background-color:#eee;border:1px solid #4BACC6;}
+.nav ul li{float:left;width:200px;position:relative;border-right:none;border-top:1px solid #4BACC6;}
+.nav ul li a:hover{background-color:#036;color:#fff;}

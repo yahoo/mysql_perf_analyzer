@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright 2015, Yahoo Inc.
+  Copyrights licensed under the Apache License.
+  See the accompanying LICENSE file for terms.
+ -->
+ <!DOCTYPE taglib
+	PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN"
+	"http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+<taglib>
+	<tlib-version>1.0</tlib-version>
+	<jsp-version>1.2</jsp-version>
+	<short-name>format</short-name>
+	<uri>http://messadmin.sf.net/fmt</uri>
+	<description>
+		The FMT JSP tag library provides a subset of tags somewhat similar to the
+		JSTL Formatting library.
+	</description>
+
+	<!--tag>
+		<name>requestEncoding</name>
+		<tag-class>clime.messadmin.taglib.fmt.RequestEncodingTag</tag-class>
+		<body-content>empty</body-content>
+		<description>
+			Sets the request character encoding
+		</description>
+		<attribute>
+			<name>value</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+Name of character encoding to be applied when
+decoding request parameters.
+			</description>
+		</attribute>
+	</tag-->
+
+	<tag>
+		<name>setLocale</name>
+		<tag-class>clime.messadmin.taglib.fmt.SetLocaleTag</tag-class>
+		<body-content>empty</body-content>
+		<description>
+			Stores the given locale in the locale configuration variable
+		</description>
+		<attribute>
+			<name>value</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+A String value is interpreted as the
+printable representation of a locale, which
+must contain a two-letter (lower-case)
+language code (as defined by ISO-639),
+and may contain a two-letter (upper-case)
+country code (as defined by ISO-3166).
+Language and country codes must be
+separated by hyphen (-) or underscore
+(_).
+			</description>
+		</attribute>
+		<attribute>
+			<name>variant</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+Vendor- or browser-specific variant.
+See the java.util.Locale javadocs for
+more information on variants.
+			</description>
+		</attribute>
+		<attribute>
+			<name>scope</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+			<description>Scope of the locale configuration variable.</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>bundle</name>
+		<tag-class>clime.messadmin.taglib.fmt.BundleTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>
+			Loads a resource bundle to be used by its tag body
+		</description>
+		<attribute>
+			<name>basename</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+Resource bundle base name. This is the bundle's
+fully-qualified resource name, which has the same
+form as a fully-qualified class name, that is, it uses
+"." as the package component separator and does not
+have any file type (such as ".class" or ".properties")
+suffix.
+			</description>
+		</attribute>
+		<attribute>
+			<name>prefix</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+Prefix to be prepended to the value of the message
+key of any nested &lt;fmt:message&gt; action.
+			</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>setBundle</name>
+		<tag-class>clime.messadmin.taglib.fmt.SetBundleTag</tag-class>
+		<body-content>empty</body-content>
+		<description>
+			Loads a resource bundle and stores it in the named scoped variable or
+			the bundle configuration variable
+		</description>
+		<attribute>
+			<name>basename</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+Resource bundle base name. This is the bundle's
+fully-qualified resource name, which has the same
+form as a fully-qualified class name, that is, it uses
+"." as the package component separator and does not
+have any file type (such as ".class" or ".properties")
+suffix.
+			</description>
+		</attribute>
+		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+			<description>
+Name of the exported scoped variable which stores
+the i18n localization context of type
+javax.servlet.jsp.jstl.fmt.LocalizationC
+ontext.
+			</description>
+		</attribute>
+		<attribute>
+			<name>scope</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+			<description>
+Scope of var or the localization context
+configuration variable.
+			</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>message</name>
+		<tag-class>clime.messadmin.taglib.fmt.MessageTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>Maps key to localized message and performs parametric replacement</description>
+		<attribute>
+			<name>key</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Message key to be looked up.</description>
+		</attribute>
+		<attribute>
+			<name>bundle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+Localization context in whose resource
+bundle the message key is looked up.
+			</description>
+		</attribute>
+		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+			<description>
+Name of the exported scoped variable
+which stores the localized message.
+			</description>
+		</attribute>
+		<attribute>
+			<name>scope</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+			<description>Scope of var.</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>param</name>
+		<tag-class>clime.messadmin.taglib.fmt.ParamTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>
+			Supplies an argument for parametric replacement to a containing
+			&lt;message&gt; tag
+		</description>
+		<attribute>
+			<name>value</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Argument used for parametric replacement.</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>formatNumber</name>
+		<tag-class>clime.messadmin.taglib.fmt.FormatNumberTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>
+			Formats a numeric value as a number, percentage, or number of bytes
+		</description>
+		<attribute>
+			<name>value</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Numeric value to be formatted.</description>
+		</attribute>
+		<attribute>
+			<name>type</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Specifies whether the value is to be formatted as number, percentage, or bytes.</description>
+		</attribute>
+		<attribute>
+			<name>pattern</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Custom formatting pattern.</description>
+		</attribute>
+		<attribute>
+			<name>groupingUsed</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Specifies whether the formatted output will contain any grouping separators.</description>
+		</attribute>
+		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+			<description>Name of the exported scoped variable which stores the formatted result as a String.</description>
+		</attribute>
+		<attribute>
+			<name>scope</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+			<description>Scope of var.</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>formatDate</name>
+		<tag-class>clime.messadmin.taglib.fmt.FormatDateTag</tag-class>
+		<body-content>empty</body-content>
+		<description>
+			Formats a date and/or time using the supplied styles and
+			pattern
+		</description>
+		<attribute>
+			<name>value</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Date and/or time to be formatted.</description>
+		</attribute>
+		<attribute>
+			<name>type</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Specifies whether the time, the date, or both the
+			time and date components of the given date are to be formatted.</description>
+		</attribute>
+		<attribute>
+			<name>dateStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Predefined formatting style for dates. Follows the
+			semantics defined in class java.text.DateFormat. Applied only
+			when formatting a date or both a date and time (i.e. if type is
+			missing or is equal to "date" or "both"); ignored otherwise.</description>
+		</attribute>
+		<attribute>
+			<name>timeStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Predefined formatting style for times. Follows the
+			semantics defined in class java.text.DateFormat. Applied only
+			when formatting a time or both a date and time (i.e. if type is
+			equal to "time" or "both"); ignored otherwise.</description>
+		</attribute>
+		<attribute>
+			<name>pattern</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Custom formatting style for dates and times.</description>
+		</attribute>
+		<attribute>
+			<name>timeZone</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Time zone in which to represent the formatted time.</description>
+		</attribute>
+		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+			<description>Name of the exported scoped variable which stores
+			the formatted result as a String.</description>
+		</attribute>
+		<attribute>
+			<name>scope</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+			<description>Scope of var.</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>formatTimeInterval</name>
+		<tag-class>clime.messadmin.taglib.fmt.FormatTimeIntervalTag</tag-class>
+		<body-content>empty</body-content>
+		<description>
+			Formats a time using the supplied pattern
+		</description>
+		<attribute>
+			<name>value</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>time in milliseconds to be formatted.</description>
+		</attribute>
+		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+			<description>Name of the exported scoped variable which stores
+			the formatted result as a String.</description>
+		</attribute>
+		<attribute>
+			<name>scope</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+			<description>Scope of var.</description>
+		</attribute>
+	</tag>
+
+</taglib>

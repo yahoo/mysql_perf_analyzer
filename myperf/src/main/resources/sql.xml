@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   Copyright 2015, Yahoo Inc.
+   Copyrights licensed under the Apache License.
+   See the accompanying LICENSE file for terms.
+-->
+<sqls comments="sql scripts used for perf queries">
+  <sql handle="snmp" paramCount="2" replace="n" errorInline="n" comments="Query SNMP data">
+    <queryProcessor>SNMPQueryProcessor</queryProcessor>
+    <param name="query_type" dataType="non_breakable_string"/>
+    <param name="metrics_only" dataType="non_breakable_string"/>
+  </sql>
+  <sql handle="mysql_repl_lag" paramCount="0" replace="n" errorInline="n" comments="Query MySQL slave status and lag">
+    <queryProcessor>ReplLagQueryProcessor</queryProcessor>
+  </sql>
+  <sql handle="mysql_processlist" paramCount="0" comments="Display MySQL processlist">
+    <text>select * from information_schema.processlist limit 3000</text>
+  </sql>
+  <sql handle="mysql_active_processlist" paramCount="0" comments="Display MySQL active processlist">
+    <text>select * from information_schema.processlist where command!='Sleep' limit 3000</text>
+  </sql>
+  <sql handle="mysql_long_running_processlist" paramCount="1" comments="Display MySQL processlist for queries running for more than specified time">
+    <text>select * from information_schema.processlist where command!='Sleep' and command!='Binlog Dump' and command!='Connect' and command!='Daemon'
+          and command!='Binlog Dump GTID' and user!='system user' and user!='event_scheduler' where time &gt;&amp;p_1
+    </text>
+    <param name="time_sec"  dataType="numeric"/>    
+  </sql>
+  <sql handle="mysql_innodb_buffer_pool_status" paramCount="0" expandRow="y" comments="Display MySQL inndodb buffer pool statistics">
+    <text>select * from information_schema.innodb_buffer_pool_stats</text>
+  </sql>
+  <sql handle="mysql_show_databases" paramCount="0" comments="Display MySQL Databases">
+    <text>show databases</text>
+  </sql>
+  <sql handle="mysql_meta_databases" paramCount="0" comments="Display MySQL Databases">
+    <text>select * from information_schema.schemata</text>
+  </sql>
+  <sql handle="mysql_meta_table_names" paramCount="1" replace="y" errorInline="y" comments="Display MySQL tables for a given schema">
+    <!--  text>select table_catalog,table_schema, table_name, table_type, engine, table_rows, data_length, index_length from information_schema.tables where table_schema='&amp;p_1' and table_type!='VIEW'</text -->
+    <text>show tables from &amp;p_1</text>
+    <param name="database_name" dataType="non_breakable_string"/>
+  </sql>
+  <sql handle="mysql_meta_view_names" paramCount="1" replace="y" errorInline="y" comments="Display MySQL views for a given schema">
+    <text>select table_catalog,table_schema, table_name from information_schema.views where table_schema='&amp;p_1'</text>
+    <param name="database_name"  dataType="single_quoted_string"/>
+  </sql>  
+  <sql handle="mysql_meta_table_columns" paramCount="2" replace="y" errorInline="y" comments="Display MySQL table column info">
+    <text>select * from information_schema.columns where table_schema='&amp;p_1' and table_name='&amp;p_2'</text>
+    <param name="database_name" dataType="non_breakable_string"/>
+    <param name="table_name" dataType="non_breakable_string"/>
+  </sql>  
+  <sql handle="mysql_meta_table_meta" paramCount="2" replace="y" errorInline="y" comments="Display MySQL table meta info">
+    <queryProcessor>TableMetaProcessor</queryProcessor>
+    <param name="database_name" dataType="non_breakable_string"/>
+    <param name="table_name" dataType="non_breakable_string"/>
+  </sql>  
+  <sql handle="mysql_meta_table_indexes" paramCount="2" replace="y" errorInline="y" comments="Display MySQL table index info">
+    <text>show indexes from &amp;p_1.&amp;p_2</text>
+    <param name="database_name" dataType="non_breakable_string"/>
+    <param name="table_name" dataType="non_breakable_string"/>
+  </sql>  
+  <sql handle="mysql_meta_table_create" paramCount="2" replace="y" errorInline="y" comments="Display MySQL table create code">
+    <text>show create table &amp;p_1.&amp;p_2</text>
+    <param name="database_name" dataType="non_breakable_string"/>
+    <param name="table_name" dataType="non_breakable_string"/>
+  </sql>  
+  <sql handle="mysql_meta_view_create" paramCount="2" replace="y" errorInline="y" comments="Display MySQL view create code">
+    <text>show create view &amp;p_1.&amp;p_2</text>
+    <param name="database_name" dataType="non_breakable_string"/>
+    <param name="view_name" dataType="non_breakable_string"/>
+  </sql>  
+  <sql handle="mysql_meta_table_constraints" paramCount="2" replace="y" cerrorInline="y" omments="Display MySQL table constraints">
+    <text>select * from information_schema.table_constraints where table_schema='&amp;p_1' and table_name='&amp;p_2'</text>
+    <param name="database_name" dataType="non_breakable_string"/>
+    <param name="table_name" dataType="non_breakable_string"/>
+  </sql>
+  <sql handle="mysql_meta_table_triggers" paramCount="2" replace="y" errorInline="y" comments="Display MySQL table triggers">
+    <text>select trigger_catalog, trigger_schema, trigger_name, event_manipulation from information_schema.triggers where event_object_schema='&amp;p_1' and event_object_table='&amp;p_2'</text>
+    <param name="database_name" dataType="non_breakable_string"/>
+    <param name="table_name" dataType="non_breakable_string"/>
+  </sql>  
+  <sql handle="mysql_meta_innodb_table_stats" paramCount="2" replace="y" errorInline="y" comments="Display MySQL Innodb table stats">
+    <text>select * from information_schema.innodb_table_stats where table_schema='&amp;p_1' and table_name='&amp;p_2'</text>
+    <param name="database_name" dataType="non_breakable_string"/>
+    <param name="table_name" dataType="non_breakable_string"/>
+  </sql>
+  <sql handle="mysql_meta_table_stats" paramCount="2" replace="y" errorInline="y" comments="Display MySQL  table stats">
+    <text>select table_catalog,table_schema, table_name, table_type, engine, 
+    case when table_rows &gt;=1000000 then concat(round(table_rows/1000000,6), 'M') else table_rows end  table_rows, 
+    concat(round(data_length/1048576),'MB') data, concat(round(index_length/1048576), 'MB') idx, 
+    concat(round((data_length+index_length)/1048576),'MB') total,
+    concat(round(data_free/1048576),'MB') free, avg_row_length
+    from information_schema.tables where table_schema='&amp;p_1' and table_name='&amp;p_2'</text>
+    <param name="database_name" dataType="non_breakable_string"/>
+    <param name="table_name" dataType="non_breakable_string"/>
+  </sql>
+  <sql handle="mysql_meta_innodb_index_stats" paramCount="2" replace="y" errorInline="y" comments="Display MySQL Innodb index stats">
+    <text>select * from information_schema.innodb_index_stats where table_schema='&amp;p_1' and table_name='&amp;p_2'</text>
+    <param name="database_name" dataType="non_breakable_string"/>
+    <param name="table_name" dataType="non_breakable_string"/>
+  </sql>
+  <sql handle="mysql_innodb_mutex" paramCount="0" comments="Display MySQL inndodb mutex">
+    <text>show engine innodb mutex</text>
+  </sql>
+  <sql handle="mysql_innodb_metrics" paramCount="0" comments="Display MySQL inndodb metrics">
+    <text>select NAME, COUNT, TIME_ELAPSED from information_schema.innodb_metrics order by NAME</text>
+    <vsql maxVersion="5.6.0">select "NA" as NAME, 0 as COUNT, 0 as TIME_ELAPSED</vsql>
+  </sql>
+  <sql handle="mysql_repl_master" paramCount="0" expandRow="y" comments="Display MySQL master status">
+    <text>show master status</text>
+  </sql>
+  <sql handle="mysql_repl_slave" paramCount="0" expandRow="y" comments="Display MySQL slave status">
+    <text>show slave status</text>
+  </sql>
+  <sql handle="mysql_global_status" paramCount="0" comments="Display MySQL global status">
+    <text>select variable_name, variable_value from information_schema.global_status</text>
+  </sql>
+  <sql handle="mysql_global_status_metrics2" paramCount="1" replace="y" comments="Display MySQL global status">
+    <text>select variable_name, variable_value from information_schema.global_status 
+    where upper(variable_name) like '%&amp;p_1%' and variable_value!='0' and variable_value regexp '[0-9\.]' limit 1000</text>
+    <param name="keyword" dataType="non_breakable_string"/>
+  </sql>
+  <sql handle="mysql_global_status_metrics" paramCount="1" replace="y" comments="Display MySQL global status">
+    <text>select variable_name, variable_value from information_schema.global_status 
+    where upper(variable_name) like '%&amp;p_1%'</text>
+    <param name="keyword" dataType="non_breakable_string"/>
+  </sql>
+  <sql handle="mysql_global_variables" paramCount="1" replace="y" comments="Display MySQL global variables">
+    <text>select variable_name, variable_value from information_schema.global_variables 
+      where variable_name like '%&amp;p_1%'</text>
+    <param name="filter_keyword" dataType="non_breakable_string"/>
+  </sql>
+  <sql handle="mysql_all_global_variables"  paramCount="0" comments="Retrieve MySQL global variables">
+    <text>select variable_name, variable_value from information_schema.global_variables</text>
+  </sql>
+  <sql handle="mysql_innodb_trx" paramCount="0" comments="Display MySQL innodb transactions">
+    <text>select * from information_schema.innodb_trx</text>
+  </sql>
+  <sql handle="mysql_user_time" paramCount="0" comments="Display MySQL user_statistics time info from percona db">
+    <text>select user, total_connections, connected_time , busy_time, cpu_time from information_schema.user_statistics order by user</text>
+  </sql>
+  <sql handle="mysql_innodb_locks" paramCount="0" comments="Display MySQL innodb locks">
+    <text>select * from information_schema.innodb_locks</text>
+  </sql>
+  <sql handle="mysql_meta_pk_check" paramCount="0" comments="Check MySQL tables without PK">
+    <text>select table_schema, table_name 
+          from information_schema.columns
+          where table_schema!='performance_schema' and table_schema!='information_schema' and table_schema!='mysql'
+          group by table_schema, table_name 
+          having sum(if(column_key in ('PRI', 'UNI'), 1, 0))=0</text>
+  </sql>
+  <sql handle="mysql_meta_schema_pk_check" paramCount="1" replace="y" comments="Check MySQL tables without PK for a given schema">
+    <text>select table_schema, table_name 
+          from information_schema.columns
+          where table_schema='&amp;p_1'
+          group by table_schema, table_name 
+          having sum(if(column_key in ('PRI', 'UNI'), 1, 0))=0</text>
+    <param name="schema_name" dataType="non_breakable_string"/>
+  </sql>
+  <sql handle="mysql_innodb_engine_status" paramCount="0" comments="Display MySQL innodb status">
+    <text>show engine innodb status</text>
+  </sql>
+  <sql handle="mysql_user_statistics" paramCount="0" errorInline="y" comments="Display MySQL user_statistics from percona db/mariadb">
+    <text>select * from information_schema.user_statistics</text>
+  </sql>
+  <sql handle="mysql_client_statistics" paramCount="0"  errorInline="y" comments="Display MySQL client_statistics from percona db/mariadb">
+    <text>select * from information_schema.client_statistics</text>
+  </sql>
+  <sql handle="mysql_client_conn_statistics" paramCount="0"  errorInline="y" comments="Display MySQL connection related client_statistics from percona db/mariadb">
+    <text>select client, total_connections,  denied_connections, lost_connections, connected_time  from information_schema.client_statistics order by client</text>
+  </sql>
+  <sql handle="mysql_table_statistics" paramCount="0"  errorInline="y" comments="Display MySQL table_statistics from percona db/mariadb">
+    <text>select concat(table_schema,'.',table_name) TABLE_NAME, rows_read, rows_changed, rows_changed_x_indexes from information_schema.table_statistics order by 1</text>
+  </sql>
+  <sql handle="mysql_index_statistics2" paramCount="0"  errorInline="y" comments="Display MySQL index_statistics from percona db/mariadb">
+    <text>select concat(table_schema,'.',table_name,'.', index_name) INDEX_NAME, rows_read from information_schema.index_statistics order by 1</text>
+  </sql>  
+  <sql handle="mysql_index_statistics" paramCount="2"  replace="y" errorInline="y" comments="Display MySQL index_statistics by table from percona db/mariadb">
+    <text>select concat(table_schema,'.',table_name,'.', index_name) INDEX_NAME, rows_read 
+          from information_schema.index_statistics where table_schema like '&amp;p_1' and table_name like '&amp;p_2' order by 1</text>
+    <param name="table_schema" dataType="non_breakable_string"/>
+    <param name="table_name" dataType="non_breakable_string"/>
+  </sql>  
+  <sql handle="mysql_perf_setup_timers" paramCount="0" comments="Display MySQL PS setup_timers">
+    <text>select * from performance_schema.setup_timers</text>
+  </sql>
+  <sql handle="mysql_perf_setup_instruments" paramCount="0" comments="Display MySQL PS setup_instruments">
+    <text>select * from performance_schema.setup_instruments</text>
+  </sql>
+  <sql handle="mysql_perf_setup_consumers" paramCount="0" comments="Display MySQL PS setup_consumers">
+    <text>select * from performance_schema.setup_consumers</text>
+  </sql>
+  <sql handle="mysql_perf_setup_threads" paramCount="0" comments="Display MySQL PS threads">
+    <text>select * from performance_schema.threads</text>
+  </sql>
+  <sql handle="mysql_perf_setup_actors" paramCount="0" comments="Display MySQL PS setup_actors">
+    <text>select * from performance_schema.setup_actors</text>
+  </sql>
+  <sql handle="mysql_perf_setup_objects" paramCount="0" comments="Display MySQL PS setup_objects">
+    <text>select * from performance_schema.setup_objects</text>
+  </sql>
+  <sql handle="mysql_perf_mutex" paramCount="0" comments="Display MySQL mutex by locked threads">
+    <text>select * from performance_schema.mutex_instances where locked_by_thread_id is not null</text>
+  </sql>
+  <sql handle="mysql_perf_rwlock" paramCount="0" comments="Display MySQL RWLOCK">
+    <text>select * from performance_schema.rwlock_instances where write_locked_by_thread_id is not null or read_locked_by_count&gt;0</text>
+  </sql>
+  <sql handle="mysql_perf_filesum_inst" paramCount="0" comments="Display MySQL file summary by instance">
+    <text>select * from performance_schema.file_summary_by_instance where count_read &gt; 0 or count_write &gt;0</text>
+  </sql>
+  <sql handle="mysql_perf_threads" paramCount="0" comments="Display MySQL thread and processlist">
+    <text>select t.thread_id, t.name, t.processlist_id, p.user processlist_user, p.host processlist_host, p.db processlist_db,
+      p.command processlist_command, p.time processlist_time, p.state processlist_state, p.info processlist_info
+      from performance_schema.threads t left join information_schema.processlist p
+      on t.processlist_id = p.id</text>
+    <vsql minVersion="5.6">select * from performance_schema.threads order by type desc limit 1000</vsql>
+  </sql>
+  <sql handle="mysql_perf_digests_wait_time" paramCount="2" replace="y" comments="Display MySQL sql digest summary">
+    <text>select * from performance_schema.events_statements_summary_by_digest where timestampadd(minute,&amp;p_1,last_seen)&gt;=localtimestamp order by sum_timer_wait desc limit &amp;p_2</text>
+    <param name="minute" dataType="numeric"/>
+    <param name="count" dataType="numeric"/>
+  </sql>
+  <sql handle="mysql_perf_digests_avg_wait_time" paramCount="2" replace="y" comments="Display MySQL sql digest summary">
+    <text>select * from performance_schema.events_statements_summary_by_digest where timestampadd(minute,&amp;p_1,last_seen)&gt;=localtimestamp order by avg_timer_wait desc limit &amp;p_2</text>
+    <param name="minute" dataType="numeric"/>
+    <param name="count" dataType="numeric"/>
+  </sql>
+  <sql handle="mysql_perf_digests_lock_time" paramCount="2" replace="y" comments="Display MySQL sql digest summary">
+    <text>select * from performance_schema.events_statements_summary_by_digest 
+    where timestampadd(minute,&amp;p_1,last_seen)&gt;=localtimestamp order by sum_lock_time desc limit &amp;p_2</text>
+    <param name="minute" dataType="numeric"/>
+    <param name="count" dataType="numeric"/>
+  </sql>
+  <sql handle="mysql_perf_digests_rows_examined" paramCount="2" replace="y" comments="Display MySQL sql digest summary">
+    <text>select * from performance_schema.events_statements_summary_by_digest 
+    where timestampadd(minute,&amp;p_1,last_seen)&gt;=localtimestamp order by sum_rows_examined desc limit &amp;p_2</text>
+    <param name="minute" dataType="numeric"/>
+    <param name="count" dataType="numeric"/>
+  </sql>
+  <sql handle="mysql_perf_digests_rows_sent" paramCount="2" replace="y" comments="Display MySQL sql digest summary">
+    <text>select * from performance_schema.events_statements_summary_by_digest 
+    where timestampadd(minute,&amp;p_1,last_seen)&gt;=localtimestamp order by sum_rows_sent desc limit &amp;p_2</text>
+    <param name="minute" dataType="numeric"/>
+    <param name="count" dataType="numeric"/>
+  </sql>
+  <sql handle="mysql_perf_digests_tmp_disk_tables" paramCount="2" replace="y" comments="Display MySQL sql digest summary">
+    <text>select * from performance_schema.events_statements_summary_by_digest 
+    where timestampadd(minute,&amp;p_1,last_seen)&gt;=localtimestamp order by sum_created_tmp_disk_tables desc limit &amp;p_2</text>
+    <param name="minute" dataType="numeric"/>
+    <param name="count" dataType="numeric"/>
+  </sql>
+  <sql handle="mysql_perf_digests_tmp_tables" paramCount="2" replace="y" comments="Display MySQL sql digest summary">
+    <text>select * from performance_schema.events_statements_summary_by_digest 
+    where timestampadd(minute,&amp;p_1,last_seen)&gt;=localtimestamp order by sum_created_tmp_tables desc limit &amp;p_2</text>
+    <param name="minute" dataType="numeric"/>
+    <param name="count" dataType="numeric"/>
+  </sql>
+  <sql handle="mysql_perf_digests_select_full_join" paramCount="2" replace="y" comments="Display MySQL sql digest summary">
+    <text>select * from performance_schema.events_statements_summary_by_digest 
+    where timestampadd(minute,&amp;p_1,last_seen)&gt;=localtimestamp order by sum_select_full_join desc limit &amp;p_2</text>
+    <param name="minute" dataType="numeric"/>
+    <param name="count" dataType="numeric"/>
+  </sql>
+  <sql handle="mysql_perf_digests_select_scan" paramCount="2" replace="y" comments="Display MySQL sql digest summary">
+    <text>select * from performance_schema.events_statements_summary_by_digest 
+    where timestampadd(minute,&amp;p_1,last_seen)&gt;=localtimestamp order by sum_select_scan desc limit &amp;p_2</text>
+    <param name="minute" dataType="numeric"/>
+    <param name="count" dataType="numeric"/>
+  </sql>
+  <sql handle="mysql_perf_digests_sort_merge_passes" paramCount="2" replace="y" comments="Display MySQL sql digest summary">
+    <text>select * from performance_schema.events_statements_summary_by_digest 
+    where timestampadd(minute,&amp;p_1,last_seen)&gt;=localtimestamp order by sum_sort_merge_passes desc limit &amp;p_2</text>
+    <param name="minute" dataType="numeric"/>
+    <param name="count" dataType="numeric"/>
+  </sql>
+  <sql handle="mysql_perf_digests_sort_rows" paramCount="2" replace="y" comments="Display MySQL sql digest summary">
+    <text>select * from performance_schema.events_statements_summary_by_digest 
+    where timestampadd(minute,&amp;p_1,last_seen)&gt;=localtimestamp order by sum_sort_rows desc limit &amp;p_2</text>
+    <param name="minute" dataType="numeric"/>
+    <param name="count" dataType="numeric"/>
+  </sql>
+  <sql handle="mysql_perf_digests_no_index" paramCount="2" replace="y" comments="Display MySQL sql digest summary">
+    <text>select * from performance_schema.events_statements_summary_by_digest 
+    where timestampadd(minute,&amp;p_1,last_seen)&gt;=localtimestamp order by sum_no_index_used desc limit &amp;p_2</text>
+    <param name="minute" dataType="numeric"/>
+    <param name="count" dataType="numeric"/>
+  </sql>
+  <sql handle="mysql_perf_digests_no_good_index" paramCount="2" replace="y" comments="Display MySQL sql digest summary">
+    <text>select * from performance_schema.events_statements_summary_by_digest 
+    where timestampadd(minute,&amp;p_1,last_seen)&gt;=localtimestamp order by sum_no_good_index_used desc limit &amp;p_2</text>
+    <param name="minute" dataType="numeric"/>
+    <param name="count" dataType="numeric"/>
+  </sql>
+  <sql handle="mysql_perf_events_waits_current" paramCount="0" comments="Display MySQL current waits">
+    <text>select NAME, pps.processlist_id as "ID", pps.thread_id as "THREAD",
+            IF(pps.processlist_id=0, 'Internal Thread', CONCAT(ips.user, '@', ips.host)) as USER,
+            DB, COMMAND, STATE, TIME, EVENT_NAME LAST_WAIT,
+            IF(TIMER_WAIT IS NULL, 'Still Waiting', TIMER_WAIT/1000000000) as LAST_WAIT_MS
+          FROM performance_schema.events_waits_current
+            JOIN performance_schema.threads pps USING (thread_id) 
+            LEFT JOIN information_schema.processlist ips on (pps.processlist_id=ips.id)</text>
+    <vsql minVersion="5.6">
+      SELECT
+        pps.processlist_id as "ID",
+        pps.thread_id as "THREAD",
+        pps.processlist_db as DB,
+        pps.processlist_command as COMMAND,
+        pps.processlist_state as STATE,
+        pps.processlist_time as "TIME",
+        ewc.event_name as LAST_WAIT,
+        IF(ewc.timer_wait is NULL AND ewc.event_name is NOT NULL, 'Still Waiting', ewc.timer_wait/1000000000) as LAST_WAIT_MS,        
+        ewc.source,
+        CONCAT(ewc.object_schema, '.', ewc.object_name, '.', ewc.index_name) as OBJECT,
+        ewc.operation,
+        ewc.number_of_bytes as BYTES, 
+        esc.rows_examined,
+        esc.rows_sent,
+        esc.rows_affected,
+        esc.created_tmp_tables TMP_TABLES,
+        esc.created_tmp_disk_tables TMP_DISK_TABLES,
+        IF(esc.no_good_index_used >0 OR esc.no_index_used>0, 'YES','NO') as FULL_SCAN,
+        IF(esc.timer_wait IS NOT NULL, esc.timer_wait/1000000000, NULL) as LAST_STATEMENT_LATENCY,
+        IF(esc.lock_time IS NOT NULL, esc.lock_time/1000000000, NULL) as LOCK_LATENCY,
+        IF(pps.name='thread/sql/one_connection', CONCAT(pps.processlist_user, '@', pps.processlist_host),
+            REPLACE(pps.name, 'thread/','')) as USER,
+        esc.sql_text SQL_TEXT
+      FROM
+        performance_schema.threads AS pps
+        LEFT JOIN performance_schema.events_waits_current AS ewc USING(thread_id)
+        LEFT JOIN performance_schema.events_statements_current AS esc USING(thread_id)
+      ORDER BY
+        pps.processlist_time DESC, LAST_WAIT_MS DESC
+    </vsql>
+  </sql>
+  <sql handle="mysql_perf_events_waits_summary" paramCount="0" comments="Display MySQL events waits summary by name">
+    <text>select e.event_name, e.count_star, e.sum_timer_wait/1000000000 WAIT_MS from performance_schema.events_waits_summary_global_by_event_name e where e.count_star&gt;0 order by  e.event_name limit 1000</text>
+  </sql>
+  <sql handle="mysql_perf_objects_summary" paramCount="0" comments="Display MySQL object access summary by name">
+    <text>select CONCAT(object_type, ':', object_schema, '.', object_name) NAME, count_star, sum_timer_wait/1000000000 WAIT_MS, min_timer_wait/1000000000 MIN_WAIT_MS, max_timer_wait/1000000000 MAX_WAIT_MS, avg_timer_wait/1000000000 AVG_WAIT_MS from performance_schema.objects_summary_global_by_type where count_star&gt;0 order by  1 limit 5000</text>
+  </sql>
+  <sql handle="mysql_perf_table_io_summary" paramCount="0" comments="Display MySQL table access summary by name">
+    <text>select CONCAT(object_type, ':', object_schema, '.', object_name) NAME, 
+             count_star, sum_timer_wait/1000000000 WAIT_MS, min_timer_wait/1000000000 MIN_WAIT_MS, max_timer_wait/1000000000 MAX_WAIT_MS, avg_timer_wait/1000000000 AVG_WAIT_MS,
+             count_read, sum_timer_read/1000000000 READ_MS, min_timer_read/1000000000 MIN_READ_MS, avg_timer_read/1000000000 AVG_READ_MS, max_timer_read/1000000000 MAX_READ_MS,
+             count_write, sum_timer_write/1000000000 WRITE_MS, min_timer_write/1000000000 MIN_WRITE_MS, avg_timer_write/1000000000 AVG_WRITE_MS, max_timer_write/1000000000 MAX_WRITE_MS,
+             count_fetch, sum_timer_fetch/1000000000 FETCH_MS, min_timer_fetch/1000000000 MIN_FETCH_MS, avg_timer_fetch/1000000000 AVG_FETCH_MS, max_timer_fetch/1000000000 MAX_FETCH_MS,
+             count_insert, sum_timer_insert/1000000000 INSERT_MS, min_timer_insert/1000000000 MIN_INSERT_MS, avg_timer_insert/1000000000 AVG_INSERT_MS, max_timer_insert/1000000000 MAX_INSERT_MS,
+             count_update, sum_timer_update/1000000000 UPDATE_MS, min_timer_update/1000000000 MIN_UPDATE_MS, avg_timer_update/1000000000 AVG_UPDATE_MS, max_timer_update/1000000000 MAX_UPDATE_MS,
+             count_delete, sum_timer_delete/1000000000 DELETE_MS, min_timer_delete/1000000000 MIN_DELETE_MS, avg_timer_delete/1000000000 AVG_DELETE_MS, max_timer_delete/1000000000 MAX_DELETE_MS
+          from performance_schema.table_io_waits_summary_by_table where count_star&gt;0 order by  1 limit 5000</text>
+  </sql>
+  <sql handle="mysql_perf_index_io_summary" paramCount="0" comments="Display MySQL index access summary by name">
+    <text>select CONCAT(object_type, ':', object_schema, '.', object_name,'.', index_name) NAME, 
+             count_star, sum_timer_wait/1000000000 WAIT_MS, min_timer_wait/1000000000 MIN_WAIT_MS, max_timer_wait/1000000000 MAX_WAIT_MS, avg_timer_wait/1000000000 AVG_WAIT_MS,
+             count_read, sum_timer_read/1000000000 READ_MS, min_timer_read/1000000000 MIN_READ_MS, avg_timer_read/1000000000 AVG_READ_MS, max_timer_read/1000000000 MAX_READ_MS,
+             count_write, sum_timer_write/1000000000 WRITE_MS, min_timer_write/1000000000 MIN_WRITE_MS, avg_timer_write/1000000000 AVG_WRITE_MS, max_timer_write/1000000000 MAX_WRITE_MS,
+             count_fetch, sum_timer_fetch/1000000000 FETCH_MS, min_timer_fetch/1000000000 MIN_FETCH_MS, avg_timer_fetch/1000000000 AVG_FETCH_MS, max_timer_fetch/1000000000 MAX_FETCH_MS,
+             count_insert, sum_timer_insert/1000000000 INSERT_MS, min_timer_insert/1000000000 MIN_INSERT_MS, avg_timer_insert/1000000000 AVG_INSERT_MS, max_timer_insert/1000000000 MAX_INSERT_MS,
+             count_update, sum_timer_update/1000000000 UPDATE_MS, min_timer_update/1000000000 MIN_UPDATE_MS, avg_timer_update/1000000000 AVG_UPDATE_MS, max_timer_update/1000000000 MAX_UPDATE_MS,
+             count_delete, sum_timer_delete/1000000000 DELETE_MS, min_timer_delete/1000000000 MIN_DELETE_MS, avg_timer_delete/1000000000 AVG_DELETE_MS, max_timer_delete/1000000000 MAX_DELETE_MS
+          from performance_schema.table_io_waits_summary_by_index_usage where index_name is not null and count_star&gt;0 order by  1 limit 5000</text>
+  </sql>
+  <sql handle="mysql_perf_table_lock_summary" paramCount="0" comments="Display MySQL table lock wait summary by name">
+    <text>select CONCAT(object_type, ':', object_schema, '.', object_name) NAME, 
+             count_star, sum_timer_wait/1000000000 WAIT_MS, min_timer_wait/1000000000 MIN_WAIT_MS, max_timer_wait/1000000000 MAX_WAIT_MS, avg_timer_wait/1000000000 AVG_WAIT_MS,
+             count_read, sum_timer_read/1000000000 READ_MS, min_timer_read/1000000000 MIN_READ_MS, avg_timer_read/1000000000 AVG_READ_MS, max_timer_read/1000000000 MAX_READ_MS,
+             count_write, sum_timer_write/1000000000 WRITE_MS, min_timer_write/1000000000 MIN_WRITE_MS, avg_timer_write/1000000000 AVG_WRITE_MS, max_timer_write/1000000000 MAX_WRITE_MS
+          from performance_schema.table_lock_waits_summary_by_table where count_star&gt;0 order by  1 limit 5000</text>
+  </sql>
+</sqls>
