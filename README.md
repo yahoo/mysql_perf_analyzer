@@ -11,7 +11,17 @@ Build
 MySQL Performance Analyzer is a Java Maven project. 
 JDK and Maven 3.0 or later are required to build it. 
 
-Although JDK 8 is specified in pom.xml, this project does not use Java 8 specific features, so the user can modify pom.xml files of the two sub projects to use different JDK version.
+Although JDK 8 is specified in pom.xml, this project does not use Java 8 specific features, so the user can modify pom.xml files of the two sub projects to use different JDK version. 
+For example, if the build host only has JDK 7, modify the file myperf/pom.xml, change the lines
+```
+  	<source>1.8</source>
+	<target>1.8</target>
+```
+to
+```
+	<source>1.7</source>
+	<target>1.7</target>
+```
 
 The build will create a zip file named as myperfserver-server.zip under directory perfJettyServer/target. To build it, at top level, run
 ```
