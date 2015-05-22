@@ -20,14 +20,16 @@
 <script language="javascript">
   var target_list_id = null;
   var target_host_name = null;
+  var target_port = null;
   function hideDBSearch()
   {
     mydom("simple_dbsearch").style.display="none";
   }
-  function prepareDBSearch(targetListId, targetHostName, keyword, actWhenOpen)
+  function prepareDBSearch(targetListId, targetHostName, keyword, actWhenOpen, targetPort)
   {
     target_list_id = targetListId;
 	target_host_name = targetHostName;
+	target_port = targetPort;
 	if(keyword!=null)
 	{
       mydom("dbsearch_keyword").value=keyword;
@@ -53,6 +55,7 @@
     if(obj == null || obj.datatable == null)return;
     var dbname = obj.datatable.getCellValueByColumnName(obj.row, 'DBGROUPNAME');
     var hostname = obj.datatable.getCellValueByColumnName(obj.row, 'HOSTNAME');
+    var port = obj.datatable.getCellValueByColumnName(obj.row, 'PORT');
 	if(target_list_id!=null && mydom(target_list_id)!=null)
 	{	            
 	  var l = mydom(target_list_id);
@@ -62,6 +65,8 @@
 	    l.focus();
 	    if(target_host_name!=null && mydom(target_host_name)!=null)
 	      mydom(target_host_name).value=hostname;
+	    if(target_port!=null && mydom(target_port)!=null)
+	      mydom(target_port).value=port;
 	  }
 	  else
 	  {

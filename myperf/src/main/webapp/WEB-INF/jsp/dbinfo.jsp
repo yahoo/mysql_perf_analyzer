@@ -63,7 +63,7 @@ var DBList=[""
         <tr id="tr_clusterName">
           <td><label for="dbGroupName">Group Name</label></td>
           <td><input type="text" id="dbGroupName" name="dbGroupName"  autofocus  required title="A unique name to identify your standalone database server or a group of servers"/> &nbsp;
-          <input type="button" value="Find" onclick="prepareDBSearch('dbGroupName','hostName', mydomval('dbGroupName'));" title="Click to find database servers by keyword"/></td>
+          <input type="button" value="Find" onclick="prepareDBSearch('dbGroupName','hostName', mydomval('dbGroupName'), null, 'port');" title="Click to find database servers by keyword"/></td>
         </tr>
         <tr id="tr_hostName">
           <td><label for="hostName">Host Name</label></td>

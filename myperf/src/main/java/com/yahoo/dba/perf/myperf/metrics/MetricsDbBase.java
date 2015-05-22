@@ -1650,14 +1650,14 @@ public abstract class MetricsDbBase implements  Runnable
 		  pstmt.setString(idx++, dbinfo.getHostName().toLowerCase());
 		  pstmt.setString(idx++, dbinfo.getDbType());
 		  pstmt.setString(idx++, String.valueOf(dbinfo.getInstance()));
-		  if(dbinfo.getPortShort()>0)
+		  if(dbinfo.getPortShort() != 0)
 			  pstmt.setShort(idx++, dbinfo.getPortShort());
 		  else 
 			  pstmt.setNull(idx++, java.sql.Types.SMALLINT);
 		  pstmt.setString(idx++, dbinfo.getDatabaseName());
 		  pstmt.setString(idx++, dbinfo.isUseTunneling()?"1":"0");
 		  pstmt.setString(idx++, dbinfo.getLocalHostName());
-		  if(dbinfo.getLocalPortShort()>0)
+		  if(dbinfo.getLocalPortShort() != 0)
 			  pstmt.setShort(idx++, dbinfo.getLocalPortShort());
 		  else 
 			  pstmt.setNull(idx++, java.sql.Types.SMALLINT);
@@ -2012,7 +2012,7 @@ public abstract class MetricsDbBase implements  Runnable
 		    int idx = 1;
 			pstmt.setString(idx++, dbinfo.getDbType());
 			pstmt.setString(idx++, String.valueOf(dbinfo.getInstance()));
-			if(dbinfo.getPortShort()>0)
+			if(dbinfo.getPortShort() != 0)
 				pstmt.setShort(idx++, dbinfo.getPortShort());
 			else pstmt.setNull(idx++, java.sql.Types.SMALLINT);
 			pstmt.setString(idx++, dbinfo.getDatabaseName());
@@ -2021,7 +2021,7 @@ public abstract class MetricsDbBase implements  Runnable
 			  pstmt.setString(idx++, dbinfo.getLocalHostName().toLowerCase());
 			else 
 			  pstmt.setNull(idx++, java.sql.Types.VARCHAR);
-			if(dbinfo.getLocalPortShort()>0)
+			if(dbinfo.getLocalPortShort() != 0)
 			  pstmt.setShort(idx++, dbinfo.getLocalPortShort());
 			else 
 			  pstmt.setNull(idx++, java.sql.Types.SMALLINT);

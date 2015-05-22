@@ -35,6 +35,7 @@ public class DbsearchController  extends MyPerfBaseController
 	  desc.addColumn("DBTYPE", false, idx++);
 	  desc.addColumn("DBGROUPNAME", false, idx++);
 	  desc.addColumn("HOSTNAME", false, idx++);
+	  desc.addColumn("PORT", false, idx++);
 	  desc.addColumn("DATABASENAME", false, idx++);
 
 	  for(DBInstanceInfo urp:dbList)
@@ -46,6 +47,7 @@ public class DbsearchController  extends MyPerfBaseController
 		cols.add(urp.getDbType());
 	    cols.add(urp.getDbGroupName());
 		cols.add(urp.getHostName());
+		cols.add(urp.getPort());
 		cols.add(urp.getDatabaseName());
 		rList.addRow(row);
 	  }

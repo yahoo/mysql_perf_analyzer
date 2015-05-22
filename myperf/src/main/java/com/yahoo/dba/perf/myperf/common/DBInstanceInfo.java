@@ -12,6 +12,7 @@ package com.yahoo.dba.perf.myperf.common;
  */
 public class DBInstanceInfo implements java.io.Serializable{
   private static final long serialVersionUID = 1L;
+  private static final int MAX_16BIT_UINT = 65536;
 	
   private int instance = 0;//keep it for future to include Oracle
   
@@ -68,20 +69,32 @@ public class DBInstanceInfo implements java.io.Serializable{
 
   public void setPort(String port) 
   {
-    this.port = port;
+	if(port!=null)
+	{
+		try
+		{
+			int lp = Integer.parseInt(port);
+			if(lp<0)
+			{
+				lp = MAX_16BIT_UINT + lp;
+			}
+			this.port = String.valueOf(lp);
+		}catch(Exception ex){}
+	}
+	else this.port = port;
   }
 
   public short getPortShort()
   {
-    short lp = 0;
+    int lp = 0;
 	try
 	{
-	  lp = Short.valueOf(this.port);
+	  lp = Integer.valueOf(this.port);	  
 	}catch(Exception ex)
 	{
 			
 	}
-	return lp;
+	return (short)lp;
   }
 
   public boolean isUseTunneling() 
@@ -113,19 +126,35 @@ public class DBInstanceInfo implements java.io.Serializable{
 
   public void setLocalPort(String localPort) 
   {
-    this.localPort = localPort;
+	if(localPort != null)
+	{
+	  try
+	  {
+		int lp = Integer.parseInt(localPort);
+		if(lp <0 )
+		{
+			lp = MAX_16BIT_UINT + lp;
+		}
+		this.localPort = String.valueOf(lp);
+		
+	  }catch(Exception ex)
+	  {
+		  
+	  }
+	}
+	else this.localPort = localPort;
   }
 
   public short getLocalPortShort()
   {
-    short lp = 0;
+    int lp = 0;
     try
     {
-      lp = Short.valueOf(this.localPort);
+      lp = Integer.valueOf(this.localPort);
 	}catch(Exception ex)
     {			
     }
-    return lp;
+    return (short)lp;
   }
 	
   public int getInstance() 
