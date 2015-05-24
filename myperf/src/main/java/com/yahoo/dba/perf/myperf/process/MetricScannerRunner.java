@@ -168,6 +168,8 @@ public class MetricScannerRunner implements Runnable
 	    try
 	    {
 	      snmpClient = new SNMPClient(scanData.dbinfo.getHostName());
+	      snmpClient.setSnmpSetting(this.frameworkContext.getSnmpSettings()
+	    		  .getHostSetting(scanData.dbinfo.getDbGroupName(), scanData.dbinfo.getHostName()));
 	      snmpClient.start();	
 		  long ts1 = System.currentTimeMillis();  
 		  Map<String, List<SNMPClient.SNMPTriple>> diskStats = snmpClient.getMultiDiskData();
@@ -208,6 +210,8 @@ public class MetricScannerRunner implements Runnable
 	    try
 	    {
 	      snmpClient = new SNMPClient(scanData.dbinfo.getHostName());
+	      snmpClient.setSnmpSetting(this.frameworkContext.getSnmpSettings()
+	    		  .getHostSetting(scanData.dbinfo.getDbGroupName(), scanData.dbinfo.getHostName()));
 	      snmpClient.start();	
 		  long ts1 = System.currentTimeMillis();  
 		  Map<String, List<SNMPClient.SNMPTriple>> diskStats = snmpClient.getStorageData(null);
@@ -265,6 +269,8 @@ public class MetricScannerRunner implements Runnable
 	    try
 	    {
 	      snmpClient = new SNMPClient(scanData.dbinfo.getHostName());
+	      snmpClient.setSnmpSetting(this.frameworkContext.getSnmpSettings()
+	    		  .getHostSetting(scanData.dbinfo.getDbGroupName(), scanData.dbinfo.getHostName()));
 	      snmpClient.start();	
 		  long ts1 = System.currentTimeMillis();  
 		  Map<String, List<SNMPClient.SNMPTriple>> diskStats = snmpClient.getNetIfData(null);//assume eth0
@@ -309,6 +315,8 @@ public class MetricScannerRunner implements Runnable
 	    try
 	    {
 	      snmpClient = new SNMPClient(scanData.dbinfo.getHostName());
+	      snmpClient.setSnmpSetting(this.frameworkContext.getSnmpSettings()
+	    		  .getHostSetting(scanData.dbinfo.getDbGroupName(), scanData.dbinfo.getHostName()));
 	      snmpClient.start();	
 		  long ts1 = System.currentTimeMillis();  
 		  Map<String, String> snmpRes = snmpClient.querySysData();				  
@@ -349,6 +357,8 @@ public class MetricScannerRunner implements Runnable
 	    try
 	    {
 	      snmpClient = new SNMPClient(scanData.dbinfo.getHostName());
+	      snmpClient.setSnmpSetting(this.frameworkContext.getSnmpSettings()
+	    		  .getHostSetting(scanData.dbinfo.getDbGroupName(), scanData.dbinfo.getHostName()));
 	      snmpClient.start();	
 		  long ts1 = System.currentTimeMillis();  
 		  Map<String, String> snmpRes = snmpClient.queryMysqld();				  

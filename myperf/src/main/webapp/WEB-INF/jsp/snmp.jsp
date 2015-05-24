@@ -55,8 +55,9 @@
 
 <c:if test="${mydbSize==0}">You have not provided any database credential yet. Please use <a href="<%= request.getContextPath() %>/cred.htm">DB Credential</a> page to provide access information for databases you are interested in.</c:if>
 </span>
-<p style="margin-bottom:5px;width:600px;">Use this page to test if we can use SNMP to gather OS level metrics for a specific server. You can use <a href="perf.htm?pg=settings">Settings</a> page 
-to disable/enable metrics gathering for individual server.</p>
+<p style="margin-bottom:5px;width:600px;">Use this page to test if you can use SNMP to gather OS level metrics for a specific server. 
+ Use <a href="perf.htm?pg=settings">Settings</a> page to disable/enable metrics gathering for individual server, 
+ or to configure snmpd versions and access methods.</p>
 
 <div id="snmptabs" class="clearTabView"> <!-- tab pane to display real time info in tabular formats -->
 	<ul>

@@ -16,11 +16,22 @@ import java.util.logging.Logger;
 
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
+import org.snmp4j.ScopedPDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.Target;
 import org.snmp4j.TransportMapping;
+import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
+import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.SnmpConstants;
+import org.snmp4j.security.AuthMD5;
+import org.snmp4j.security.AuthSHA;
+import org.snmp4j.security.PrivDES;
+import org.snmp4j.security.SecurityLevel;
+import org.snmp4j.security.SecurityModels;
+import org.snmp4j.security.SecurityProtocols;
+import org.snmp4j.security.USM;
+import org.snmp4j.security.UsmUser;
 import org.snmp4j.smi.Address;
 import org.snmp4j.smi.GenericAddress;
 import org.snmp4j.smi.OID;
@@ -30,6 +41,8 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.snmp4j.util.DefaultPDUFactory;
 import org.snmp4j.util.TableEvent;
 import org.snmp4j.util.TableUtils;
+
+import com.yahoo.dba.perf.myperf.common.SNMPSettings;
 
 /**
  * A simple SNMP client to poll a single MySQL server for OS performance metrics, such as CPU, memory, disk usage, etc.
@@ -95,8 +108,15 @@ public class SNMPClient
 	
 	Snmp snmp = null;
 	String address = null;
-
-	
+    private String community;
+	private String version;
+	//v3 support
+	private String username;
+	private String password;
+	private String authprotocol;
+	private String privacypassphrase;
+	private String privacyprotocol;
+	private String context;
 	static
 	{
 		OID_MAP.put("memTotalSwap",memTotalSwap);
@@ -232,6 +252,11 @@ public class SNMPClient
 	{
 		TransportMapping transport = new DefaultUdpTransportMapping();
 		snmp = new Snmp(transport);
+		if("3".equals(this.version))//add v3 support
+		{
+			USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);  
+			SecurityModels.getInstance().addSecurityModel(usm);  
+		}
 		// Do not forget this line!
 		transport.listen();
 	}
@@ -253,6 +278,16 @@ public class SNMPClient
 			return res.getResponse().get(0).getVariable().toString();
 		return null;
 	}
+	
+	private PDU createPDU() {
+		if(!"3".equals(this.version))
+			return new PDU();
+        ScopedPDU pdu = new ScopedPDU();
+        if(this.context != null && !this.context.isEmpty())
+          pdu.setContextEngineID(new OctetString(this.context));    //if not set, will be SNMP engine id            
+        return pdu;  
+    }
+	
 	/**
 	 * This method is capable of handling multiple OIDs
 	 * @param oids
@@ -261,7 +296,7 @@ public class SNMPClient
 	 */
 	public Map<OID, String> get(OID oids[]) throws IOException 
 	{
-		PDU pdu = new PDU();
+		PDU pdu = createPDU();
 		for (OID oid : oids) {
 			pdu.add(new VariableBinding(oid));
 		}
@@ -283,7 +318,7 @@ public class SNMPClient
 
 	public ResponseEvent getEvent(OID oids[]) throws IOException 
 	{
-		PDU pdu = new PDU();
+		PDU pdu = createPDU();
 		for (OID oid : oids) {
 			pdu.add(new VariableBinding(oid));
 		}
@@ -301,17 +336,46 @@ public class SNMPClient
 	* @return
 	*/
 	private Target getTarget() {
+		if("3".equals(this.version))return getTargetV3();
 		Address targetAddress = GenericAddress.parse(address);
 		CommunityTarget target = new CommunityTarget();
-		target.setCommunity(new OctetString("public"));
+		//logger.info("snmp version "+this.version+", community: "+this.community);
+		if(this.community == null || this.community.isEmpty())
+			target.setCommunity(new OctetString("public"));
+		else 
+			target.setCommunity(new OctetString(this.community));
 		target.setAddress(targetAddress);
 		target.setRetries(2);
 		target.setTimeout(1500);
-		target.setVersion(SnmpConstants.version2c);
+		target.setVersion(this.getVersionInt());
 		return target;
 	}
 
-	
+	private Target getTargetV3() {
+		//logger.info("Use SNMP v3, "+this.privacyprotocol +"="+this.password+", "+this.privacyprotocol+"="+this.privacypassphrase);
+		OID authOID = AuthMD5.ID;
+		if("SHA".equals(this.authprotocol))
+			authOID = AuthSHA.ID;
+		OID privOID = PrivDES.ID;
+		if(this.privacyprotocol == null || this.privacyprotocol.isEmpty())
+			privOID = null;
+		UsmUser user = new UsmUser(new OctetString(this.username),  
+				authOID, new OctetString(this.password),  //auth
+				privOID, this.privacypassphrase!=null?new OctetString(this.privacypassphrase):null); //enc
+		snmp.getUSM().addUser(new OctetString(this.username), user);  
+		Address targetAddress = GenericAddress.parse(address);
+		UserTarget target = new UserTarget();
+		target.setAddress(targetAddress);
+		target.setRetries(2);
+		target.setTimeout(1500);
+		target.setVersion(this.getVersionInt());
+		if(privOID != null)
+			target.setSecurityLevel(SecurityLevel.AUTH_PRIV);  
+		else
+			target.setSecurityLevel(SecurityLevel.AUTH_NOPRIV); 
+		target.setSecurityName(new OctetString(this.username));
+		return target;
+	}
 
     public static final String DISK_TABLE_OID="1.3.6.1.4.1.2021.13.15.1.1";
     public static final String DISK_TABLE_DEVICE_OID="1.3.6.1.4.1.2021.13.15.1.1.2";
@@ -338,7 +402,7 @@ public class SNMPClient
 			return new ArrayList<SNMPTriple>();
 		}
 		logger.fine("Query disk stats for "+index);
-		PDU pdu = new PDU();
+		PDU pdu = createPDU();
 		for ( int i=1; i< DISK_TABLE_ENTRIES.length; i++) {
 			if(DISK_TABLE_ENTRIES[i].length()==0)continue;
 			pdu.add(new VariableBinding(new OID("."+DISK_TABLE_OID+"."+i+"."+index)));
@@ -368,7 +432,7 @@ public class SNMPClient
 			return  resMap;
 		
 		logger.fine("Query disk stats");
-		PDU pdu = new PDU();
+		PDU pdu = createPDU();
 		for(Map.Entry<Integer, String> entry: indexes.entrySet())
 		{
 			for ( int i=1; i< DISK_TABLE_ENTRIES.length; i++) {
@@ -541,7 +605,7 @@ public class SNMPClient
 			return resMap;
 		}
 		logger.fine("Query net if stats for network");
-		PDU pdu = new PDU();
+		PDU pdu = createPDU();
 		for(Map.Entry<Integer, String> entry: indexMap.entrySet())
 		for ( int i=1; i< IF_TABLE_ENTRIES.length; i++) {
 			if(IF_TABLE_ENTRIES[i].length()==0)continue;
@@ -712,7 +776,7 @@ public class SNMPClient
 			return  resList;
 		
 		logger.fine("Query process stats");
-		PDU pdu = new PDU();
+		PDU pdu = createPDU();
 		for(Integer idx: prIndexes)
 		{
 			for ( int i=1; i< PROCESS_PERF_TABLE_ENTRIES.length; i++) {
@@ -762,4 +826,44 @@ public class SNMPClient
 		 return resMap;
 	}
 
+	public String getCommunity() {
+		return community;
+	}
+
+	public void setCommunity(String community) {
+		this.community = community;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+    
+	public int getVersionInt()
+	{
+		if("1".equals(this.version))
+			return SnmpConstants.version1;
+		else if("3".equals(this.version))
+			return SnmpConstants.version3;
+		else 
+			return SnmpConstants.version2c;
+	}
+	public void setSnmpSetting(SNMPSettings.SNMPSetting setting)
+	{
+	  if(setting == null)return;
+	  this.setCommunity(setting.getCommunity());
+	  this.setVersion(setting.getVersion());
+	  if("3".equals(this.version))
+	  {
+		  this.username = setting.getUsername();
+		  this.password = setting.getPassword();
+		  this.authprotocol = setting.getAuthProtocol();
+		  this.privacypassphrase = setting.getPrivacyPassphrase();
+		  this.privacyprotocol = setting.getPrivacyProtocol();
+		  this.context = setting.getContext();
+	  }
+	}
 }

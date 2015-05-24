@@ -38,6 +38,7 @@ public class MyPerfContext implements java.io.Serializable, InitializingBean,Dis
   private static final long serialVersionUID = 1L;
 
   private MyPerfConfiguration myperfConfig = new MyPerfConfiguration(); //configurations, from settings page
+  private SNMPSettings snmpSettings = new SNMPSettings();
   private DBInfoManager dbInfoManager = new DBInfoManager(); //managed database servers
   private SqlManager sqlManager = new SqlManager();//built in SQL definitions
   private MetricsDefManager metricsDef = new MetricsDefManager();//metrics and alert definitions, builtin and user defined
@@ -153,6 +154,7 @@ public class MyPerfContext implements java.io.Serializable, InitializingBean,Dis
     
 	logger.info("Initialize AutoScanner ...");
 	this.myperfConfig.init(this);
+	this.snmpSettings.init(this);
 	if(this.myperfConfig.isConfigured())
 	{
 	  this.initMetricsDB(); //move metrics db creation and initialization away from scanner
@@ -479,6 +481,10 @@ public class MyPerfContext implements java.io.Serializable, InitializingBean,Dis
 
   public MyPerfConfiguration getMyperfConfig() {
 	return myperfConfig;
+  }
+
+  public SNMPSettings getSnmpSettings() {
+	return snmpSettings;
   }
 
   public boolean initMetricsDB()

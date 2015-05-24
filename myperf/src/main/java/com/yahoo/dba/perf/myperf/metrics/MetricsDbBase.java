@@ -330,6 +330,9 @@ public abstract class MetricsDbBase implements  Runnable
 	    this.stopped = true;	  
 	  }
 	  	  
+	  //derbydb does not support limit
+	  abstract protected boolean isLimitSupport();
+	  
 	  abstract protected String[] buildHostDDL();
 	  abstract protected String[] buildAlertSettingDDL();
 
@@ -874,7 +877,12 @@ public abstract class MetricsDbBase implements  Runnable
 		Connection conn = null;
 		PreparedStatement stmt = null;
 	    String sql = "delete from "+metricGroupName+" where dbid=? limit " + batchSize;
-		logger.log(Level.INFO, "To purge metrics "+metricGroupName+" for db "+dbid+" using batch of " + batchSize);
+	    if(!this.isLimitSupport())
+	    	sql = "delete from "+metricGroupName+" where dbid=?";
+	    if(this.isLimitSupport())
+	    	logger.log(Level.INFO, "To purge metrics "+metricGroupName+" for db "+dbid+" using batch of " + batchSize);
+	    else
+	    	logger.log(Level.INFO, "To purge metrics "+metricGroupName+" for db "+dbid);
 	    try
 	    {
 	  	  conn = createConnection(true);
@@ -884,7 +892,7 @@ public abstract class MetricsDbBase implements  Runnable
 	    	  stmt.setInt(1, dbid);
 	    	  stmt.execute();
 	    	  int total = stmt.getUpdateCount();
-	    	  if(total <= 0)
+	    	  if(total <= 0 || !this.isLimitSupport())
 	    		  break;
 	    	  else
 	    		  logger.log(Level.INFO, "To purge metrics "+metricGroupName+" for db "+dbid+": " + total);
@@ -2039,14 +2047,14 @@ public abstract class MetricsDbBase implements  Runnable
 			pstmt.setString(idx++, dbinfo.getHostName().toLowerCase());
 			pstmt.setString(idx++, dbinfo.getDbType());
 			pstmt.setString(idx++, String.valueOf(dbinfo.getInstance()));
-			if(dbinfo.getPortShort()>0)
+			if(dbinfo.getPortShort() != 0)
 			  pstmt.setShort(idx++, dbinfo.getPortShort());
 			else 
 			  pstmt.setNull(idx++, java.sql.Types.SMALLINT);
 			pstmt.setString(idx++, dbinfo.getDatabaseName());
 			pstmt.setString(idx++, dbinfo.isUseTunneling()?"1":"0");
 			pstmt.setString(idx++, dbinfo.getLocalHostName());
-			if(dbinfo.getLocalPortShort()>0)
+			if(dbinfo.getLocalPortShort() != 0)
 			  pstmt.setShort(idx++, dbinfo.getLocalPortShort());
 			else 
 			  pstmt.setNull(idx++, java.sql.Types.SMALLINT);

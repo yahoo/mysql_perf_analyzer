@@ -15,6 +15,7 @@
 <style>
   #scanner_cfg_tbl td{padding:10px;}
   #alert_info_tbl td{padding:10px;}
+  .snmpv3 {display:none;}
 </style>
 </head>
 <body>
@@ -28,6 +29,7 @@
     <ul>
       <li><a href="#scanner_div" title="Configure metrics storage, scheduling and retention">Metrics Gathering</a></li>
       <li><a href="#alerts_div" title="Customize alert thresholds, blackouts, etc">Alert Settings</a></li>
+      <li><a href="#snmp_div" title="Customize SNMP community and version settings">SNMP Settings</a></li>
     </ul>
     <div id="scanner_div"><!-- metrics gathering configuration -->
 <% if(u.isAdminUser()){ %>   
@@ -171,6 +173,63 @@
           </fieldset>  
       </div><!-- end of alert_settings_main -->    
     </div><!-- end of alert settings -->
+
+    <div id="snmp_div">
+      <div><!-- db selection -->
+        <table id="snmp_db_block" style="margin-bottom:6px;">
+          <tr><td>Group Name</td><td>DB Host</td><td>&nbsp;</td></tr>
+          <tr><td><select name="snmp_dbgroup" id="snmp_dbgroup" >
+                 <option value="">----</option>
+                 <c:forEach var="cluster" items="${mydbs}" varStatus="stat">
+    		    	<option value="${cluster}">${cluster}</option>
+  			     </c:forEach>          
+                 </select>&nbsp;<input type="button" value="Find" onclick="prepareDBSearch('snmp_dbgroup');"/>
+              </td>
+              <td><select  name="snmp_host" id="snmp_host">
+                    <option value=""> --- </option>
+                    <c:forEach var="db" items="${dbMap[sessionScope.group].instances}">
+    			      <option value="${db.hostName}">${db.hostName}</option>
+                    </c:forEach>
+                  </select>
+              </td>
+              <td>&nbsp;&nbsp;<input type="button" id="btn_snmp_settings" value="Retrieve Settings" /></td>
+          </tr>
+        </table>
+      </div><!-- end of db selection -->
+      <div id="snmp_settings">
+        <fieldset style="width:600px;">
+          <legend>SNMP Community/Version Settings</legend>
+            <table id="snmp_info_tbl">
+              <tr><td>Community: </td><td><input name="snmp_settings_community" id="snmp_settings_community" size="20" /></td></tr>
+              <tr><td>Version: </td><td><select name="snmp_settings_version" id="snmp_settings_version">
+                <option value="1">1</option>
+                <option value="2c" selected>2c</option>
+                <option value="3">3</option>                
+              </select></td></tr>
+              <tr class="snmpv3"><td>User Name(v3): </td><td><input name="snmp_settings_username" id="snmp_settings_username" size="20" /></td></tr>
+              <tr class="snmpv3"><td>Password(v3): </td><td><input type="password" name="snmp_settings_password" id="snmp_settings_password" size="20" /></td></tr>
+              <tr class="snmpv3"><td>Auth Protocol(v3): </td><td><select name="snmp_settings_authprotocol" id="snmp_settings_authprotocol">
+                <option value="">---</option>
+                <option value="MD5">MD4</option>
+                <option value="SHA">SHA</option>
+              </select></td></tr>
+              <tr class="snmpv3"><td>Privacy Passphrase(v3): </td><td><input type="password" name="snmp_settings_passphrase" id="snmp_settings_passphrase" size="20" /></td></tr>
+              <tr class="snmpv3"><td>Privacy Protocol(v3): </td><td><select name="snmp_settings_privacyprotocol" id="snmp_settings_privacyprotocol">
+                <option value="">---</option>
+                <option value="DES">DES</option>
+              </select></td></tr>
+              <tr class="snmpv3"><td>Context: </td><td><input name="snmp_settings_context" id="snmp_settings_context" size="20" /></td></tr>
+              <tr><td colspan="2">Notes: the default version is v2c and default community is public. If both group and host are specified, 
+                the setting will be applied to the specific host only. If only group name is specified, the setting will be applied to all
+                hosts in that group except the ones specified at host level. If none of the group and host is specified, the setting will be applied
+                to all groups/hosts except the ones specified at host or group level.
+              </td></tr>
+              <tr><td>&nbsp;</td><td><input type="button" id="snmp_settings_update" name="snmp_settings_update" value="Update" /></td></tr>
+            </table>
+          </fieldset>  
+      </div><!-- end of alert_settings_main -->    
+    </div><!-- end of snmp settings -->
+
   </div> <!-- end of settingsTab -->   
 </div><!-- end of main_div -->  
 
@@ -184,6 +243,20 @@ $('#settingsTab').tabs();
 $('#dbgroup').change(function()
   {
     query_hostlist_main(mydomval('dbgroup'), 'host', true);
+  }
+);
+$('#snmp_dbgroup').change(function()
+  {
+    query_hostlist_main(mydomval('snmp_dbgroup'), 'snmp_host', true);
+  }
+);
+
+$('#snmp_settings_version').change(function()
+  {
+    if(mydomval("snmp_settings_version") == "3")
+      $(".snmpv3").css("display", "table-row");
+    else
+      $(".snmpv3").css("display", "none");
   }
 );
 
@@ -245,6 +318,45 @@ function retrieveSettings()
   });
 }//retrieveSettings
 
+$('#btn_snmp_settings').click(function()
+{
+  retrieveSnmpSettings();
+});
+	
+function retrieveSnmpSettings()
+{
+  var mydata = "group="+escape(mydomval("snmp_dbgroup"))+"&host="+escape(mydomval("snmp_host")) + "&task=fetchsnmp";
+    
+  $.ajax({
+      url: 'settings.html',
+      method: 'POST',
+      data: mydata,
+      success:function(jsonObj)
+      {
+        if(jsonObj==null || jsonObj.status != 0)
+        {
+         	reportStatus(true, 'common_msg', 'Failed to retrieve snmp settings.');
+        }else
+        {
+          mydom("snmp_settings_community").value = jsonObj.community;
+          setSelect("snmp_settings_version", jsonObj.version);
+          if(jsonObj.version == "3")
+          {
+            mydom("snmp_settings_username").value = jsonObj.username;
+            if(jsonObj.context != null)mydom("snmp_settings_context").value = jsonObj.context;
+            setSelect("snmp_settings_authprotocol", jsonObj.authprotocol);
+            setSelect("snmp_settings_privacyprotocol", jsonObj.privacyprotocol);
+            $('.snmpv3').css("display", "table-row");            
+          }else
+            $('.snmpv3').css("display", "none");
+<% if(!u.isAdminUser()) {%>
+               mydom("snmp_settings_update").disabled = true; 
+<% } %>                
+        //showHideOne("snmp_settings", "block");
+        }        
+      }
+  });
+}//retrieveSnmpSettings
 
 <% if (u.isAdminUser()) {%>
 // most functions here are only for admin user
@@ -281,6 +393,40 @@ function updateSettings()
       });
 }
 
+$('#snmp_settings_update').click(function(){
+  updateSnmpSettings();
+});
+	
+function updateSnmpSettings()
+{
+      var mydata = "group="+escape(mydomval("snmp_dbgroup"))+"&host="+escape(mydomval("snmp_host")) + "&task=updatesnmp";
+   		  mydata += "&community="+ escape(mydomval("snmp_settings_community"));
+   		  mydata += "&version="+ mydomval("snmp_settings_version");
+   		  if(mydomval("snmp_settings_version") == "3")
+   		  {
+   		    mydata += "&username="+ escape(mydomval("snmp_settings_username"));
+   		    mydata += "&password="+ escape(mydomval("snmp_settings_password"));
+   		    mydata += "&authprotocol="+ escape(mydomval("snmp_settings_authprotocol"));
+   		    mydata += "&privacypassphrase="+ escape(mydomval("snmp_settings_passphrase"));
+   		    mydata += "&privacyprotocol="+ escape(mydomval("snmp_settings_privacyprotocol"));
+   		    mydata += "&context="+ escape(mydomval("snmp_settings_context"));
+   		  }
+      $.ajax({
+        url: 'settings.html',
+        method: 'POST',
+        data: mydata,
+        success:function(jsonObj)
+        {
+              if(jsonObj==null)
+              {
+              	reportStatus(true, 'common_msg', 'Failed to update snmp settings.');
+              }else
+              {
+                reportStatus((jsonObj.resp.status != 0), 'common_msg', jsonObj.resp.message);
+              }
+        }
+      });
+}
 $('#alerts_enabled').click(function()
 {
   enableDisableFeature({url:"alerts.html", feature:"alerts", field:"alerts_enabled", msgField: "common_msg", group:"dbgroup", host: "host"});

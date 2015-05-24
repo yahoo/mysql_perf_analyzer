@@ -29,16 +29,21 @@
     <li><strong>Port Number</strong>: the port number of MySQL TCP listener, usually it is 3306.</li>
     <li><strong>SSH Tunneling</strong>: if the database cannot be accessed directly and SSH tunneling has to be used, for example, using PUTTY or openSSH, this box should be checked. 
         It is usually used when the Analyzer runs from a desktop/laptop. When checked, please also provide <strong>Local Host Name</strong> (usually localhost) and <strong>Local Port</strong>.</li>
-    <li><strong>Add DB Credentail</strong>: provide database user account and password to access the database. The password will be stored in encrypted format.
-    The account needs at least PROCESS privilege to access INFORMATION_SCHEMA and INNODB information. 
-    To check replication status, the account needs REPLCATION_CLIENT privileges. 
-    To access PERFORMANCE_SCHEMA, at least SELECT on PERFORMANCE_SCHEMA is required.
-    To access meta data such as database and table information, "SHOW DATABASES" privilege is required.
-    To access table and view information of a given database, "SELECT" privilege on the given database is required.
-    To access view definition, "SHOW VIEW" privilege on the given database is required.
+    <li><strong>Add DB Credential</strong>: provide database user account and password to access the database. The password will be stored in encrypted format.
+      <ol type="a">
+        <li>The account needs at least PROCESS privilege to access INFORMATION_SCHEMA and INNODB information.</li>
+        <li>To check replication status, the account needs REPLCATION_CLIENT privileges.</li> 
+        <li>To access PERFORMANCE_SCHEMA, at least SELECT on PERFORMANCE_SCHEMA is required.</li>
+        <li>To access meta data such as database and table information, "SHOW DATABASES" privilege is required.</li>
+        <li>To access table and view information of a given database, "SELECT" privilege on the given database is required.</li>
+        <li>To access view definition, "SHOW VIEW" privilege on the given database is required.</li>
+      </ol>
     </li>
     <li><strong>Test Connection?</strong>: if checked, upon submit, the Analyzer will first test if the database account can be used to access the target database.</li>
-   </ol> 
+    <li style="color:read;"><strong>Notes</strong>: For the first time to  add a server into a group, make sure to check both "Add DB Credential" and "Test Connection" boxes.
+      If a server is added by other user, you can use Credential tab to add database account for your own usages.
+    </li>
+   </ol>
   </p>   
 </body>
 </html>

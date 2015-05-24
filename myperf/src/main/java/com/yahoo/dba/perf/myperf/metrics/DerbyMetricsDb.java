@@ -178,5 +178,9 @@ protected String[] buildAlertSettingDDL() {
 	   	     "create unique index IDX_METRICS_SUBSCRIPT1 on METRICS_SUBSCRIPT (MGROUP, MSUBGROUP)"	   	     
 	    };
   }
+  @Override
+  protected boolean isLimitSupport() {
+	return false;
+  }
 }
   

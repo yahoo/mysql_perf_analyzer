@@ -32,6 +32,12 @@ public class SettingsController extends MyPerfBaseController
 	if("update".equalsIgnoreCase(task))
 	{
 	  return handleUpdate(req,resp);
+	}else if("updatesnmp".equalsIgnoreCase(task))
+	{
+      return handleUpdateSNMP(req,resp);	  
+	}else if("fetchsnmp".equalsIgnoreCase(task))
+	{
+	      return handleFetchSNMP(req,resp);	  
 	}
 	else if(("start".equalsIgnoreCase(task)||"restart".equalsIgnoreCase(task))&& appUser.isAdminUser())
 	{
@@ -76,6 +82,56 @@ public class SettingsController extends MyPerfBaseController
 	return mv;
  }
 	
+  private ModelAndView handleFetchSNMP(HttpServletRequest req,
+		HttpServletResponse resp) {
+	String dbgroup = req.getParameter("group");
+	String host = req.getParameter("host");
+	SNMPSettings.SNMPSetting snmpSetting = this.frameworkContext.getSnmpSettings().getHostSetting(dbgroup, host);
+	ModelAndView mv = new ModelAndView(this.jsonView);
+	String community = snmpSetting == null? SNMPSettings.SNMPSetting.DEFAULT_COMMUNITY: snmpSetting.getCommunity();
+	String ver = snmpSetting == null? SNMPSettings.SNMPSetting.DEFAULT_VERSION: snmpSetting.getVersion();
+	if(community == null || community.isEmpty())community = SNMPSettings.SNMPSetting.DEFAULT_COMMUNITY;
+	if(ver == null || ver.isEmpty())ver = SNMPSettings.SNMPSetting.DEFAULT_VERSION;
+	StringBuilder sb = new StringBuilder();
+	sb.append("{\"status\":0,\"message\":\"OK\", \"community\":\"").append(community)
+	  .append("\",\"version\":\"").append(ver).append("\"");
+	if("3".equals(ver))
+	{
+		if(snmpSetting.getUsername()!=null)
+			sb.append(",\"username\":\"").append(snmpSetting.getUsername()).append("\"");
+		if(snmpSetting.getAuthProtocol()!=null)
+			sb.append(",\"authprotocol\":\"").append(snmpSetting.getAuthProtocol()).append("\"");
+		if(snmpSetting.getPrivacyProtocol()!=null)
+			sb.append(",\"privacyprotocol\":\"").append(snmpSetting.getPrivacyProtocol()).append("\"");
+		if(snmpSetting.getContext()!=null)
+			sb.append(",\"context\":\"").append(snmpSetting.getContext()).append("\"");
+		//logger.info("Ommit pwd: "+snmpSetting.getPassword()+", "+snmpSetting.getPrivacyPassphrase());
+	}
+	sb.append("}");
+    mv.addObject("json_result", sb.toString());
+	return mv;
+}
+
+private ModelAndView handleUpdateSNMP(HttpServletRequest req,
+		HttpServletResponse resp) {
+	boolean successful = this.frameworkContext.getSnmpSettings().updateSnmpSetting(
+			req.getParameter("group"), 
+			req.getParameter("host"), 
+			req.getParameter("community"), 
+			req.getParameter("version"),
+			req.getParameter("username"),
+			req.getParameter("password"),
+			req.getParameter("authprotocol"),
+			req.getParameter("privacypassphrase"),
+			req.getParameter("privacyprotocol"),
+			req.getParameter("context")			
+			);
+	if(successful)
+		return this.respondSuccess("SNMP settings have been updated", req);
+	else
+		return this.respondFailure("Failed to update SNMP settings.", req);
+  }
+
   private ModelAndView handleUpdate(HttpServletRequest req, HttpServletResponse resp)
   {
 	//AutoScanner scanner = this.frameworkContext.getAutoScanner();

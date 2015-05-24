@@ -56,6 +56,8 @@ public class SNMPQueryProcessor implements CustomQueryProcessor{
 		try
 		{
 		  client = new SNMPClient(qps.getHost());
+	      client.setSnmpSetting(context.getSnmpSettings()
+	    		  .getHostSetting(dbinfo.getDbGroupName(), dbinfo.getHostName()));
 		  client.start();
 		  if("disk".equalsIgnoreCase(cat))
 		  {
@@ -93,33 +95,54 @@ public class SNMPQueryProcessor implements CustomQueryProcessor{
 			  ResultList sysList = querySystemData(client, qps);
 			  
 			  if(sysList == null)return null; //don't expect no system data
-			  ResultList diskList = queryDisk(client, qps);;
-			  ResultList netList = queryNetwork(client, qps);
-			  ResultList storageList  = queryStorage(client, qps);
-			  //ResultList mysqldList  = queryMysqldData(client, qps);
-			  if(diskList != null)
+			  try
 			  {
+   			    ResultList diskList = queryDisk(client, qps);;
+			    //ResultList mysqldList  = queryMysqldData(client, qps);
+			    if(diskList != null)
+			    {
 				  for(ResultRow row: diskList.getRows())
 				  {
 					  row.setColumnDescriptor(sysList.getColumnDescriptor());
 					  sysList.addRow(row);
 				  }
-			  }
-			  if(netList != null)
+			    }
+			  }catch(Exception ex)
 			  {
+				  logger.log(Level.INFO, "Failed to query disk data", ex);
+				  return sysList;
+			  }
+			  try
+			  {
+  			    ResultList netList = queryNetwork(client, qps);
+			    if(netList != null)
+			    {
 				  for(ResultRow row: netList.getRows())
 				  {
 					  row.setColumnDescriptor(sysList.getColumnDescriptor());
 					  sysList.addRow(row);
 				  }
-			  }
-			  if(storageList != null)
+			    }
+			  }catch(Exception ex)
 			  {
+				  logger.log(Level.INFO, "Failed to query netif data", ex);
+				  return sysList;
+			  }
+			  try
+			  {
+  			    ResultList storageList  = queryStorage(client, qps);
+			    if(storageList != null)
+			    {
 				  for(ResultRow row: storageList.getRows())
 				  {
 					  row.setColumnDescriptor(sysList.getColumnDescriptor());
 					  sysList.addRow(row);
 				  }
+			    }
+			  }catch(Exception ex)
+			  {
+				  logger.log(Level.INFO, "Failed to query storage data", ex);
+				  return sysList;
 			  }
 			  //if(mysqldList != null)
 			  //{

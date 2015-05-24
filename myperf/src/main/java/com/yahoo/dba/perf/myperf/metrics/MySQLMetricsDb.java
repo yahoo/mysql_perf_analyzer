@@ -161,5 +161,9 @@ public class MySQLMetricsDb  extends MetricsDbBase implements java.io.Serializab
 	    return new String[]{"CREATE TABLE METRICS_SUBSCRIPT ("
 	     + "ID INT NOT NULL AUTO_INCREMENT, DBGROUP VARCHAR(30) NOT NULL, HOSTNAME VARCHAR(100), MGROUP VARCHAR(30) NOT NULL,  MSUBGROUP VARCHAR(30), PRIMARY KEY(ID), UNIQUE KEY (DBGROUP, HOSTNAME, MGROUP, MSUBGROUP), KEY (MGROUP, MSUBGROUP))"};
 	}
+	@Override
+	protected boolean isLimitSupport() {
+		return true;
+	}
 
 }

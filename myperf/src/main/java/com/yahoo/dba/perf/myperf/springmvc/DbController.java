@@ -161,7 +161,11 @@ public class DbController extends MyPerfBaseController
 			message = "Database server (" +db.getDbGroupName()+", "+origHostName+") has been added or updated, "+count+" servers.";
 		}
 		//store db user name or password if specified
-		if(db.isStoreCredential())
+		//or if this user has none stored
+		DBCredential mycred = DBUtils.findDBCredential(this.frameworkContext, db.getDbGroupName(), WebAppUtil.retrieveUserFromRequest(request));
+		boolean recordPwd = (mycred == null && db.isTestConnection())? true: false;
+		
+		if(db.isStoreCredential() || recordPwd)
 		{
 			DBCredential cred = new DBCredential();
 			cred.setAppUser(WebAppUtil.findUserFromRequest(request));
