@@ -717,7 +717,7 @@ public class MetaDB implements java.io.Serializable{
 	  {
 	    pstmt = conn.prepareStatement(sql2);
 		pstmt.setString(1, cred.getAppUser());
-		pstmt.setString(2, cred.getDbGroupName());
+		pstmt.setString(2, cred.getDbGroupName().toLowerCase());
 		pstmt.setString(3, cred.getUsername());
 		pstmt.setString(4, keyTool.encrypt(pString));
 		pstmt.execute();

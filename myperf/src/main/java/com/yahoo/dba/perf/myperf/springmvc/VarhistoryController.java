@@ -140,7 +140,8 @@ public class VarhistoryController extends MyPerfBaseController
 					rList.addRow(row);			  
 
 				}
-			} 
+			}
+			if(ch !=  null)
 			{
 				ConfigBlock cb = ch.getStartingConfig();
 				
@@ -170,6 +171,10 @@ public class VarhistoryController extends MyPerfBaseController
 					rList.addRow(row);
 				}
 				
+			}else
+			{
+				status = Constants.STATUS_BAD;
+				message = "No variable configuration history has been recorded yet.";
 			}
 
 		}catch(Throwable ex)

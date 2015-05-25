@@ -33,8 +33,12 @@ public class DbController extends MyPerfBaseController
   {
     DBInstanceInfo db = new DBInstanceInfo();
 	db.setDbType(request.getParameter("dbtype"));
-	db.setDbGroupName(request.getParameter("dbGroupName"));
-	db.setHostName(request.getParameter("hostName"));
+	String grp = request.getParameter("dbGroupName");
+	if(grp != null)grp = grp.trim().toLowerCase();
+	db.setDbGroupName(grp);
+	String host = request.getParameter("hostName");
+	if(host != null)host = host.trim().toLowerCase();
+	db.setHostName(host);
 	db.setPort(request.getParameter("port"));
 	db.setDatabaseName(request.getParameter("databaseName"));
 	db.setUseTunneling("1".equals(request.getParameter("useTunneling")));
