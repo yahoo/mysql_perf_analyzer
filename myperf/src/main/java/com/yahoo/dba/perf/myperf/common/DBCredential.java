@@ -5,6 +5,8 @@
  */
 package com.yahoo.dba.perf.myperf.common;
 
+import com.yahoo.dba.perf.myperf.meta.KeyTool;
+
 /** 
  * Database access user name and password
  * @author xrao
@@ -19,6 +21,8 @@ public class DBCredential implements java.io.Serializable{
   private String password;//db password
   private String dbGroupName;//the name of the database group
 	
+  private String encrypted; //encypted password
+  
   public DBCredential()
   {		
   }
@@ -64,6 +68,7 @@ public class DBCredential implements java.io.Serializable{
 	cred.setDbGroupName(this.dbGroupName);
 	cred.setUsername(this.username);
 	cred.setPassword(this.password);
+	cred.setEncrypted(encrypted);
 	return cred;
   }
 
@@ -76,5 +81,26 @@ public class DBCredential implements java.io.Serializable{
   {
 		this.dbGroupName = dbname;
   }
-	
+
+  public String getEncrypted() {
+	return encrypted;
+  }
+
+  public void setEncrypted(String encrypted) {
+	this.encrypted = encrypted;
+  }
+
+  /**
+   * Invoke this method if password is encrypted
+   * @param keyTool
+   */
+  public void decryptPassword(KeyTool.DesEncrypter keyTool)
+  {
+	  if(encrypted == null)
+		  return;
+	  String credString = keyTool.decrypt(encrypted);
+	  credString = credString.substring(0, credString.lastIndexOf("::"));
+	  credString = credString.substring(credString.lastIndexOf("::")+2);
+	  this.password = credString;
+  }  
 }

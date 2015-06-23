@@ -639,12 +639,12 @@ public abstract class MetricsDbBase implements  Runnable
 	    //final store after shutdown
 	    store();
 	    DBUtils.close(storeConnection);
+	    storeConnection = null;
 	    logger.info("metrics db stopped");
 	  }
 	  
 	  protected void store()
 	  {
-		java.sql.PreparedStatement stmt = null;
 		try
 		{
 	      for(String s: this.dataQueues.keySet())
@@ -660,16 +660,19 @@ public abstract class MetricsDbBase implements  Runnable
 	        }
 	        if(q2.size()>0)
 	        {
+	    	  java.sql.PreparedStatement stmt = null;
 	          logger.fine("Store "+q2.size()+" "+s+" metric records.");
 	          long currTime = System.currentTimeMillis();
-	          if(storeConnection==null)storeConnection = this.createConnection(true);
-	          else if(currTime - this.lastConnTime >30000)
+	          if(currTime - this.lastConnTime >30000)
 	          {
 	        	  DBUtils.close(storeConnection);
-	        	  storeConnection = this.createConnection(true);//create a new connection
+	        	  storeConnection = null;
 	          }
-	          this.lastConnTime = currTime;
-
+	          if(storeConnection == null)
+	          {
+	        	  storeConnection = this.createConnection(true);
+  	              this.lastConnTime = currTime;
+	          }
 	          MetricsGroup mg = this.metricsGroups.get(s);//generic metrics
 	          if(mg.isStoreInCommonTable())
 	          {
@@ -680,58 +683,59 @@ public abstract class MetricsDbBase implements  Runnable
 	          }
 	          //builtin metrics
 	          String sql = this.insertSQL.get(s);
-	          stmt = storeConnection.prepareStatement(sql);
-	          for(MetricsData mdata:q2)
-	          {
-	        	ByteBuffer buf = mdata.data;  
-	            int idx = 1;
-	            int pos = 0;
-	            stmt.setInt(idx++, buf.getInt(pos));pos+=4;//dbid
-	            stmt.setInt(idx++, buf.getInt(pos));pos+=4;//snap_id
-	            if(mg.getKeyColumn() != null && !mg.getKeyColumn().isEmpty())
+	            stmt = storeConnection.prepareStatement(sql);
+	            for(MetricsData mdata:q2)
 	            {
+	        	  ByteBuffer buf = mdata.data;  
+	              int idx = 1;
+	              int pos = 0;
+	              stmt.setInt(idx++, buf.getInt(pos));pos+=4;//dbid
+	              stmt.setInt(idx++, buf.getInt(pos));pos+=4;//snap_id
+	              if(mg.getKeyColumn() != null && !mg.getKeyColumn().isEmpty())
+	              {
 	            	if (mdata.dataKey == null)
 	            		stmt.setNull(idx++, java.sql.Types.VARCHAR);
 	            	else
 	            		stmt.setString(idx++, mdata.dataKey);
-	            }
-	            stmt.setString(idx++, sdf.format(new java.util.Date(buf.getLong(pos))));pos+=8;//timestamp
-	            stmt.setInt(idx++, buf.getInt(pos));pos+=4;//sql time
+	              }
+	              stmt.setString(idx++, sdf.format(new java.util.Date(buf.getLong(pos))));pos+=8;//timestamp
+	              stmt.setInt(idx++, buf.getInt(pos));pos+=4;//sql time
 	            
-	            List<Metric> ms = mg.getMetrics();
-	            int len = ms.size();
-				for(int i=0;i<len;i++)
-				{
-				  Metric m = ms.get(i);
-				  if(m.getDataType()==MetricDataType.BYTE)
+	              List<Metric> ms = mg.getMetrics();
+	              int len = ms.size();
+				  for(int i=0;i<len;i++)
 				  {
-				    stmt.setInt(idx++, buf.get(pos));pos++;
-				  }else if(m.getDataType()==MetricDataType.SHORT)
-				  {
+				    Metric m = ms.get(i);
+				    if(m.getDataType()==MetricDataType.BYTE)
+				    {
+				      stmt.setInt(idx++, buf.get(pos));pos++;
+				    }else if(m.getDataType()==MetricDataType.SHORT)
+				    {
 					 stmt.setInt(idx++, buf.getShort(pos));pos+=2;				 
-				  }else if(m.getDataType()==MetricDataType.INT)
-				  {
+				    }else if(m.getDataType()==MetricDataType.INT)
+				    {
 					 stmt.setInt(idx++, buf.getInt(pos));pos+=4;
-				  }else if(m.getDataType()==MetricDataType.LONG)
-				  {
+				    }else if(m.getDataType()==MetricDataType.LONG)
+				    {
 					  stmt.setLong(idx++,buf.getLong(pos));pos+=8;
-				  }else if(m.getDataType()==MetricDataType.FLOAT)
-				  {
+				    }else if(m.getDataType()==MetricDataType.FLOAT)
+				    {
 					  stmt.setString(idx++, df.format(buf.getFloat(pos)));pos+=4;
-				  }else if(m.getDataType()==MetricDataType.DOUBLE)
-				  {
+				    }else if(m.getDataType()==MetricDataType.DOUBLE)
+				    {
 					  stmt.setString(idx++, df.format(buf.getDouble(pos)));pos+=8;
-				  }					
-			    }//one row
-		        stmt.addBatch();
-	          }//for loop
-	          try{
-	        	  stmt.executeBatch();
-	          }catch(Exception iex)
-	          {
-	        	  logger.warning("Failed: "+sql);
-	        	  throw iex;
-	          }
+				    }					
+			      }//one row
+		          stmt.execute();
+		          stmt.clearBatch();
+	            }//for loop
+	            //try{
+	        	//  stmt.executeBatch();
+	            //}catch(Exception iex)
+	            //{
+	        	// logger.warning("Failed: "+sql);
+	        	//  throw iex;
+	            //}
 	          //storeConnection.commit();
 	          this.lastConnTime = System.currentTimeMillis();
 	          stmt.close(); stmt = null;
@@ -741,11 +745,16 @@ public abstract class MetricsDbBase implements  Runnable
 	    }catch(Exception ex)
 	    {
 	      logger.log(Level.WARNING, "Exception when store metrics", ex);
+	      if(ex instanceof com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException)
+	      {
+	    	  DBUtils.close(storeConnection);
+	    	  storeConnection = null;
+	      }
 	      if(storeConnection!=null){try{storeConnection.rollback();}catch(Exception iex){}}
 	    }
 		finally
 	    {
-		  DBUtils.close(stmt);
+		  //DBUtils.close(stmt);
 	      //DBUtils.close(conn);
 	    }	  
 	  }

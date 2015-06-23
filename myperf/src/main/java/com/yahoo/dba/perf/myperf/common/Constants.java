@@ -29,5 +29,7 @@ public class Constants
   public static final String URL_PATH_START_TS = "START_TS";
   public static final String URL_PATH_END_TS = "END_TS";
   public static final String URL_PATH_ALERT_TYPE = "ALERT_TYPE";
-  
+
+  public static final String SESSION_DEBUG="sess_debug";
+
 }

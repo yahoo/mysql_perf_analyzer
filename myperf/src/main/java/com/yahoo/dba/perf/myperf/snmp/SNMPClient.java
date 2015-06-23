@@ -346,7 +346,7 @@ public class SNMPClient
 			target.setCommunity(new OctetString(this.community));
 		target.setAddress(targetAddress);
 		target.setRetries(2);
-		target.setTimeout(1500);
+		target.setTimeout(5000);
 		target.setVersion(this.getVersionInt());
 		return target;
 	}
@@ -377,8 +377,8 @@ public class SNMPClient
 		return target;
 	}
 
-    public static final String DISK_TABLE_OID="1.3.6.1.4.1.2021.13.15.1.1";
-    public static final String DISK_TABLE_DEVICE_OID="1.3.6.1.4.1.2021.13.15.1.1.2";
+    public static final String DISK_TABLE_OID        ="1.3.6.1.4.1.2021.13.15.1.1";
+    public static final String DISK_TABLE_DEVICE_OID ="1.3.6.1.4.1.2021.13.15.1.1.2";
     public static final String[] DISK_TABLE_ENTRIES = {"",
     													"diskIOIndex",
     													"diskIODevice",
@@ -394,7 +394,7 @@ public class SNMPClient
     													"diskIONReadX",
     													"diskIONWrittenX"};
     
-	public List<SNMPTriple> getDiskData(String device) throws IOException {
+    public List<SNMPTriple> getDiskData(String device) throws IOException {
 		
 		int index = this.getDiskIndex(device);
 		if(index<0)
@@ -426,17 +426,19 @@ public class SNMPClient
 	
    public Map<String, List<SNMPTriple>> getMultiDiskData() throws IOException {
 		
-		Map<Integer, String> indexes = this.getDiskIndexes();
 		Map<String, List<SNMPTriple>> resMap = new HashMap<String, List<SNMPTriple>>();
+		Map<Integer, String> indexes = this.getDiskIndexes();
 		if(indexes == null || indexes.size() == 0)
 			return  resMap;
 		
 		logger.fine("Query disk stats");
 		PDU pdu = createPDU();
+		int reqSize = 0;
 		for(Map.Entry<Integer, String> entry: indexes.entrySet())
 		{
 			for ( int i=1; i< DISK_TABLE_ENTRIES.length; i++) {
 				if(DISK_TABLE_ENTRIES[i].length()==0)continue;
+				reqSize++;
 				pdu.add(new VariableBinding(new OID("."+DISK_TABLE_OID+"."+i+"."+entry.getKey())));
 			}
 		}
@@ -444,7 +446,13 @@ public class SNMPClient
 		Map<String, String> res = new HashMap<String, String>(13);
 		ResponseEvent event = snmp.send(pdu, getTarget(), null);
 		if(event != null) {
-			VariableBinding[] binds = event.getResponse().toArray();
+			PDU resp = event.getResponse();
+			if(resp == null)
+			{
+				logger.info("Unexpected snmp response: "+event+", request size " + reqSize );
+				return resMap;
+			}
+			VariableBinding[] binds = resp.toArray();
 			for(VariableBinding b: binds)
 				res.put(b.getOid().toString(), b.getVariable().toString());
 			//logger.info(res.toString());
@@ -472,7 +480,9 @@ public class SNMPClient
 
          for (TableEvent event : events) {
            if(event.isError()) {
-              throw new RuntimeException(event.getErrorMessage());
+          	 logger.warning("SNMP event error: "+event.getErrorMessage());
+          	 continue;
+                //throw new RuntimeException(event.getErrorMessage());
            }
            for(VariableBinding vb: event.getColumns()) {
         	   String key = vb.getOid().toString();
@@ -503,7 +513,9 @@ public class SNMPClient
 
          for (TableEvent event : events) {
            if(event.isError()) {
-              throw new RuntimeException(event.getErrorMessage());
+          	 logger.warning("SNMP event error: "+event.getErrorMessage());
+          	 continue;
+                //throw new RuntimeException(event.getErrorMessage());
            }
            
            for(VariableBinding vb: event.getColumns()) {
@@ -570,7 +582,9 @@ public class SNMPClient
 
          for (TableEvent event : events) {
            if(event.isError()) {
-              throw new RuntimeException(event.getErrorMessage());
+          	 logger.warning("SNMP event error: "+event.getErrorMessage());
+          	 continue;
+                //throw new RuntimeException(event.getErrorMessage());
            }
            for(VariableBinding vb: event.getColumns()) {
         	   String key = vb.getOid().toString();
@@ -594,6 +608,61 @@ public class SNMPClient
    }
 
    public Map<String, List<SNMPTriple>> getNetIfData(String device) throws IOException {
+		
+	    Map<Integer, String> ifMaps = new HashMap<Integer, String> ();
+		Map<String, List<SNMPTriple>> resMap = new HashMap<String, List<SNMPTriple>>();
+		Map<String, String> res = new HashMap<String, String>();
+        TableUtils tUtils = new TableUtils(snmp, new DefaultPDUFactory());
+        
+        logger.fine("Query "+this.address+" for network interface, excluding lo");
+         @SuppressWarnings("unchecked")
+         List<TableEvent> events = tUtils.getTable(getTarget(), new OID[]{new OID("."+IF_TABLE_OID)}, null, null);
+
+         for (TableEvent event : events) {
+           if(event.isError()) {
+          	 logger.warning("SNMP event error: "+event.getErrorMessage()+", already returned: "+ifMaps);
+          	 continue;
+                //throw new RuntimeException(event.getErrorMessage());
+           }
+           for(VariableBinding vb: event.getColumns()) {
+        	   String key = vb.getOid().toString();
+        	   String value = vb.getVariable().toString();
+        	   res.put(key, value);
+        	   if(key.startsWith(IF_TABLE_DEVICE_OID+"."))
+        	   {
+        	     if(device!=null && !device.isEmpty() && !value.equalsIgnoreCase(device))
+        		   continue;
+        	     if(value!=null && !value.equalsIgnoreCase("lo"))
+        	     {
+        	       logger.fine("Find device OID entry: "+key);
+        	         int index = -1;
+        	         String[] strs = key.split("\\.");
+        	         try
+        	         {
+        	        	 index = Integer.parseInt(strs[strs.length-1]);
+        	        	 ifMaps.put(index, value);
+        	         }catch(Exception ex){}
+        	     }
+             }
+           }//for var
+         }//for event
+		
+		for(Map.Entry<Integer, String> entry: ifMaps.entrySet())
+		{
+			int index = entry.getKey();
+			String ifName = entry.getValue();
+			//ignore the case with no incoming and no outgoing traffic
+			if("0".equals(res.get(IF_TABLE_OID+".6."+index)) && "0".equals(res.get(IF_TABLE_OID+".10."+index)))continue;
+			resMap.put(ifName, new ArrayList<SNMPTriple>(IF_TABLE_ENTRIES.length));
+			for(int i=1;i<IF_TABLE_ENTRIES.length; i++) {
+			    if(IF_TABLE_ENTRIES[i].length()==0)continue;
+			    resMap.get(ifName).add(new SNMPTriple("."+IF_TABLE_OID+"."+i+"."+index, IF_TABLE_ENTRIES[i], res.get(IF_TABLE_OID+"."+i+"."+index)));
+			}
+		}
+         return resMap;
+   }
+
+   public Map<String, List<SNMPTriple>> getNetIfData3(String device) throws IOException {
 		
 		Map<String, List<SNMPTriple>> resMap = new HashMap<String, List<SNMPTriple>>();
 		Map<Integer, String> indexMap = this.getNetIfIndexes(device);
@@ -634,7 +703,7 @@ public class SNMPClient
 		}
          return resMap;
    }
-	
+
    public static final String STORAGE_TABLE_OID         = "1.3.6.1.2.1.25.2.3.1";
    public static final String STORAGE_TABLE_DEVICE_OID  = "1.3.6.1.2.1.25.2.3.1.1";
    public static final String[] STORAGE_TABLE_ENTRIES = {"",
@@ -710,7 +779,9 @@ public class SNMPClient
        
        for (TableEvent event : events) {
          if(event.isError()) {
-            throw new RuntimeException(event.getErrorMessage());
+        	 logger.warning("SNMP event error: "+event.getErrorMessage());
+        	 continue;
+              //throw new RuntimeException(event.getErrorMessage());
          }
          for(VariableBinding vb: event.getColumns()) {
       	   String key = vb.getOid().toString();
@@ -742,7 +813,9 @@ public class SNMPClient
 
         for (TableEvent event : events) {
           if(event.isError()) {
-             throw new RuntimeException(event.getErrorMessage());
+         	 logger.warning("SNMP event error: "+event.getErrorMessage());
+         	 continue;
+               //throw new RuntimeException(event.getErrorMessage());
           }
           for(VariableBinding vb: event.getColumns()) {
        	   String key = vb.getOid().toString();
@@ -808,8 +881,8 @@ public class SNMPClient
 		}
         return resList;
    }
-   
-	public Map<String, String> queryMysqld() throws IOException 
+
+   public Map<String, String> queryMysqld() throws IOException 
 	{
 		logger.fine("Query mysqld for "+address);
 		Map<String, String> resMap = null;

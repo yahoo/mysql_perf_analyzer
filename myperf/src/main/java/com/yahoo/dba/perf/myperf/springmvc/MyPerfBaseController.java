@@ -40,7 +40,11 @@ public abstract class MyPerfBaseController extends AbstractController{
 	protected ModelAndView handleRequestInternal(HttpServletRequest req,
 				HttpServletResponse resp) throws Exception 
 	{
-		logger.info("receive url path: "+req.getContextPath()+","+req.getRequestURI()+", "
+		setupDebug(req);
+		
+		boolean debug = this.isDebug(req);
+		
+		if(debug)logger.info("receive url path: "+req.getContextPath()+","+req.getRequestURI()+", "
 	                +req.getServletPath()+", parameters: "+req.getQueryString());
 	    
 		AppUser user =retrieveAppUser(req);
@@ -60,7 +64,7 @@ public abstract class MyPerfBaseController extends AbstractController{
 		
 		return handleRequestImpl(req, resp);
 	}
-	
+
 	//Create an MV to ack failure
 	protected ModelAndView respondFailure(String message, HttpServletRequest req)
 	{
@@ -118,6 +122,36 @@ public abstract class MyPerfBaseController extends AbstractController{
 		this.requireLogin = requireLogin;
 	}
 
+	/**
+	 * Whether debug is enabled at session level
+	 * @param req
+	 * @return
+	 */
+	protected boolean isDebug(HttpServletRequest req)
+	{
+		//if system level use debug, return true
+		if(frameworkContext.isDebug())return true;
+		if(req.getSession()!=null)
+		{
+		  try
+		  {
+		    if("1".equals(req.getSession().getAttribute(Constants.SESSION_DEBUG)))
+		    		return true;
+		  }catch(Exception ex){}
+		}
+
+		return false;
+	}
+
+	private void setupDebug(HttpServletRequest req)
+	{
+		String paramString = req.getQueryString();
+		if(paramString != null && (paramString.indexOf("debug=y") >=0 || paramString.indexOf("DEBUG=Y") >=0 ))
+			req.getSession().setAttribute(Constants.SESSION_DEBUG, "1");
+		else if(paramString != null && (paramString.indexOf("debug=n") >=0 || paramString.indexOf("DEBUG=N") >=0 ))
+			req.getSession().removeAttribute(Constants.SESSION_DEBUG);
+		  
+	}
 	static protected AppUser retrieveAppUser(HttpServletRequest req)
 	{
 	    return AppUser.class.cast(req.getSession().getAttribute(AppUser.SESSION_ATTRIBUTE));

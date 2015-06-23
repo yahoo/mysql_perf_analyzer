@@ -13,7 +13,9 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,6 +35,10 @@ public class MetaDB implements java.io.Serializable{
   private KeyTool.DesEncrypter keyTool = new KeyTool.DesEncrypter();
   private String dbkey;
 
+  //store  credentials so we no need to go to db everytime
+  //the key is owner||dbname
+  private Map<String, DBCredential> credCache = java.util.Collections.synchronizedMap(new HashMap<String, DBCredential>());
+  
   public static final String DEFAULT_USER = "myperf";
   public MetaDB()
   {
@@ -45,6 +51,7 @@ public class MetaDB implements java.io.Serializable{
 	}
   }
 
+ 
   public String enc(String str)
   {
 	  return keyTool.encrypt(str);
@@ -566,11 +573,22 @@ public class MetaDB implements java.io.Serializable{
    */
   public DBCredential retrieveDBCredential(String owner, String dbGroupName)
   {
-    Connection conn = null;
+	Connection conn = null;
 	try
 	{
-	  conn = getConnection();
-	  return retrieveDBCredential(conn, owner, dbGroupName);
+      if(!this.credCache.containsKey(owner + "||" + dbGroupName))
+	  {
+	    conn = getConnection();
+  	    DBCredential cred =  retrieveDBCredential(conn, owner, dbGroupName);
+	    if(cred != null)this.credCache.put(owner + "||" +dbGroupName, cred);
+	  }  
+      DBCredential saved = this.credCache.get(owner + "||" + dbGroupName);
+      if(saved != null)//return a decrypted copy
+      {
+    	  saved = saved.copy();
+    	  saved.decryptPassword(keyTool);
+      }
+      return saved;
 	}catch(Exception ex)
 	{
 	  logger.log(Level.SEVERE,"Exception", ex);
@@ -603,14 +621,16 @@ public class MetaDB implements java.io.Serializable{
 		cred.setDbGroupName(rs.getString("DBGROUPNAME"));
 		cred.setUsername(rs.getString("USERNAME"));
 		cred.setAppUser(rs.getString("OWNER"));
-		String credString = keyTool.decrypt(rs.getString("CREDENTIAL"));
+		String credStringOrig = rs.getString("CREDENTIAL");
+		String credString = keyTool.decrypt(credStringOrig);
 		//we will use two :: as separator
 		int verified = rs.getInt("VERIFIED");
 		if(verified==1)
 		{
-		  credString = credString.substring(0, credString.lastIndexOf("::"));
-		  credString = credString.substring(credString.lastIndexOf("::")+2);
-		  cred.setPassword(credString);
+		  //credString = credString.substring(0, credString.lastIndexOf("::"));
+		  //credString = credString.substring(credString.lastIndexOf("::")+2);
+		  //cred.setPassword(credString);
+		  cred.setEncrypted(credStringOrig);
 		  return cred;
 		}else 
 		{
@@ -687,6 +707,9 @@ public class MetaDB implements java.io.Serializable{
   public void upsertDBCredential(DBCredential cred)
   {
     if(cred==null)return;
+    //bust our cached cred first
+    if(this.credCache.containsKey(cred.getAppUser() +"||"+cred.getDbGroupName()))
+    	this.credCache.remove(cred.getAppUser() +"||"+cred.getDbGroupName());
 	String sql1 = "update "+CRED_TABLENAME+" set username=?,credential=?,verified=1 where owner=? and dbgroupname=?";
     String sql2 = "insert into "+CRED_TABLENAME+" (owner,dbgroupname,username,credential,verified) values(?,?,?,?,1)";
 		

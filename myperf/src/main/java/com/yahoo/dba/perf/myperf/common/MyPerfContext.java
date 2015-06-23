@@ -36,6 +36,9 @@ import com.yahoo.dba.perf.myperf.process.AutoScanner;
 public class MyPerfContext implements java.io.Serializable, InitializingBean,DisposableBean  {
 
   private static final long serialVersionUID = 1L;
+  //Use this parameter to control debug log at system level at runtime
+  //This way, we don't need change and load our log configuration
+  private java.util.concurrent.atomic.AtomicBoolean DEBUG = new java.util.concurrent.atomic.AtomicBoolean();
 
   private MyPerfConfiguration myperfConfig = new MyPerfConfiguration(); //configurations, from settings page
   private SNMPSettings snmpSettings = new SNMPSettings();
@@ -89,8 +92,21 @@ public class MyPerfContext implements java.io.Serializable, InitializingBean,Dis
   //hold alerts for notification
   private Alerts alerts = new Alerts();
   
-  public MyPerfContext(){}
-	
+  public MyPerfContext()
+  {
+    DEBUG.set(false);
+  }
+
+  public void enableDebug(boolean enable)
+  {
+    DEBUG.set(enable); 
+  }
+  
+  public boolean isDebug()
+  {
+	  return DEBUG.get();
+  }
+  
   public DBInfoManager getDbInfoManager() 
   {
     return dbInfoManager;

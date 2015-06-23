@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 /**
  * This will have two 
+ * Modify the way repl down is alerted. Now only alert repl status changes.
  * @author xrao
  *
  */
@@ -131,27 +132,20 @@ public class InstanceStates implements java.io.Serializable{
       		  alertType = "CONNECT_FAILURE";
       		  alertValue = String.format("%.3f",aborted_cc);      		  
       		  
-      	  }else if((this.prevSnapshot.getReplIo() > this.currSnapshot.getReplIo() 
+      	  }else if(this.prevSnapshot.getReplIo() > this.currSnapshot.getReplIo() 
       			  && this.prevSnapshot.getReplSql() > this.currSnapshot.getReplSql())
-      			  ||(this.currSnapshot.getReplIo()==0 &&this.currSnapshot.getReplSql()==0 
-      			    && this.currSnapshot.getTimestamp() - this.lastAlertTime.getTime() >= REPETA_ALERT_DELAY))
       	  {
       		  alertType = "REPLDOWN";
       		  alertValue = "Slave IO and SQL threads down";      		  
-      	  }else if(this.prevSnapshot.getReplIo() > this.currSnapshot.getReplIo()
-      			  ||(this.currSnapshot.getReplIo()==0 
-      			  && this.currSnapshot.getTimestamp() - this.lastAlertTime.getTime() >= REPETA_ALERT_DELAY))
+      	  }else if(this.prevSnapshot.getReplIo() > this.currSnapshot.getReplIo())
       	  {
       		  alertType = "REPLDOWN";
       		  alertValue = "Slave IO threads down";      		  
-      	  }else if(this.prevSnapshot.getReplSql() > this.currSnapshot.getReplSql() 
-      			  ||(this.currSnapshot.getReplSql() ==0 
-      			  && this.currSnapshot.getTimestamp() - this.lastAlertTime.getTime() >= REPETA_ALERT_DELAY))
+      	  }else if(this.prevSnapshot.getReplSql() > this.currSnapshot.getReplSql())
       	  {
       		  alertType = "REPLDOWN";
       		  alertValue = "Slave SQL threads down";      		  
       	  }
-
         }
         if(alertType==null && this.currSnapshot.getTimestamp()>0)//one snap is enough
         {
@@ -291,40 +285,14 @@ public class InstanceStates implements java.io.Serializable{
 		}
 		return false;
 	}
-	/** 
-	 * Report replication down
-	 * @param offline
-	 * @param dt
-	 * @return
-	 */
-	public boolean reportReplDown(boolean offline, String reason, Date dt)
-	{
-		String altType = "REPLDOWN";
-		if(altType.equals(this.lastAlertType) && !offline)
-		{
-			logger.info("CASE 1 "+altType.equals(this.lastAlertType) +", "+offline);
-			updateAlert(true, dt, altType, reason, false);
-			return true;
-		}else if(altType.equals(this.lastAlertType) && offline && (this.lastAlertEndTime!=null ||  (dt.getTime() - this.lastAlertTime.getTime() >= REPETA_ALERT_DELAY)))
-		{
-			logger.info("CASE 2 "+altType.equals(this.lastAlertType) +", "+offline + ", "+this.lastAlertEndTime+", "+(dt.getTime() - this.lastAlertTime.getTime()));
-			updateAlert(false, dt, altType, reason, true);
-			return true;
-		}else if(!altType.equals(this.lastAlertType) && offline)
-		{
-			logger.info("CASE 3 "+altType.equals(this.lastAlertType) +", "+offline);
-			updateAlert(false, dt, altType, reason, false);			
-			return true;
-		}
-		return false;
-	}
+
 	/**
 	 * 
 	 * @param clear If true alert ends
 	 * @param dt
 	 * @param alertType
 	 * @param alertValue
-	 * @param force: if true, update lastAlertTime anyway with new vaules
+	 * @param force: if true, update lastAlertTime anyway with new values
 	 */
 	public void updateAlert(boolean clear, Date dt, String alertType, String alertValue, boolean force)
 	{

@@ -49,6 +49,7 @@ public class AutoScanner {
 
 	private boolean firstScan = true;//we just started
 	private long lastScanTime = System.currentTimeMillis();
+	private long maxScanIdleTime = 3600000L;
 	
 	public AutoScanner(MyPerfContext context)
 	{
@@ -123,6 +124,10 @@ public class AutoScanner {
 		
 		int secOfTheDay = getCurrentSeconds();
 		int interval = context.getMyperfConfig().getScannerIntervalSeconds();
+		maxScanIdleTime = interval * 3000;
+		if(maxScanIdleTime < 300000L) maxScanIdleTime = 300000L;//minumum check time 5 minutes
+		logger.info("maximun alowed hange time: "+maxScanIdleTime);
+		
 		int metricsDelay = (int)Math.ceil(((double)secOfTheDay)/(interval))*interval - secOfTheDay;
 		int alertDelay = (int)Math.ceil(((double)secOfTheDay)/(context.getMyperfConfig().getAlertScanIntervalSeconds()))*context.getMyperfConfig().getAlertScanIntervalSeconds() - secOfTheDay;
 		int configDelay = (int)Math.ceil(((double)secOfTheDay)/(720*60))*720*60 - secOfTheDay;
@@ -278,9 +283,9 @@ public class AutoScanner {
 		public void run()
 		{
 			long currentTime = System.currentTimeMillis();
-			if(currentTime - lastScanTime >= 3600000L)//if last run is one hour ago
+			if(currentTime - lastScanTime >= maxScanIdleTime)//if last run is 3 times of interval
 			{
-				logger.info("Scanner hangs, shut it down.");
+				logger.severe("Scanner hangs, shut it down.");
 				forceStop();
 				try
 				{
