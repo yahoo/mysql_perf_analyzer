@@ -462,7 +462,7 @@ public class App {
 	private void shutdown() {
 		try { // shutdown
 			System.out.println(new Date() + " Shutdown server");
-			startServer();
+			stop();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
