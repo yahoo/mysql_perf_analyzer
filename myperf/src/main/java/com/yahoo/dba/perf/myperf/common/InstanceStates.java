@@ -145,6 +145,11 @@ public class InstanceStates implements java.io.Serializable{
       	  {
       		  alertType = "REPLDOWN";
       		  alertValue = "Slave SQL threads down";      		  
+      	  }else if(this.prevSnapshot.getMax_conn_error() >= 0
+      			  && this.currSnapshot.getMax_conn_error() > this.prevSnapshot.getMax_conn_error())
+      	  {
+      		  alertType = "MAXCONNERR";
+      		  alertValue = String.valueOf(this.currSnapshot.getMax_conn_error() - this.prevSnapshot.getMax_conn_error());
       	  }
         }
         if(alertType==null && this.currSnapshot.getTimestamp()>0)//one snap is enough

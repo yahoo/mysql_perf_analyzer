@@ -1695,7 +1695,37 @@ public abstract class MetricsDbBase implements  Runnable
 		}			
 	  }
 	  
-	  
+	  public void renameDbGroup(String oldName, String newName)
+	  {
+		  Connection conn = null;
+		  PreparedStatement stmt = null;
+		  String[] renameDbinfoSql = new String[]{"update " +DBINFO_TABLENAME+" set dbgroupname=? where dbgroupname=?",
+				  "update " + ALERTSETTING_TABLENAME + " set dbgroupname=? where dbgroupname=?",
+				  "update ALERT_SUBSCRIPT set DBGROUP=? where DBGROUP=?",
+				  "update METRICS_SUBSCRIPT set DBGROUP=? where DBGROUP=?"};
+		  try
+		  {
+			  conn = this.createConnection(true);
+			  for(int i=0; i<renameDbinfoSql.length; i++)
+			  {
+				  logger.info("Rename dbgroup: " + renameDbinfoSql[i]);
+				  stmt = conn.prepareStatement(renameDbinfoSql[i]);
+				  stmt.setString(1, newName.toLowerCase());
+				  stmt.setString(2, oldName.toLowerCase());
+				  stmt.execute();
+				  stmt.close(); stmt = null;
+			  }
+
+		  }catch(Exception ex)
+		  {
+			  logger.log(Level.WARNING, "Failed to rename dbgroup " + oldName+" to " + newName, ex);
+			  throw new RuntimeException(ex);
+		  }finally
+		  {
+			  DBUtils.close(stmt);
+			  DBUtils.close(conn);
+		  }
+	  }
 	  public java.util.Map<Integer, DBInstanceInfo> loadDbInfo(Connection conn)
 	  {
 		String sql = "select * from " + DBINFO_TABLENAME;

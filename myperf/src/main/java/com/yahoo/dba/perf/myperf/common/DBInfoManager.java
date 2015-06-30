@@ -91,6 +91,7 @@ public class DBInfoManager implements java.io.Serializable
     DBGroupInfo cls = this.findGroup(groupName);
 	if(cls==null)return;
 	this.groups.remove(groupName);
+	this.projectDb.removeDbGroup(groupName);
   }
 
   synchronized public java.util.List<String> listGroupNames()
@@ -261,5 +262,25 @@ public class DBInfoManager implements java.io.Serializable
 		if(this.metricsDb!=null)
 			return this.metricsDb.enableMetrics(dbGroup, hostname, enabled, owner, force);
 		return false;
+	}
+	
+	synchronized public void renameDbGroup(String oldname, String newName)
+	{
+		//nothing to do
+		if(!this.groups.containsKey(oldname.toLowerCase()) || newName == null || newName.isEmpty())
+			return;
+		DBGroupInfo dbgroups = this.groups.get(oldname.toLowerCase());
+		this.groups.remove(oldname.toLowerCase());
+		this.metricsDb.renameDbGroup(oldname, newName);
+		List<DBInstanceInfo> instances = dbgroups.getInstances();
+		dbgroups.setGroupName(newName.toLowerCase());
+		for(DBInstanceInfo inst: instances)
+			inst.setDbGroupName(newName.toLowerCase());
+		this.groups.put(newName.toLowerCase(), dbgroups);
+		this.projectDb.renameDbGroupName(oldname.toLowerCase(), newName.toLowerCase());
+		for(Map.Entry<String, MyDatabases> entry: this.mydbs.entrySet())
+		{
+			entry.getValue().replaceDb(oldname.toLowerCase(), newName.toLowerCase());
+		}
 	}
 }

@@ -40,6 +40,16 @@ public class MyDatabases implements java.io.Serializable{
 			this.myDbSet.remove(name);		
 	}
 	
+	synchronized public void replaceDb(String oldName, String newName)
+	{
+		if(!this.myDbSet.contains(oldName))
+		{
+			this.myDbSet.remove(oldName);
+			this.myDbSet.remove(newName);
+			
+		}
+	}
+	
 	synchronized public int size()
 	{
 		return this.myDbSet.size();

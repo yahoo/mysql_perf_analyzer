@@ -116,7 +116,7 @@
   </sql>
   <sql handle="mysql_global_status_metrics2" paramCount="1" replace="y" comments="Display MySQL global status">
     <text>select variable_name, variable_value from information_schema.global_status 
-    where upper(variable_name) like '%&amp;p_1%' and variable_value!='0' and variable_value regexp '[0-9\.]' limit 1000</text>
+    where upper(variable_name) like '%&amp;p_1%' and variable_value!='0' and variable_value regexp '[0-9\.]' limit 5000</text>
     <param name="keyword" dataType="non_breakable_string"/>
   </sql>
   <sql handle="mysql_global_status_metrics" paramCount="1" replace="y" comments="Display MySQL global status">
@@ -212,7 +212,7 @@
       p.command processlist_command, p.time processlist_time, p.state processlist_state, p.info processlist_info
       from performance_schema.threads t left join information_schema.processlist p
       on t.processlist_id = p.id</text>
-    <vsql minVersion="5.6">select * from performance_schema.threads order by type desc limit 1000</vsql>
+    <vsql minVersion="5.6">select * from performance_schema.threads order by type desc limit 5000</vsql>
   </sql>
   <sql handle="mysql_perf_digests_wait_time" paramCount="2" replace="y" comments="Display MySQL sql digest summary">
     <text>select * from performance_schema.events_statements_summary_by_digest where timestampadd(minute,&amp;p_1,last_seen)&gt;=localtimestamp order by sum_timer_wait desc limit &amp;p_2</text>
@@ -332,7 +332,21 @@
     </vsql>
   </sql>
   <sql handle="mysql_perf_events_waits_summary" paramCount="0" comments="Display MySQL events waits summary by name">
-    <text>select e.event_name, e.count_star, e.sum_timer_wait/1000000000 WAIT_MS from performance_schema.events_waits_summary_global_by_event_name e where e.count_star&gt;0 order by  e.event_name limit 1000</text>
+    <text>select e.event_name, e.count_star, e.sum_timer_wait/1000000000 WAIT_MS from performance_schema.events_waits_summary_global_by_event_name e where e.count_star&gt;0 order by  e.event_name limit 5000</text>
+  </sql>
+  <sql handle="mysql_perf_thread_stmt_summary" paramCount="1" comments="Display MySQL statement summary by name for a given thread">
+    <text>select e.event_name, e.count_star, e.sum_timer_wait/1000000000 WAIT_MS, e.sum_lock_time/1000000000 LOCK_MS 
+          from performance_schema.events_statements_summary_by_thread_by_event_name e 
+          where e.count_star&gt;0 and thread_id=&amp;p_1 
+          order by  e.event_name</text>
+    <param name="thread_id" dataType="numeric"/>
+  </sql>
+  <sql handle="mysql_perf_thread_waits_summary" paramCount="1" comments="Display MySQL waits summary by name for a given thread">
+    <text>select e.event_name, e.count_star, e.sum_timer_wait/1000000000 WAIT_MS 
+          from performance_schema.events_waits_summary_by_thread_by_event_name e 
+          where e.count_star&gt;0 and thread_id=&amp;p_1 
+          order by  e.event_name</text>
+    <param name="thread_id" dataType="numeric"/>
   </sql>
   <sql handle="mysql_perf_objects_summary" paramCount="0" comments="Display MySQL object access summary by name">
     <text>select CONCAT(object_type, ':', object_schema, '.', object_name) NAME, count_star, sum_timer_wait/1000000000 WAIT_MS, min_timer_wait/1000000000 MIN_WAIT_MS, max_timer_wait/1000000000 MAX_WAIT_MS, avg_timer_wait/1000000000 AVG_WAIT_MS from performance_schema.objects_summary_global_by_type where count_star&gt;0 order by  1 limit 5000</text>

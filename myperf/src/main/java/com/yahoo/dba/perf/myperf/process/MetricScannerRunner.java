@@ -807,11 +807,12 @@ public class MetricScannerRunner implements Runnable
 			  }
 			  if(ist.getLastAlertTime()!=null && ist.getLastAlertEndTime()==null)
 			  {
-				  //if IO, and it is not current one, skip it unless 30 minutes have passed
+				  //if IO, and it is not current one, skip it unless certain minutes have passed
 				  if((!"IO".equalsIgnoreCase(ist.getLastAlertType()) 
 						  && !"SLOW".equalsIgnoreCase(ist.getLastAlertType())  
 						  && !"REPLLAG".equalsIgnoreCase(ist.getLastAlertType())
 						  && !"REPLDOWN".equalsIgnoreCase(ist.getLastAlertType())
+						  && !"MAXCONNERR".equalsIgnoreCase(ist.getLastAlertType())
 						  )
 					||ist.getLastUpdateTime() == ist.getLastAlertTime().getTime()
 					||ist.getLastUpdateTime() - ist.getLastReportTime()>= InstanceStates.REPETA_ALERT_DELAY)

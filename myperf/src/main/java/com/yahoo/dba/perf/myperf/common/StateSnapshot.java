@@ -30,6 +30,7 @@ public class StateSnapshot implements java.io.Serializable{
 	private long queries = 0L;
 	private long questions = 0L;
 	private long deadlocks = 0L;
+	private long max_conn_error = -1L;//-1 means not recorded yet
 	
 	private long uptime = 0L;//need it to calculate diff if restart
 	
@@ -118,6 +119,7 @@ public class StateSnapshot implements java.io.Serializable{
 		ss.setReplSql(this.replSql);
 		ss.setDeadlocks(deadlocks);
 		ss.setUptime(uptime);
+		ss.setMax_conn_error(max_conn_error);
 		if(this.metricsMap != null)
 			for(Map.Entry<String, Float> e: this.metricsMap.entrySet())
 				ss.addMetric(e.getKey(), e.getValue());
@@ -237,6 +239,7 @@ public class StateSnapshot implements java.io.Serializable{
 	    setActiveThreads((int)CommonUtils.getMapValueLong(kvPairs, "THREADS_RUNNING", 0L));
 	    setDeadlocks(CommonUtils.getMapValueLong(kvPairs, "INNODB_DEADLOCKS", 0L));
 	    setUptime(CommonUtils.getMapValueLong(kvPairs, "UPTIME", 0L));
+	    setMax_conn_error(CommonUtils.getMapValueLong(kvPairs, "CONNECTION_ERRORS_MAX_CONNECTIONS", 0L));
 	}  
 	public void recordRepl(Map<String, String> resMap)
 	{
@@ -257,5 +260,11 @@ public class StateSnapshot implements java.io.Serializable{
 	}
 	public void setSoftirqtime(long softirqtime) {
 		this.softirqtime = softirqtime;
+	}
+	public long getMax_conn_error() {
+		return max_conn_error;
+	}
+	public void setMax_conn_error(long max_conn_error) {
+		this.max_conn_error = max_conn_error;
 	}
 }

@@ -650,6 +650,104 @@ public class MetaDB implements java.io.Serializable{
 	return null;
   }
 
+  public void renameDbGroupName(String oldName, String newName)
+  {
+	  //nothing to change
+	  if(newName == null || newName.equalsIgnoreCase(oldName))
+		  return;
+	  
+	  String sql1 = "select * from "+CRED_TABLENAME+" where dbgroupname=?";
+	  String sql2 = "insert into "+CRED_TABLENAME+" (owner,dbgroupname,username,credential,verified) values(?,?,?,?,1)";
+	  String sql3 = "delete from "+CRED_TABLENAME+" where dbgroupname=?";
+	  Connection conn = null;
+	  Map<String, String> credMap = new java.util.HashMap<String, String>();
+	  Map<String, String> credUserMap = new java.util.HashMap<String, String>();
+	  PreparedStatement stmt = null;
+	  ResultSet rs = null;
+	  try
+	  {
+		  conn = getConnection();
+		  logger.info("Rename db group: from "+oldName+" to " + newName);
+		  stmt = conn.prepareStatement(sql1);
+		  stmt.setString(1, oldName.toLowerCase());
+		  rs = stmt.executeQuery();
+		  while(rs != null && rs.next())
+		  {
+			  String owner = rs.getString("OWNER");
+			  String user = rs.getString("USERNAME");
+			  String credString = rs.getString("CREDENTIAL");
+			  if(credString != null)
+			  {
+				  credString = keyTool.decrypt(credString);
+				  credString = credString.substring(0, credString.lastIndexOf("::"));
+				  credString = credString.substring(credString.lastIndexOf("::")+2);
+				  credMap.put(owner, credString);
+				  logger.info("cred for "+owner+" is "+credString);
+				  credUserMap.put(owner, user);
+			  }
+		  }
+		  rs.close(); rs = null;
+		  stmt.close(); stmt = null;
+		  logger.info("Update db group credentials: " + credUserMap.size());
+		  stmt = conn.prepareStatement(sql2);
+		  for(Map.Entry<String, String> entry: credMap.entrySet())
+		  {
+			  credCache.remove(entry.getKey() + "||" + oldName.toLowerCase());
+			  String owner = entry.getKey();
+			  String pString = owner == null?"NULL":owner;
+				pString += "::"+newName.toLowerCase()
+						+"::"+credUserMap.get(owner)
+						+"::"+credMap.get(owner)
+						+"::"+Math.random();
+			  stmt.setString(1, owner);
+			  stmt.setString(2, newName.toLowerCase());
+			  stmt.setString(3, credUserMap.get(owner));
+			  stmt.setString(4, this.keyTool.encrypt(pString));
+			  stmt.execute();
+		  }
+		  stmt.close(); stmt = null;
+		  stmt = conn.prepareStatement(sql3);
+		  stmt.setString(1, oldName.toLowerCase());
+		  stmt.execute();
+		  stmt.close(); stmt = null;
+	  }catch(Exception ex)
+	  {
+		  logger.log(Level.SEVERE,"Exception", ex);
+		  throw new RuntimeException(ex);
+	  }
+	  finally
+	  {
+		  DBUtils.close(rs);
+		  DBUtils.close(stmt);
+		  DBUtils.close(conn);
+	  }
+	  
+  }
+  
+  public void removeDbGroup(String grpName)
+  {
+	  String sql3 = "delete from "+CRED_TABLENAME+" where dbgroupname=?";
+	  Connection conn = null;
+	  PreparedStatement stmt = null;
+	  try
+	  {
+		  conn = getConnection();
+		  stmt = conn.prepareStatement(sql3);
+		  stmt.setString(1, grpName.toLowerCase());
+		  stmt.execute();
+		  stmt.close(); stmt = null;
+	  }catch(Exception ex)
+	  {
+		  logger.log(Level.SEVERE,"Exception", ex);
+		  throw new RuntimeException(ex);
+	  }
+	  finally
+	  {
+		  DBUtils.close(stmt);
+		  DBUtils.close(conn);
+	  }
+  
+  }
   /**
    * List database groups the specific user has provided passwords
    * @param owner

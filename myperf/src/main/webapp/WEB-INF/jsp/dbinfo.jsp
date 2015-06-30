@@ -42,7 +42,7 @@ var DBList=[""
   <div id="mainTabs" class="clearTabView">
     <ul>
       <li><a href="#dbinfo_add_update" title="Add or update MySQL servers">Add/Update</a></li>
-      <li><a href="#dbinfo_remove" title="Remove a group or a servers">Remove</a></li>
+      <li><a href="#dbinfo_remove" title="Remove a group or a servers">Remove/Rename</a></li>
       <li><a href="#dbinfo_cred" title="Provide MySQL user and credential for information retrieval">Credentials</a></li>
     </ul>
     <div id="dbinfo_add_update">
@@ -127,6 +127,7 @@ var DBList=[""
        		<select name="dbAction_2" id="dbAction_2" onchange="showRows(this.value);" title="remove a server or groups" >
        		  <option value="4">Remove a DB Server</option>
        		  <option value="5">Remove a DB Group</option>
+       		  <option value="6">Rename a DB Group</option>
        		</select>
          </td>
        </tr>
@@ -134,6 +135,11 @@ var DBList=[""
          <td><label for="dbGroupName_2">Group Name</label></td>
          <td><input type="text" id="dbGroupName_2" name="dbGroupName_2"  autofocus  required title="A unique name to identify your standalone database server or a group of servers"/> &nbsp;
            <input type="button" value="Find" onclick="prepareDBSearch('dbGroupName_2','hostName_2', mydomval('dbGroupName_2'));" title="Click to find database servers by keyword"/>
+         </td>
+       </tr>
+       <tr id="tr_newClusterName_2" style="display:none;">
+         <td><label for="dbNewGroupName_2">New Group Name</label></td>
+         <td><input type="text" id="dbNewGroupName_2" name="dbNewGroupName_2"  required title="A unique name to identify your standalone database server or a group of servers"/>
          </td>
        </tr>
        <tr id="tr_hostName_2">
@@ -248,12 +254,17 @@ $('#btn_remove').click(function()
 
 function showRows(val)
 {
- 	if(val=="4"||val=="5")
+ 	if(val=="4"||val=="5"||val=="6")
  	{
  		if(val=="4")
  			showRow("tr_hostName_2",1);
  		else  
- 			showRow("tr_hostName_2",0); 				
+ 			showRow("tr_hostName_2",0); 
+ 		if(val == "6")
+ 		    showRow("tr_newClusterName_2",1);
+ 		else
+ 		    showRow("tr_newClusterName_2",0);    	
+ 			
  	}else
  	{
  		showRow("tr_hostName",1);
@@ -286,12 +297,13 @@ function addOrUpdateDB(dbAction)
  	   if(!confirm("Do you really want to remove a full group of database servers from this application?"))
  	      return;
  	 }
- 	  var grpName = (dbAction == 4 || dbAction ==5)?mydomval("dbGroupName_2"): mydomval("dbGroupName"); 
-	  var hostName = (dbAction == 4 || dbAction ==5)?mydomval("hostName_2"): mydomval("hostName"); 
+ 	  var grpName =  (dbAction >= 4)?mydomval("dbGroupName_2"): mydomval("dbGroupName"); 
+	  var hostName = (dbAction >= 4)?mydomval("hostName_2"): mydomval("hostName"); 
  	  var mydata = "dbAction=" + dbAction +"&dbtype=mysql";
-		  mydata += "&dbGroupName=" + grpName;
-
-	  if(dbAction != 5)
+		  mydata += "&dbGroupName=" + escape(grpName);
+	  if(dbAction == 6)
+	     mydata += "&dbNewGroupName=" + escape(mydomval("dbNewGroupName_2"));;
+	  if(dbAction < 5)
 	      mydata += "&hostName=" + hostName;
 
 	  if(dbAction < 4)

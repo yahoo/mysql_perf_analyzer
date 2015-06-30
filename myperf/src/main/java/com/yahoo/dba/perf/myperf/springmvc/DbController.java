@@ -191,7 +191,41 @@ public class DbController extends MyPerfBaseController
 	if(message == null)message = "OK";
 	return this.respondWithStatus(status, message, request);
   }
-  
+
+  private ModelAndView processRenameCluster(HttpServletRequest request, HttpServletResponse response, 
+		  String cmd, DBInstanceInfo db)
+  {
+	int status = Constants.STATUS_BAD;
+	String message = null;
+	String grp = request.getParameter("dbGroupName");
+	String newGrp = request.getParameter("dbNewGroupName");
+	if(newGrp != null)newGrp = newGrp.trim();
+	if(newGrp == null || newGrp.isEmpty())
+		message = "Please provide new group name.";	
+	else if(grp == null || grp.isEmpty())
+		message = "Please provide original group name.";
+	else if(newGrp.equalsIgnoreCase(grp))
+		message = "New Group Name is the same as old name, ignored.";
+	else if(this.frameworkContext.getDbInfoManager().findGroup(newGrp) != null)
+		message = "Grpup name " + newGrp +" is an existing group name. Please use different name.";
+	else
+	{
+		try
+		{
+			this.frameworkContext.getDbInfoManager().renameDbGroup(grp, newGrp);
+		}catch(Exception ex)
+		{
+			message = "Failed to rename db group: " + ex.getMessage();
+		}
+	}
+	if(message == null)
+	{
+		message = "DB GROUP " + grp+" has been renamed. Please refresh your pages to verify.";
+		status = Constants.STATUS_OK;
+	}
+	return this.respondWithStatus(status, message, request);
+  }
+
   @Override
   protected ModelAndView handleRequestImpl(HttpServletRequest request,
 			HttpServletResponse response) throws Exception 
@@ -220,6 +254,8 @@ public class DbController extends MyPerfBaseController
 	if(cmd.equals(String.valueOf(Constants.DBM_ACTION_ADD_HOST))
 			|| cmd.equals(String.valueOf(Constants.DBM_ACTION_UPDATE_HOST)))
 		return processAddUpdate(request, response, cmd,  db);
+	else if(cmd.equals(String.valueOf(Constants.DBM_ACTION_RENAME_CLUSTER)))
+		return processRenameCluster(request, response, cmd,  db);
 	else if(cmd.equals(String.valueOf(Constants.DBM_ACTION_REMOVE_CLUSTER)))//remove a group
 	{
 	  if(this.frameworkContext.getDbInfoManager().removeDbGroup(db.getDbGroupName(),

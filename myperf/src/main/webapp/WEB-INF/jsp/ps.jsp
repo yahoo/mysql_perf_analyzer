@@ -68,7 +68,7 @@
 <div id="pstabs" class="clearTabView"> <!-- tab pane to display real time info in tabular formats -->
     <ul>
         <li><a href="#setup_tbl_div" title="MySQL Performance schema Setup">Setup</a></li>
-        <li><a href="#mysql_perf_threads_tbl_div" title="MySQL Performance schema Thread list">Threads</a></li>
+        <li><a href="#thread_tab" title="MySQL Performance schema Thread list">Threads</a></li>
         <li><a href="#mysql_perf_events_waits_current_tbl_div" title="MySQL Performance schema Current Events">Events Waits</a></li>
         <li><a href="#mysql_perf_events_waits_summary_tbl_div" title="MySQL Performance schema Events summary">Events Waits Summary</a></li>
         <li><a href="#mysql_perf_objects_summary_tbl_div" title="MySQL Performance schema Table/Index Access summary">Table/Index Access Summary</a></li>
@@ -119,12 +119,36 @@
             </div>            
           </div>  
       </div> <!-- setup -->
-      <div id="mysql_perf_threads_tbl_div" class="datatableContainer">
-        <table id="mysql_perf_threads_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
-      </div>
+      
+      <div id="thread_tab" class="clearTabView">
+          <ul>
+              <li><a href="#mysql_perf_threads_tbl_div" title="MySQL Performance schema Threads">Threads</a></li>
+              <li><a href="#thread_waits_summary_tbl_div" title="MySQL Performance schema Thread Summary">Thread Wait Summary</a></li>
+              <li><a href="#thread_stmt_summary_tbl_div" title="MySQL Performance schema Thread Summary">Thread Statement Summary</a></li>
+          </ul>
+          <div id="mysql_perf_threads_tbl_div">   
+            <table id="mysql_perf_threads_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
+          </div>  
+          <div id="thread_waits_summary_tbl_div">
+             <span>Thread ID: <input type="text" id="thread_id" /> 
+                &nbsp;&nbsp; <input type="button" id="btn_mysql_perf_thread_waits_summary" value="Refresh" title="Click to see differences"/>
+                &nbsp;&nbsp; <input type="button" id="btn_mysql_perf_thread_waits_summary_reset" value="Reset" title="Click to Restart"/>
+             </span>
+             <table id="mysql_perf_thread_waits_summary_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
+          </div>  
+          <div id="thread_stmt_summary_tbl_div">
+             <span>Thread ID: <input type="text" id="stmt_thread_id" /> 
+                &nbsp;&nbsp; <input type="button" id="btn_mysql_perf_thread_stmt_summary" value="Refresh" title="Click to see differences"/>
+                &nbsp;&nbsp; <input type="button" id="btn_mysql_perf_thread_stmt_summary_reset" value="Reset" title="Click to Restart"/>
+             </span>
+             <table id="mysql_perf_thread_stmt_summary_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
+          </div>  
+      </div><!-- thread -->
+      
       <div id="mysql_perf_events_waits_current_tbl_div" class="datatableContainer">
         <table id="mysql_perf_events_waits_current_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
       </div>
+      
       <div id="mysql_perf_events_waits_summary_tbl_div" class="datatableContainer">
     	 <span><input type="button" id="btn_events_waits_summary" value="Refresh" title="Click to see differences"/> (Click Refresh to see changes)</span>
          <table id="mysql_perf_events_waits_summary_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
@@ -204,6 +228,13 @@
   <jsp:param name="y" value="40" />  
 </jsp:include>
 <script language=javascript>
+function messagehandler(datatable, status, message)
+{
+	if(status != 0)
+	  reportStatus(true, "common_msg", message);
+	else 
+      reportStatus(false, "common_msg", "");
+}
 $('#dbgroup').change(function()
   {
     query_hostlist_main(mydomval('dbgroup'), 'host');
@@ -230,6 +261,8 @@ $('#ps_setup_tab').tabs
  }
 );
 
+$('#thread_tab').tabs();
+
 var mysql_perf_threadsTable = new JSTable({
    	   name: "mysql_perf_threads",
    	   query:{
@@ -238,10 +271,31 @@ var mysql_perf_threadsTable = new JSTable({
    	     paramFields:[]
    	   }, 
    	   db: {dbGroupId: "dbgroup", dbHost: "host"},
-   	   handlers: {jquery:1},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler, contextMenuHandler:[
+   	       {key: "show_thread_wait", label: "Thread Wait Summary", handler: contextmenu_mysql_perf_threads},
+   	       {key: "show_thread_stmt", label: "Thread Statement Summary", handler: contextmenu_mysql_perf_threads}   	       
+   	     ]},
    	   showRowDataOnClick:"y",
    	   formatter:{columnFormatters:{"PROCESSLIST_INFO":jqueryFormatSqlText}}
    	});//TODO formatter
+   	
+function contextmenu_mysql_perf_threads(obj)
+{
+  if(obj == null || obj.datatable == null)return;
+  var thid = obj.datatable.getCellValueByColumnName(obj.row, 'THREAD_ID');
+  var key = obj.key;
+  mydom("thread_id").value = thid;
+  mydom("stmt_thread_id").value = thid;
+  if(key =='show_thread_wait')
+  {
+    mydom('btn_mysql_perf_thread_waits_summary_reset').click();
+    $('#thread_tab').tabs("option", "active", 1);
+  }else
+  {
+    mydom('btn_mysql_perf_thread_stmt_summary_reset').click();
+    $('#thread_tab').tabs("option", "active", 2);
+  }
+}//contextmenu_mysql_perf_threads
 
 var mysql_perf_events_waits_currentTable = new JSTable({
    	   name: "mysql_perf_events_waits_current",
@@ -251,11 +305,11 @@ var mysql_perf_events_waits_currentTable = new JSTable({
    	     paramFields:[]
    	   }, 
    	   db: {dbGroupId: "dbgroup", dbHost: "host"},
-   	   handlers: {jquery:1},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler},
    	   showRowDataOnClick:"y",
    	   formatter:{columnFormatters:{"SQL_TEXT":jqueryFormatSqlText}}
    	});
-   	
+    	
 var mysql_perf_events_waits_summaryTable = new JSTable({
    	   name: "mysql_perf_events_waits_summary",
    	   query:{
@@ -264,7 +318,7 @@ var mysql_perf_events_waits_summaryTable = new JSTable({
    	     paramFields:[]
    	   }, 
    	   db: {dbGroupId: "dbgroup", dbHost: "host"},
-   	   handlers: {jquery:1},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler},
    	   diff: {keyColumns:["EVENT_NAME"], valueColumns:["COUNT_STAR","WAIT_MS"]},
    	   formatter:{commonFormatter:jqueryFormatNumber}
    	});
@@ -272,6 +326,83 @@ var mysql_perf_events_waits_summaryTable = new JSTable({
 $('#btn_events_waits_summary').click(function()
 {
   mysql_perf_events_waits_summaryTable.sendQuery();
+});
+
+var mysql_perf_thread_waits_summaryTable = new JSTable({
+   	   name: "mysql_perf_thread_waits_summary",
+   	   query:{
+   	     queryURL: "query.html",
+   	     sqlId: "mysql_perf_thread_waits_summary",
+   	     paramFields:[{name:"p_1", valueField:"thread_id"}]
+   	   }, 
+   	   db: {dbGroupId: "dbgroup", dbHost: "host"},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler},
+   	   diff: {keyColumns:["EVENT_NAME"], valueColumns:["COUNT_STAR","WAIT_MS"]},
+   	   formatter:{commonFormatter:jqueryFormatNumber}
+   	});
+
+$('#btn_mysql_perf_thread_waits_summary').click(function()
+{
+  var thid = mydomval('thread_id');
+  if(thid == null || thid == "")
+  {
+    alert("Please provide a thread_id to start.");
+    mydom('thread_id').focus();
+    return;    
+  } 
+  mysql_perf_thread_waits_summaryTable.sendQuery();
+});
+
+$('#btn_mysql_perf_thread_waits_summary_reset').click(function()
+{
+  var thid = mydomval('thread_id');
+  if(thid == null || thid == "")
+  {
+    alert("Please provide a thread_id to start.");
+    mydom('thread_id').focus();
+    return;    
+  } 
+  mysql_perf_thread_waits_summaryTable.baseDataObj['mysql_perf_thread_waits_summary'] = null;
+  mysql_perf_thread_waits_summaryTable.sendQuery();
+});
+
+
+var mysql_perf_thread_stmt_summaryTable = new JSTable({
+   	   name: "mysql_perf_thread_stmt_summary",
+   	   query:{
+   	     queryURL: "query.html",
+   	     sqlId: "mysql_perf_thread_stmt_summary",
+   	     paramFields:[{name:"p_1", valueField:"stmt_thread_id"}]
+   	   }, 
+   	   db: {dbGroupId: "dbgroup", dbHost: "host"},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler},
+   	   diff: {keyColumns:["EVENT_NAME"], valueColumns:["COUNT_STAR","WAIT_MS", "LOCK_MS"]},
+   	   formatter:{commonFormatter:jqueryFormatNumber}
+   	});
+
+$('#btn_mysql_perf_thread_stmt_summary').click(function()
+{
+  var thid = mydomval('stmt_thread_id');
+  if(thid == null || thid == "")
+  {
+    alert("Please provide a thread_id to start.");
+    mydom('stmt_thread_id').focus();
+    return;    
+  } 
+  mysql_perf_thread_stmt_summaryTable.sendQuery();
+});
+
+$('#btn_mysql_perf_thread_stmt_summary_reset').click(function()
+{
+  var thid = mydomval('stmt_thread_id');
+  if(thid == null || thid == "")
+  {
+    alert("Please provide a thread_id to start.");
+    mydom('stmt_thread_id').focus();
+    return;    
+  } 
+  mysql_perf_thread_stmt_summaryTable.baseDataObj['mysql_perf_thread_stmt_summary'] = null;
+  mysql_perf_thread_stmt_summaryTable.sendQuery();
 });
 
 var mysql_perf_objects_summaryTable = new JSTable({
@@ -282,7 +413,7 @@ var mysql_perf_objects_summaryTable = new JSTable({
    	     paramFields:[]
    	   }, 
    	   db: {dbGroupId: "dbgroup", dbHost: "host"},
-   	   handlers: {jquery:1},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler},
    	   searchable: 'y',
    	   diff: {keyColumns:["NAME"], valueColumns:["COUNT_STAR","WAIT_MS"]},
    	   formatter:{commonFormatter:jqueryFormatNumber}
@@ -301,7 +432,7 @@ var mysql_perf_table_io_summaryTable = new JSTable({
    	     paramFields:[]
    	   }, 
    	   db: {dbGroupId: "dbgroup", dbHost: "host"},
-   	   handlers: {jquery:1},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler},
    	   searchable: 'y',
    	   showRowDataOnClick:"y",
    	   diff: {keyColumns:["NAME"], valueColumns:["COUNT_STAR","WAIT_MS","COUNT_READ", "READ_MS", 
@@ -323,7 +454,7 @@ var mysql_perf_index_io_summaryTable = new JSTable({
    	     paramFields:[]
    	   }, 
    	   db: {dbGroupId: "dbgroup", dbHost: "host"},
-   	   handlers: {jquery:1},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler},
    	   searchable: 'y',
    	   showRowDataOnClick:"y",
    	   diff: {keyColumns:["NAME"], valueColumns:["COUNT_STAR","WAIT_MS","COUNT_READ", "READ_MS", 
@@ -345,7 +476,7 @@ var mysql_perf_filesum_instTable = new JSTable({
    	     paramFields:[]
    	   }, 
    	   db: {dbGroupId: "dbgroup", dbHost: "host"},
-   	   handlers: {jquery:1},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler},
    	   searchable: 'y',
    	   showRowDataOnClick:"y"
    	});//TODO format number
@@ -358,7 +489,7 @@ var mysql_perf_table_lock_summaryTable = new JSTable({
    	     paramFields:[]
    	   }, 
    	   db: {dbGroupId: "dbgroup", dbHost: "host"},
-   	   handlers: {jquery:1},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler},
    	   searchable: 'y',
    	   showRowDataOnClick:"y",
    	   diff: {keyColumns:["NAME"], valueColumns:["COUNT_STAR","WAIT_MS","COUNT_READ", "READ_MS", "COUNT_WRITE", "WRITE_MS"]},
@@ -378,7 +509,7 @@ var mysql_perf_mutexTable = new JSTable({
    	     paramFields:[]
    	   }, 
    	   db: {dbGroupId: "dbgroup", dbHost: "host"},
-   	   handlers: {jquery:1},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler},
    	   searchable: 'y',
    	   showRowDataOnClick:"y"
    	});//TODO format number
@@ -391,7 +522,7 @@ var mysql_perf_rwlockTable = new JSTable({
    	     paramFields:[]
    	   }, 
    	   db: {dbGroupId: "dbgroup", dbHost: "host"},
-   	   handlers: {jquery:1},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler},
    	   searchable: 'y',
    	   showRowDataOnClick:"y"
    	});//TODO format number
@@ -404,7 +535,7 @@ var mysql_perf_digestsTable = new JSTable({
    	     paramFields:[{name:"p_1", valueField:"top_q_time"},{name:"p_2", valueField:"top_q_records"}]
    	   }, 
    	   db: {dbGroupId: "dbgroup", dbHost: "host"},
-   	   handlers: {jquery:1},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler},
    	   searchable: 'y',
    	   showRowDataOnClick:"y",
    	   formatter:{commonFormatter:jqueryFormatNumber,columnFormatters:{"DIGEST_TEXT":jqueryFormatSqlText}}
@@ -511,7 +642,7 @@ var mysql_perf_setup_timersTable = new JSTable({
    	     paramFields:[]
    	   }, 
    	   db: {dbGroupId: "dbgroup", dbHost: "host"},
-   	   handlers: {jquery:1},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler},
    	   searchable: 'n',
    	   showRowDataOnClick:"y"
    	});//TODO format number
@@ -524,7 +655,7 @@ var mysql_perf_setup_instrumentsTable = new JSTable({
    	     paramFields:[]
    	   }, 
    	   db: {dbGroupId: "dbgroup", dbHost: "host"},
-   	   handlers: {jquery:1},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler},
    	   searchable: 'y',
    	   showRowDataOnClick:"y"
    	});//TODO format number
@@ -537,7 +668,7 @@ var mysql_perf_setup_consumersTable = new JSTable({
    	     paramFields:[]
    	   }, 
    	   db: {dbGroupId: "dbgroup", dbHost: "host"},
-   	   handlers: {jquery:1},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler},
    	   searchable: 'n',
    	   showRowDataOnClick:"y"
    	});//TODO format number
@@ -550,7 +681,7 @@ var mysql_perf_setup_threadsTable = new JSTable({
    	     paramFields:[]
    	   }, 
    	   db: {dbGroupId: "dbgroup", dbHost: "host"},
-   	   handlers: {jquery:1},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler},
    	   searchable: 'y',
    	   showRowDataOnClick:"y"
    	});//TODO format number
@@ -563,7 +694,7 @@ var mysql_perf_setup_actorsTable = new JSTable({
    	     paramFields:[]
    	   }, 
    	   db: {dbGroupId: "dbgroup", dbHost: "host"},
-   	   handlers: {jquery:1},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler},
    	   searchable: 'n',
    	   showRowDataOnClick:"y"
    	});//TODO format number
@@ -576,7 +707,7 @@ var mysql_perf_setup_objectsTable = new JSTable({
    	     paramFields:[]
    	   }, 
    	   db: {dbGroupId: "dbgroup", dbHost: "host"},
-   	   handlers: {jquery:1},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler},
    	   searchable: 'n',
    	   showRowDataOnClick:"y"
    	});//TODO format number
