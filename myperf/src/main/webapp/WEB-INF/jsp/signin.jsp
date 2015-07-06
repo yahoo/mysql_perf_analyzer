@@ -35,14 +35,23 @@
              </td>
            </tr>
            <tr><td colspan="2">&nbsp;</td></tr>     
-           <tr><td colspan="2" align="right"><input type="submit" value="Sign In" onclick="return auth();"/>&nbsp;&nbsp;<a href="user.htm?a=reset">Forget Password?</a></td></tr>
+           <tr><td colspan="2" align="right"><input type="submit" value="Sign In" onclick="return auth();"/>
+<c:if test="${setup == 1}" >
+           &nbsp;&nbsp;<a href="user.htm?a=reset">Forget Password?</a>
+</c:if>
+           </td></tr>
          </table>
        </td>
        <td style="width:280px;">
-         <table valign="middle"> 
+         <table valign="middle">
+<c:if test="${setup == 1}" >         
            <tr><td align="left">No Account Yet?</a></td></tr>
            <tr><td align="left"><a href="user.htm?a=new">Sign Up Here</a></td></tr>
            <tr><td align="left"><a href="perf.htm?pg=st">Status Dash Board</a></td></tr>
+</c:if>
+<c:if test="${setup != 1}" >
+           <tr><td align="left">(Please login to complete setup first, check <a target="_doc" href="https://github.com/yahoo/mysql_perf_analyzer">the simple doc</a> for detail.)</td></tr>
+</c:if>
          </table>
        </td>
      </tr>      

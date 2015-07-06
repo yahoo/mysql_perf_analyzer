@@ -292,8 +292,8 @@ public class App {
 			host = "localhost";
 		}
 		int myport = connector.getLocalPort();
-		serverURI = new URI(String.format("%s://%s:%d/", scheme, host, myport));
-		System.out.println(new Date() + " Server URI: " + serverURI);
+		serverURI = new URI(String.format("%s://%s:%d", scheme, host, myport));
+		System.out.println(new Date() + " Server URI: " + serverURI + this.contextPath);
 		return serverURI;
 	}
 

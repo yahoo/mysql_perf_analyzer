@@ -81,6 +81,7 @@ public class SigninController extends AbstractController
 	mv.addObject("help_key", "start");
 	mv.addObject("server_ts", server_ts);
 	mv.addObject("ars", seed);//ars: authentication random seed
+	mv.addObject("setup", this.frameworkContext.getMyperfConfig().isConfigured()?1:0);
 	//add store them in session
 	request.getSession(true).setAttribute(AppUser.SERVER_TS, new Long(server_ts));
 	request.getSession().setAttribute(AppUser.RANDOM_SEED, new Integer(seed));

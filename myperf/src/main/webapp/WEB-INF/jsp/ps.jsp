@@ -123,8 +123,9 @@
       <div id="thread_tab" class="clearTabView">
           <ul>
               <li><a href="#mysql_perf_threads_tbl_div" title="MySQL Performance schema Threads">Threads</a></li>
-              <li><a href="#thread_waits_summary_tbl_div" title="MySQL Performance schema Thread Summary">Thread Wait Summary</a></li>
-              <li><a href="#thread_stmt_summary_tbl_div" title="MySQL Performance schema Thread Summary">Thread Statement Summary</a></li>
+              <li><a href="#thread_waits_summary_tbl_div" title="MySQL Performance schema Thread Wait Summary">Thread Wait Summary</a></li>
+              <li><a href="#thread_stmt_summary_tbl_div" title="MySQL Performance schema Thread Statement Summary">Thread Statement Summary</a></li>
+              <li><a href="#thread_stage_summary_tbl_div" title="MySQL Performance schema Thread Stage Summary">Thread Stage Summary</a></li>
           </ul>
           <div id="mysql_perf_threads_tbl_div">   
             <table id="mysql_perf_threads_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
@@ -142,6 +143,13 @@
                 &nbsp;&nbsp; <input type="button" id="btn_mysql_perf_thread_stmt_summary_reset" value="Reset" title="Click to Restart"/>
              </span>
              <table id="mysql_perf_thread_stmt_summary_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
+          </div>  
+          <div id="thread_stage_summary_tbl_div">
+             <span>Thread ID: <input type="text" id="stage_thread_id" /> 
+                &nbsp;&nbsp; <input type="button" id="btn_mysql_perf_thread_stage_summary" value="Refresh" title="Click to see differences"/>
+                &nbsp;&nbsp; <input type="button" id="btn_mysql_perf_thread_stage_summary_reset" value="Reset" title="Click to Restart"/>
+             </span>
+             <table id="mysql_perf_thread_stage_summary_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
           </div>  
       </div><!-- thread -->
       
@@ -273,7 +281,8 @@ var mysql_perf_threadsTable = new JSTable({
    	   db: {dbGroupId: "dbgroup", dbHost: "host"},
    	   handlers: {jquery:1, statusMessageHandler:messagehandler, contextMenuHandler:[
    	       {key: "show_thread_wait", label: "Thread Wait Summary", handler: contextmenu_mysql_perf_threads},
-   	       {key: "show_thread_stmt", label: "Thread Statement Summary", handler: contextmenu_mysql_perf_threads}   	       
+   	       {key: "show_thread_stmt", label: "Thread Statement Summary", handler: contextmenu_mysql_perf_threads},	       
+   	       {key: "show_thread_stage", label: "Thread Stage Summary", handler: contextmenu_mysql_perf_threads}	       
    	     ]},
    	   showRowDataOnClick:"y",
    	   formatter:{columnFormatters:{"PROCESSLIST_INFO":jqueryFormatSqlText}}
@@ -286,14 +295,19 @@ function contextmenu_mysql_perf_threads(obj)
   var key = obj.key;
   mydom("thread_id").value = thid;
   mydom("stmt_thread_id").value = thid;
+  mydom("stage_thread_id").value = thid;
   if(key =='show_thread_wait')
   {
     mydom('btn_mysql_perf_thread_waits_summary_reset').click();
     $('#thread_tab').tabs("option", "active", 1);
-  }else
+  }else if(key == 'show_thread_stmt')
   {
     mydom('btn_mysql_perf_thread_stmt_summary_reset').click();
     $('#thread_tab').tabs("option", "active", 2);
+  }else
+  {
+    mydom('btn_mysql_perf_thread_stage_summary_reset').click();
+    $('#thread_tab').tabs("option", "active", 3);
   }
 }//contextmenu_mysql_perf_threads
 
@@ -403,6 +417,45 @@ $('#btn_mysql_perf_thread_stmt_summary_reset').click(function()
   } 
   mysql_perf_thread_stmt_summaryTable.baseDataObj['mysql_perf_thread_stmt_summary'] = null;
   mysql_perf_thread_stmt_summaryTable.sendQuery();
+});
+
+
+var mysql_perf_thread_stage_summaryTable = new JSTable({
+   	   name: "mysql_perf_thread_stage_summary",
+   	   query:{
+   	     queryURL: "query.html",
+   	     sqlId: "mysql_perf_thread_stage_summary",
+   	     paramFields:[{name:"p_1", valueField:"stage_thread_id"}]
+   	   }, 
+   	   db: {dbGroupId: "dbgroup", dbHost: "host"},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler},
+   	   diff: {keyColumns:["EVENT_NAME"], valueColumns:["COUNT_STAR","WAIT_MS"]},
+   	   formatter:{commonFormatter:jqueryFormatNumber}
+   	});
+
+$('#btn_mysql_perf_thread_stage_summary').click(function()
+{
+  var thid = mydomval('stage_thread_id');
+  if(thid == null || thid == "")
+  {
+    alert("Please provide a thread_id to start.");
+    mydom('stmt_thread_id').focus();
+    return;    
+  } 
+  mysql_perf_thread_stage_summaryTable.sendQuery();
+});
+
+$('#btn_mysql_perf_thread_stage_summary_reset').click(function()
+{
+  var thid = mydomval('stage_thread_id');
+  if(thid == null || thid == "")
+  {
+    alert("Please provide a thread_id to start.");
+    mydom('stage_thread_id').focus();
+    return;    
+  } 
+  mysql_perf_thread_stage_summaryTable.baseDataObj['mysql_perf_thread_stage_summary'] = null;
+  mysql_perf_thread_stage_summaryTable.sendQuery();
 });
 
 var mysql_perf_objects_summaryTable = new JSTable({

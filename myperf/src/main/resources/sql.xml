@@ -348,6 +348,13 @@
           order by  e.event_name</text>
     <param name="thread_id" dataType="numeric"/>
   </sql>
+  <sql handle="mysql_perf_thread_stage_summary" paramCount="1" comments="Display MySQL waits summary by stage for a given thread">
+    <text>select e.event_name, e.count_star, e.sum_timer_wait/1000000000 WAIT_MS 
+          from performance_schema.events_stages_summary_by_thread_by_event_name e 
+          where e.count_star&gt;0 and thread_id=&amp;p_1 
+          order by  e.event_name</text>
+    <param name="thread_id" dataType="numeric"/>
+  </sql>
   <sql handle="mysql_perf_objects_summary" paramCount="0" comments="Display MySQL object access summary by name">
     <text>select CONCAT(object_type, ':', object_schema, '.', object_name) NAME, count_star, sum_timer_wait/1000000000 WAIT_MS, min_timer_wait/1000000000 MIN_WAIT_MS, max_timer_wait/1000000000 MAX_WAIT_MS, avg_timer_wait/1000000000 AVG_WAIT_MS from performance_schema.objects_summary_global_by_type where count_star&gt;0 order by  1 limit 5000</text>
   </sql>

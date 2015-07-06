@@ -932,7 +932,11 @@ function jqueryVariableName  (data, type, row, meta)
     else if(data.indexOf("BINLOG")==0 || data.indexOf("LOG_BIN")==0 || data.indexOf("MAX_BINLOG")==0
       || data=='SYNC_BINLOG' || data=='MASTER_VERIFY_CHECKSUM' || data == 'LOG_SLAVE_UPDATES')
         h = "http://dev.mysql.com/doc/refman/5.6/en/replication-options-binary-log.html#sysvar_";
-	         
+	else if(data.indexOf("RELAY_LOG")==0 || data.indexOf("SLAVE_")==0 || data.indexOf("SYNC_RELAY_LOG_")==0
+      || data=='SYNC_MASTER_INFO' || data=='SQL_SLAVE_SKIP_COUNTER' || data == 'RPL_STOP_SLAVE_TIMEOUT'
+      || data=='MASTER_INFO_REPOSITORY'||data=='LOG_SLOW_SLAVE_ATTEMPTS'||data=='INIT_SLAVE')
+        h = "http://dev.mysql.com/doc/refman/5.6/en/replication-options-slave.html#sysvar_";
+                 
     return "<a href=\"" + h + data.toLowerCase() + "\" target=\"_var\">" + data + "</a>";
   }
   return data;

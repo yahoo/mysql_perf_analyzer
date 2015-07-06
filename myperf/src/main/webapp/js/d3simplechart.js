@@ -308,6 +308,31 @@ function drawOneChart(chartInfo, jsondata)
         }
       }
     }
+    //we still need shift by 1, otherwise we cannot align with inc=1
+    for(i=0;i<len-1;i++)
+    {
+      times[i] = times[i+1];
+    }
+    times.length = times.length - 1;
+    for(j=0;j<metrics.length;j++)
+    {
+      for(i=0;i<data[j].length;i++)
+      {
+        if(num_keys == 0)
+          data[j][i] = data[j][i+1];
+        else
+        {
+          for(var k = 0; k<num_keys; k++)
+          {
+            var jk = j*num_keys+k;
+            data[jk][i] = data[jk][i+1];
+          }
+        }
+      }
+      data[j].length = data[j].length -1;
+      for(var k = 0; k<num_keys; k++)
+        data[jk].length = data[jk].length -1;
+    }
   }
   //calculate average
   for(j=0;j<data.length;j++)
