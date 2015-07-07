@@ -49,7 +49,7 @@
 </form>  
 </div><!-- end of query form -->
 <span id="common_msg"> <!-- common message line -->
-<c:if test="${mydbSize==0}">You have not provided any database credential yet. Please use <a href="<%= request.getContextPath() %>/cred.htm">DB Credential</a> page to provide access information for databases you are interested in.</c:if>
+<c:if test="${mydbSize==0}">You have not provided any database credential yet. Please use <a href="<%= request.getContextPath() %>/db.htm">DB Credential</a> page to provide access information for databases you are interested in.</c:if>
 </span>
 
 <div>

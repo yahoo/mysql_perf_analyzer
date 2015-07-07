@@ -26,14 +26,17 @@
    <legend>Reset Password:</legend>
    <table border="0">
      <tr id="tr_name">
-       <td><a href="#" onclick="return false;"  title="A unique identifier for the user to use this tool and store user specific data such as reports and filters.">User Name</a></td>
+       <td><label for="name"  title="A unique identifier for the user to use this tool and store user specific data such as reports and filters.">User Name</label></td>
        <td><input type="text" id="name" name="name" />
        </td>
      </tr>  
      <tr  id="tr_email">
-       <td><a href="#" onclick="return false;"  title="Optional. It will be used for password reset and other administrative tasks.">Email</a></td>
+       <td><label for="email" title="Optional. It will be used for password reset and other administrative tasks.">Email</label></td>
        <td><input type="text" name="email" id="email" maxlength="100" /></td>
-     </tr>     
+     </tr>
+     <tr>
+       <td colspan="2">Note: If the server has problem to send out email, please contact administrator to change your password.</td>
+     </tr>
      <tr>
      <td></td><td><input type="submit" align="center" value="Submit" /></td>
      </tr>

@@ -62,7 +62,7 @@
 	   <li id="menu-item-8"><a href="<%= request.getContextPath() %>/perf.htm?pg=st" 
 	   		style='text-decoration:<%= "st".equals(pg)?"underline":"none"%>;'>Dashboard</a></li>
 	   <li id="menu-item-9"><a href="logout.html" 
-	   		title="You are signing in as <%= u.getName() %>, click here to sign out.">Sign Out</a></li>
+	   		title="You are logged in as <%= u.getName() %>, click here to sign out.">Sign Out(<%= u.getName() %>)</a></li>
 	   <li id="menu-item-10"><a target="_help" href="help.htm?key=${help_key}">Help</a></li>
     </ul>
    </div>	

@@ -526,6 +526,42 @@ public class MetaDB implements java.io.Serializable{
 	}
   }
 
+  public boolean deleteUser(String user)
+  {
+    if(user == null || DEFAULT_USER.equals(user))return false;
+	String sql1 = "delete from "+APPUSER_TABLENAME+" where USERNAME=?";
+	String sql2 = "delete from "+CRED_TABLENAME+" where owner=?";
+
+	Connection conn = null;
+	PreparedStatement pstmt = null;
+	try
+	{
+	  conn = getConnection();
+	  pstmt = conn.prepareStatement(sql1);
+	  pstmt.setString(1, user);
+	  pstmt.execute();
+	  conn.commit();
+	  DBUtils.close(pstmt); pstmt = null;
+	  
+	  pstmt = conn.prepareStatement(sql2);
+	  pstmt.setString(1, user);
+	  pstmt.execute();
+	  conn.commit();
+	  DBUtils.close(pstmt); pstmt = null;
+	  
+	  return true;
+	}catch(Exception ex)
+	{
+	  logger.log(Level.SEVERE,"Exception", ex);
+	  if(conn!=null)try{conn.rollback();}catch(Exception iex){}
+	  throw new RuntimeException(ex);
+	}finally
+	{
+	  DBUtils.close(pstmt);
+	  DBUtils.close(conn);
+	}
+  }
+
 	
   /**
    * List all registered users

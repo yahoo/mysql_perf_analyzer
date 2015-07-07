@@ -46,6 +46,7 @@ public class SigninController extends AbstractController
   {
 	logger.info("receive url path: "+request.getContextPath()+","+request.getRequestURI()+", "+request.getServletPath()+", parameters: "+request.getQueryString());
 	boolean failed = false;     
+	String message = null;
 	String username = request.getParameter("name");
     if(username!=null)
     {
@@ -62,12 +63,22 @@ public class SigninController extends AbstractController
 	    //if admin user, and setup not done yet, send to setup.
 	    if(appUser.isAdminUser() && !frameworkContext.getMyperfConfig().isConfigured())
 	    	view = this.getSetupView();
-	    logger.info(appUser.getName()+" login, redirect to "+view);
-	    return new ModelAndView(new RedirectView(view));
+	    else if(!appUser.isAdminUser()  && !appUser.isVerified())
+	    {
+	    	failed = true;
+	    	message = "Your signup has not been confirmed by any administrator user yet.";
+	    }
+	    if(!failed)
+	    {
+	    	logger.info(appUser.getName()+" login, redirect to "+view);
+	    	return new ModelAndView(new RedirectView(view));
+	    }
 	  }//if(appUser!=null && appUser.match(request.getParameter("pd"))
 	  else
 	  {
 	    failed = true;
+	    message = DEFAULT_ERROR;
+	    
 	  }
     }//if(username!=null)
 
@@ -77,7 +88,7 @@ public class SigninController extends AbstractController
     int seed = (int)(Math.random()*Integer.MAX_VALUE);
     ModelAndView mv = new ModelAndView(getLoginFormView());
     mv.addObject("name", username);
-	if(failed)mv.addObject("message", DEFAULT_ERROR);
+	if(failed)mv.addObject("message", message);
 	mv.addObject("help_key", "start");
 	mv.addObject("server_ts", server_ts);
 	mv.addObject("ars", seed);//ars: authentication random seed

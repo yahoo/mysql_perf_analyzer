@@ -104,7 +104,14 @@ public class AppUserManager implements Serializable{
 			au.setVerified(confirmed);
 	}
   }
-
+  
+  public boolean deleteUser(String username)
+  {
+	  boolean ret =  this.metaDb.deleteUser(username);
+	  if(ret)
+		  this.userMap.remove(username);
+	  return ret;
+  }
   /**
    * Add a new user. Return AppUser object if succeed. Otherwise null.
    * @param userame
