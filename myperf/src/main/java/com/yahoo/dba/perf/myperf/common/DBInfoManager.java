@@ -159,7 +159,7 @@ public class DBInfoManager implements java.io.Serializable
     this.projectDb = projectDb;
   }
 
-  public MyDatabases getMyDatabases(String owner)
+  public MyDatabases getMyDatabases(String owner, boolean restricted)
   {
     MyDatabases mydb = null;
 	synchronized (this.mydbs)
@@ -170,18 +170,18 @@ public class DBInfoManager implements java.io.Serializable
 	  this.mydbs.put(owner, mydb);
 	}
 	//fill data from meta rep
-	mydb.addDbs( this.projectDb.listMyDBs(owner));
+	mydb.addDbs( this.projectDb.listMyDBs(owner, restricted));
 	return mydb;
   }
 	
   /**
-   * Will list all DBs and the dbs with user specified credentails are listed at the top
+   * Will list all DBs and the dbs with user specified credentials are listed at the top
    * @param user
    * @return
    */
-  public List<String> listDbsByUserInfo(String user)
+  public List<String> listDbsByUserInfo(String user, boolean restricted)
   {
-    Set<String> mydb = this.getMyDatabases(user).getMyDbList();
+    Set<String> mydb = this.getMyDatabases(user, restricted).getMyDbList();
 	List<String> alldb = new ArrayList<String>(this.groups.size());
 		
 	synchronized(this)
@@ -191,10 +191,11 @@ public class DBInfoManager implements java.io.Serializable
 	    if(this.groups.containsKey(db))
 		  alldb.add(db);
 	  }
-	  for(String key: this.groups.keySet())
-	  {
-	    if(!mydb.contains(key))alldb.add(key);
-	  }
+	  if(!restricted)
+	    for(String key: this.groups.keySet())
+	    {
+	      if(!mydb.contains(key))alldb.add(key);
+	    }
 	}
 	return alldb;
   }  
@@ -282,5 +283,23 @@ public class DBInfoManager implements java.io.Serializable
 		{
 			entry.getValue().replaceDb(oldname.toLowerCase(), newName.toLowerCase());
 		}
+	}
+	
+	public boolean updateRestricteduserAcl(String username, String dbgroupname, boolean visible)
+	{
+	  if(this.projectDb.updateUserAcl(username, dbgroupname, visible))
+	  {
+		  MyDatabases mydb = this.getMyDatabases(username, true);
+		  if(mydb != null)
+		  {
+			  if(visible)
+				  mydb.addDb(dbgroupname);
+			  else
+				  mydb.removeDb(dbgroupname);
+		  }
+		  return true;
+	  }
+	  return false;
+	  
 	}
 }

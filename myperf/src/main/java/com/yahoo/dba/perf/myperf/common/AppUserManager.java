@@ -134,7 +134,10 @@ public class AppUserManager implements Serializable{
 	newUser.setVerified(confirmed);
 	try
 	{
-	  newUser.setUserprivilege(Integer.parseInt(priv)==AppUser.PRIV_USER_POWER?AppUser.PRIV_USER_POWER:AppUser.PRIV_USER_STANDARD);
+	  int privInt = Integer.parseInt(priv);
+	  if(privInt == AppUser.PRIV_USER_POWER || privInt == AppUser.PRIV_USER_RESTRICTED)
+		  newUser.setUserprivilege(privInt);
+	  //otherwise standard
 	}catch(Exception ex){}	
 	newUser.setMd5Hash(newUser.calMd5(newUser.getPassword()));
 	metaDb.upsertAppUser(newUser);//save to db

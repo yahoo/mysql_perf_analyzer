@@ -619,6 +619,8 @@ public class UserController  extends MyPerfBaseController{
 	  }
 	  mv.addObject("allUsers", allUsers);
 	  mv.addObject("newUsers", newUsers);
+	  mv.addObject("mydbs", this.frameworkContext.getDbInfoManager()
+				.listDbsByUserInfo(WebAppUtil.findUserFromRequest(req), retrieveAppUser(req).isRestrictedUser()));
 	  logger.info("Total user list: "+userList.size()+", all: "+allUsers.size()+", new: "+newUsers.size());
   }
 	public String getResetView() {

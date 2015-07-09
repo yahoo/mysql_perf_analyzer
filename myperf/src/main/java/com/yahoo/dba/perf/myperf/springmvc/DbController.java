@@ -5,6 +5,8 @@
  */
 package com.yahoo.dba.perf.myperf.springmvc;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,7 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.yahoo.dba.perf.myperf.common.*;
-import com.yahoo.dba.perf.myperf.meta.MetaDB;
 
 public class DbController extends MyPerfBaseController
 {
@@ -82,6 +83,11 @@ public class DbController extends MyPerfBaseController
   private ModelAndView processAddUpdate(HttpServletRequest request, HttpServletResponse response, 
 		  String cmd, DBInstanceInfo db)
   {
+	//only admin/standard user can add new dbs
+	AppUser appUser = retrieveAppUser(request);
+	if(appUser == null || appUser.isRestrictedUser())
+		return this.respondFailure("Restricted user is not allowed to add or modify databases.", request);
+	
 	int status = Constants.STATUS_OK;
 	String message = null;
 	  
@@ -177,7 +183,7 @@ public class DbController extends MyPerfBaseController
 			cred.setUsername(db.getUsername());
 			cred.setPassword(db.getPassword());
 			this.frameworkContext.getMetaDb().upsertDBCredential(cred);
-			this.dbManager.getMyDatabases(cred.getAppUser()).addDb(cred.getDbGroupName());
+			this.dbManager.getMyDatabases(cred.getAppUser(), retrieveAppUser(request).isRestrictedUser()).addDb(cred.getDbGroupName());
 			
 			if(db.isTestConnection()) //only store tested credential
 			{
@@ -226,6 +232,44 @@ public class DbController extends MyPerfBaseController
 	return this.respondWithStatus(status, message, request);
   }
 
+  private ModelAndView processACL(HttpServletRequest request, HttpServletResponse response, 
+		  String cmd, DBInstanceInfo db)
+  {
+	int status = Constants.STATUS_BAD;
+	String message = null;
+	String grp = request.getParameter("dbGroupName");
+	String username = request.getParameter("username");
+	boolean visible = "1".equals(request.getParameter("visible"));
+	if(grp != null)grp = grp.trim();
+	if(grp == null || grp.isEmpty())
+		message = "Please provide db group name.";	
+	else if(username == null || username.isEmpty())
+		message = "Please provide restricted user name.";
+	else if(this.frameworkContext.getUserManager().getUser(username) == null )
+		message = "Please provide a valie restricted user name";
+	else if(!this.frameworkContext.getUserManager().getUser(username).isRestrictedUser() )
+		message = "Please provide a valie restricted user name";
+	else
+	{
+		try
+		{
+			if(!this.frameworkContext.getDbInfoManager().updateRestricteduserAcl(username, grp, visible))
+			{
+				message = "Failed, please check log.";
+			}
+		}catch(Exception ex)
+		{
+			message = "Failed to update ACL for user: "+ username+", group: " + ex.getMessage();
+		}
+	}
+	if(message == null)
+	{
+		message = "ACL for user "+ username + ", DB group " + grp+" has been updated.";
+		status = Constants.STATUS_OK;
+	}
+	return this.respondWithStatus(status, message, request);
+  }
+
   @Override
   protected ModelAndView handleRequestImpl(HttpServletRequest request,
 			HttpServletResponse response) throws Exception 
@@ -236,7 +280,19 @@ public class DbController extends MyPerfBaseController
     {
 		ModelAndView mv = new ModelAndView(this.getFormView());
 		mv.addObject("help_key", "dbinfo");
-		mv.addObject("mydbs", this.frameworkContext.getDbInfoManager().listDbsByUserInfo(WebAppUtil.findUserFromRequest(request)));
+		mv.addObject("mydbs", this.frameworkContext.getDbInfoManager()
+				.listDbsByUserInfo(WebAppUtil.findUserFromRequest(request), retrieveAppUser(request).isRestrictedUser()));
+		
+		  AppUser appUser = retrieveAppUser(request);
+		  if(appUser == null || !appUser.isAdminUser()) return mv;
+		  List<String> restrictedUsers = new ArrayList<String>();
+		  List<AppUser> userList = this.frameworkContext.getMetaDb().retrieveAllUsers();
+		  for(AppUser u: userList)
+		  {
+			  if(u.isRestrictedUser())
+				  restrictedUsers.add(u.getName());
+		  }
+		  mv.addObject("restrictedUsers", restrictedUsers);
 		return mv;    	
     }
     
@@ -256,6 +312,8 @@ public class DbController extends MyPerfBaseController
 		return processAddUpdate(request, response, cmd,  db);
 	else if(cmd.equals(String.valueOf(Constants.DBM_ACTION_RENAME_CLUSTER)))
 		return processRenameCluster(request, response, cmd,  db);
+	else if(cmd.equals(String.valueOf(Constants.DBM_ACTION_ACL)))
+		return processACL(request, response, cmd,  db);
 	else if(cmd.equals(String.valueOf(Constants.DBM_ACTION_REMOVE_CLUSTER)))//remove a group
 	{
 	  if(this.frameworkContext.getDbInfoManager().removeDbGroup(db.getDbGroupName(),

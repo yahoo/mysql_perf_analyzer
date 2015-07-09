@@ -54,8 +54,10 @@ public class PerfController extends MyPerfBaseController
 	
 	if(WebAppUtil.hasValidSession(request))
 	{
-		mv.addObject("mydbs", this.frameworkContext.getDbInfoManager().listDbsByUserInfo(WebAppUtil.findUserFromRequest(request)));
-	    mv.addObject("mydbSize", this.frameworkContext.getDbInfoManager().getMyDatabases(WebAppUtil.findUserFromRequest(request)).size());
+		mv.addObject("mydbs", this.frameworkContext.getDbInfoManager()
+				.listDbsByUserInfo(WebAppUtil.findUserFromRequest(request), retrieveAppUser(request).isRestrictedUser()));
+	    mv.addObject("mydbSize", this.frameworkContext.getDbInfoManager()
+	    		.getMyDatabases(WebAppUtil.findUserFromRequest(request), retrieveAppUser(request).isRestrictedUser()).size());
 	}
 	else
 	{

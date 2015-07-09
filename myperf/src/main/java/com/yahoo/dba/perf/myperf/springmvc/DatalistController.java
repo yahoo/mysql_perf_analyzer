@@ -5,6 +5,9 @@
  */
 package com.yahoo.dba.perf.myperf.springmvc;
 
+import java.util.List;
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -43,6 +46,8 @@ public class DatalistController extends MyPerfBaseController
 	  rs = this.retrieveDbHostList(req);
 	else if("dbinfo".equalsIgnoreCase(dataType))
 	  rs = this.retrieveDbHostInfo(req);
+	else if("list_restricted".equalsIgnoreCase(dataType))
+		  rs = this.listRestricted(req);		
 	if("json".equalsIgnoreCase(contentType))
 	{
 	  mv.addObject("json_result", ResultListUtil.toJSONString(rs, null, 0, "OK"));
@@ -156,5 +161,24 @@ public class DatalistController extends MyPerfBaseController
 	}
 	else
 	  return null;
+  }
+  private ResultList listRestricted(HttpServletRequest req)
+  {
+    String name = req.getParameter("name");
+	ResultList rs = new ResultList();
+	ColumnDescriptor desc = new ColumnDescriptor();
+	desc.addColumn("DBGROUP", false, 1);
+	rs.setColumnDescriptor(desc);
+	Set<String> mydbs = this.frameworkContext.getDbInfoManager().getMyDatabases(name, true).getMyDbList();
+	
+	if(mydbs == null)return rs;
+	for(String s: mydbs)
+	{
+	  ResultRow row = new ResultRow();
+	  row.setColumnDescriptor(desc);
+  	  row.addColumn(s);			
+	  rs.addRow(row);
+	}
+	return rs;
   }
 }

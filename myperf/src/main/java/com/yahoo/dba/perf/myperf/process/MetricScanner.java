@@ -122,7 +122,7 @@ public class MetricScanner{
 	}
 	public void scan(int snap_id)
 	{
-		Set<String> clusternames = frameworkContext.getDbInfoManager().getMyDatabases(appUser.getName()).getMyDbList();
+		Set<String> clusternames = frameworkContext.getDbInfoManager().getMyDatabases(appUser.getName(), false).getMyDbList();
 		logger.info("Start scan metrics");
 		if (this.buffer == null)
 		{

@@ -64,7 +64,7 @@ public class AlertScanner{
 	}
 	public void scan()
 	{
-		Set<String> clusternames = frameworkContext.getDbInfoManager().getMyDatabases(appUser.getName()).getMyDbList();
+		Set<String> clusternames = frameworkContext.getDbInfoManager().getMyDatabases(appUser.getName(), false).getMyDbList();
 		logger.info("Start scan alerts");
 		LinkedBlockingQueue<DBInstanceInfo> dbqueue = new LinkedBlockingQueue<DBInstanceInfo>();
 		for(String cl: clusternames)

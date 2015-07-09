@@ -24,7 +24,12 @@
    #dbinfo_tb_3{border:0px;border-spacing:0px;}
    #dbinfo_tbl_3 tr {border:0px;}
    #dbinfo_tbl_3 th {border:0px;}
-   #dbinfo_tbl_3 td {border:0px; padding: 10px;} 	
+   #dbinfo_tbl_3 td {border:0px; padding: 10px;} 
+   #dbinfo_tb_4{border:0px;border-spacing:0px;}
+   #dbinfo_tbl_4 tr {border:0px;}
+   #dbinfo_tbl_4 th {border:0px;}
+   #dbinfo_tbl_4 td {border:0px; padding: 10px;} 
+   .user_acl{}	
 </style>
 </head>
 <body>
@@ -35,16 +40,25 @@
 <script language="javascript">
 var DBList=[""
     <c:forEach var="cluster" items="${mydbs}">,"${cluster}"</c:forEach>
-  ];   
+  ];
+var RESTRICTUSERLIST = [""
+    <c:forEach var="u" items="${restrictedUsers}">,"${u}"</c:forEach>
+  ];     
 </script>
 <div style="margin-left:48px;">
   <span id="common_msg"></span>
   <div id="mainTabs" class="clearTabView">
     <ul>
+<% if(!u.isRestrictedUser()){ %>    
       <li><a href="#dbinfo_add_update" title="Add or update MySQL servers">Add/Update</a></li>
       <li><a href="#dbinfo_remove" title="Remove a group or a servers">Remove/Rename</a></li>
+<% } %>      
       <li><a href="#dbinfo_cred" title="Provide MySQL user and credential for information retrieval">Credentials</a></li>
+<% if(u.isAdminUser()){ %>
+      <li><li><a href="#dbinfo_acl" title="Assign DB Groups to Restricted User">Access Control</a></li>
+<% } %>
     </ul>
+<% if(!u.isRestrictedUser()){ %>    
     <div id="dbinfo_add_update">
 	  <p style="width:600px;">Note: You can use one occurrence of the pattern "[nnn-mmm]" inside host name to add multiple servers to the same group, 
 	     where nnn and mmm are numbers only. When you add servers to an existing group, no need to provide MySQL user name and password, Connection test
@@ -117,7 +131,7 @@ var DBList=[""
       </table>
     </div><!-- end of add/update db -->
     <div id="dbinfo_remove">
-<% if(!u.isAdminUser()){ %>    
+<% if(!u.isAdminUser()){ %>
 	  <p style="width:600px;">Note: You can only remove the groups or servers you added.</p>
 <% } %>	  
       <table border="0" id="dbinfo_tbl_2">
@@ -151,6 +165,7 @@ var DBList=[""
      </tr>
    </table>
   </div><!-- end of dbinfo_remove -->
+<% } %>
   <div id="dbinfo_cred">
     <p style="width:600px;">Note: To access database information and gathering metrics, you need provide a MySQL account and password with
       the following privileges:
@@ -190,6 +205,27 @@ var DBList=[""
      </tr>
    </table>    
   </div><!-- cred div-->
+<% if(u.isAdminUser()){ %>  
+  <div id="dbinfo_acl">
+    <p>Please use this screen to control database group visibility to restricted users. If you don't see the DB Group list, please refresh this page.</p>
+    <table border="0" id="dbinfo_tbl_4">
+      <tr>
+        <td>Restricted User</td>
+        <td><input type="text" id="username_acl" name="username_acl" required/></td>
+      </tr>
+      <tr>
+        <td>Visible ?</td>
+        <td>
+          <dl>
+            <c:forEach var="dg" items="${mydbs}">
+              <dt><input type="checkbox" id="acl_chk_${dg}" value="${dg}" class="user_acl" />&nbsp;${dg}</dt>
+            </c:forEach>
+          </dl>  
+        </td>
+      </tr>
+    </table>
+  </div><!-- acl div -->
+<% } %>
 </div><!-- main tab -->
 </div><!-- top div -->
 
@@ -201,7 +237,8 @@ var DBList=[""
 <script language="javascript">
 $('#mainTabs').tabs();
 $("#dbGroupNameCred").autocomplete({source: DBList, minLength:0}) 
-  .bind('focus', function(){$(this).autocomplete("search");});  
+  .bind('focus', function(){$(this).autocomplete("search");}); 
+     
 $('#dbGroupNameCred').blur(function()
 {
   var db = mydomval('dbGroupNameCred');
@@ -220,6 +257,79 @@ $('#dbGroupNameCred').blur(function()
      }
   );  
 });
+<% if(u.isAdminUser()){ %>
+$("#username_acl").autocomplete({source: RESTRICTUSERLIST, minLength:0}) 
+  .bind('focus', function(){$(this).autocomplete("search");});
+  
+$('#username_acl').blur(function()
+{
+  var name = mydomval('username_acl');
+  if(name == null || name == '')return;
+  var mydata = "t=list_restricted&ct=json&name=" + escape(name) + "&seed="+Math.random();
+  //clean old data
+  for(var i = 0; i<DBList.length; i++)
+  {
+    if(mydom("acl_chk_"+DBList[i]))
+      mydom("acl_chk_"+DBList[i]).checked = false;
+  }
+  $.ajax({
+       url: "datalist.html",
+       data: mydata,
+       type: 'GET',
+       dataType: 'json',
+       success: function(json)
+       {
+          if(json==null||json.resp==null
+               ||json.resp.results==null||json.resp.results.results==null||json.resp.results.results<1)
+          {
+               return;
+          }
+          var res = json.resp.results.results;
+          var obj = new Object();
+          var i = 0;
+          //reset first
+          for(i=0;i<res.length;i++)
+          {
+               var dg = res[i]["DBGROUP"];
+               $("#acl_chk_"+dg).prop("checked", true);
+          }//for
+     }//success
+  });  //ajax
+});//binding 
+
+$(".user_acl").on("change", function()
+{
+   var dg = $(this).attr("value");
+   var checked = $(this).is(":checked");
+   handleAclUpdate(dg, checked);
+}
+);
+   
+function handleAclUpdate(dg,  subscribe)
+{     
+  var user = mydomval("username_acl");
+  var mydata = "dbAction=7&username="+escape(user) +"&dbGroupName=" + escape(dg);
+  if(subscribe)
+	   mydata += "&visible=1";
+  else mydata += "&visible=0";
+  mydata += "&seed="+Math.random();
+  $.ajax({
+       url: "db.html",
+       data: mydata,
+       dataType: 'json',
+       success: function(json)
+       {
+         if(json!=null && json.resp!=null)
+         {
+           if(json.resp.status==0)
+             alert("ACL for ("+ user + ", "+ dg + ") has been updated.");
+           else
+             alert("Failed to update ACL for ("+ user +", "+ db+"): " + json.resp.message);
+         } 
+       }
+     });
+ }
+<% } %>
 
 $('#btn_cred').click(function()
 {
@@ -242,6 +352,7 @@ $('#btn_cred').click(function()
      }
   );        
 });
+<% if(!u.isRestrictedUser()){ %>
 $('#btn_add_update').click(function()
 {
   addOrUpdateDB(mydomval("dbAction"));
@@ -251,7 +362,7 @@ $('#btn_remove').click(function()
 {
   addOrUpdateDB(mydomval("dbAction_2"));
 });
-
+<% } %>
 function showRows(val)
 {
  	if(val=="4"||val=="5"||val=="6")

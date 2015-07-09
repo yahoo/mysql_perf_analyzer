@@ -116,6 +116,7 @@
              <td><select id="userprivilege" name="userprivilege">
                  <option value="0">Standard User</option>
                  <option value="1">Power User</option>
+                 <option value="2">Restricted User</option>
                </select>
              </td>
            </tr>

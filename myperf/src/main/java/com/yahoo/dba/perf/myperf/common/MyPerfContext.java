@@ -680,7 +680,7 @@ public class MyPerfContext implements java.io.Serializable, InitializingBean,Dis
 			cred2.setUsername(dbuser);
 			cred2.setPassword(password);
 			getMetaDb().upsertDBCredential(cred2);
-			this.dbInfoManager.getMyDatabases(cred2.getAppUser()).addDb(cred2.getDbGroupName());
+			this.dbInfoManager.getMyDatabases(cred2.getAppUser(), false).addDb(cred2.getDbGroupName());
 		}
 		
 		if(metricsUser != null && !MetaDB.DEFAULT_USER.equals(metricsUser.getName())
@@ -693,7 +693,7 @@ public class MyPerfContext implements java.io.Serializable, InitializingBean,Dis
 			cred2.setUsername(dbuser);
 			cred2.setPassword(password);
 			getMetaDb().upsertDBCredential(cred2);
-			this.dbInfoManager.getMyDatabases(cred2.getAppUser()).addDb(cred2.getDbGroupName());				
+			this.dbInfoManager.getMyDatabases(cred2.getAppUser(), false).addDb(cred2.getDbGroupName());				
 		}
 
   }

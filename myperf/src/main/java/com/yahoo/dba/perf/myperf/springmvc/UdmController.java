@@ -149,8 +149,10 @@ public class UdmController extends MyPerfBaseController
 		
 		if(WebAppUtil.hasValidSession(req))
 		{
-			mv.addObject("mydbs", this.frameworkContext.getDbInfoManager().listDbsByUserInfo(WebAppUtil.findUserFromRequest(req)));
-		    mv.addObject("mydbSize", this.frameworkContext.getDbInfoManager().getMyDatabases(WebAppUtil.findUserFromRequest(req)).size());
+			mv.addObject("mydbs", this.frameworkContext.getDbInfoManager()
+					.listDbsByUserInfo(WebAppUtil.findUserFromRequest(req), retrieveAppUser(req).isRestrictedUser()));
+		    mv.addObject("mydbSize", this.frameworkContext.getDbInfoManager()
+		    		.getMyDatabases(WebAppUtil.findUserFromRequest(req), retrieveAppUser(req).isRestrictedUser()).size());
 		}
 		else
 		{

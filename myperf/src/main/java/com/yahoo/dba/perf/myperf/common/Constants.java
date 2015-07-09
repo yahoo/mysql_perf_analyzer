@@ -22,6 +22,7 @@ public class Constants
   public static final int DBM_ACTION_REMOVE_HOST=4;
   public static final int DBM_ACTION_REMOVE_CLUSTER=5;
   public static final int DBM_ACTION_RENAME_CLUSTER=6;
+  public static final int DBM_ACTION_ACL=7;
   	
   public static final String URL_PATH_CMD = "CMD";
   public static final String URL_PATH_DBGROUP = "DBGROUP";

@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -31,6 +32,7 @@ public class MetaDB implements java.io.Serializable{
   private static final String SCHEMA_NAME="METADB";
   private static final String CRED_TABLENAME="DBCREDENTIALS";
   private static final String APPUSER_TABLENAME="APPUSERS";
+  private static final String USERACL_TABLENAME="USERACLS"; //user, db group access control
   
   private KeyTool.DesEncrypter keyTool = new KeyTool.DesEncrypter();
   private String dbkey;
@@ -138,6 +140,7 @@ public class MetaDB implements java.io.Serializable{
 	  conn = getConnection();
 	  checkAndCreateAppUserTable(conn);
 	  checkAndCreateDBCredentialTable(conn);
+	  checkAndCreateUserAclTable(conn);
 	}finally
 	{
 	  DBUtils.close(conn);
@@ -226,6 +229,7 @@ public class MetaDB implements java.io.Serializable{
 		String sql = "create table "+CRED_TABLENAME+"(OWNER VARCHAR(30), DBGROUPNAME VARCHAR(30),USERNAME VARCHAR(60), CREDENTIAL VARCHAR(1024), VERIFIED SMALLINT DEFAULT 0, CREATED TIMESTAMP DEFAULT CURRENT TIMESTAMP)";
 		stmt.execute(sql);
 		sql = "create unique index UK_"+CRED_TABLENAME+" on "+CRED_TABLENAME+" (OWNER, DBGROUPNAME)";
+		stmt.execute(sql);
 	  }finally
 	  {
 	    DBUtils.close(stmt);
@@ -237,6 +241,35 @@ public class MetaDB implements java.io.Serializable{
 		try
 		{
 			stmt = conn.createStatement();
+			
+			//because of an earlier bug, we forgot to create uniq index/PK on this table
+			String  ukSQL = "SELECT * FROM "
+							+" SYS.SYSCONGLOMERATES WHERE "
+							+" CONGLOMERATENAME = 'UK_" + CRED_TABLENAME + "'";
+			logger.info("Check unique constraints on table " + CRED_TABLENAME +" with " + ukSQL);
+			rs = stmt.executeQuery(ukSQL);
+			boolean hasIndex = false;
+			if(rs != null && rs.next())
+			{
+				logger.info("UK_" + CRED_TABLENAME + " exists, nothing to do.");
+				hasIndex = true;
+			}
+			rs.close(); rs = null;
+			
+			if(!hasIndex)
+			{
+				logger.info("UK_" + CRED_TABLENAME + " does not exist, create it.");
+				try
+				{
+					boolean ret = stmt.execute("CREATE UNIQUE INDEX UK_"+CRED_TABLENAME+" ON "+CRED_TABLENAME+" (OWNER, DBGROUPNAME)");
+					logger.info("UK_" + CRED_TABLENAME + " created: " + ret);
+				}catch(Throwable ex)
+				{
+					logger.log(Level.WARNING, "Exception when create UK_"+CRED_TABLENAME, ex);
+				}
+			}
+			
+			
 			String sql = "select * from "+CRED_TABLENAME+" where 1=0";
 			rs = stmt.executeQuery(sql);
 			ResultSetMetaData meta = rs.getMetaData();
@@ -261,6 +294,25 @@ public class MetaDB implements java.io.Serializable{
 		{
 			if(stmt!=null)try{stmt.close();stmt=null;}catch(Exception ex){}
 		}		
+	}
+  }
+
+  
+  private void checkAndCreateUserAclTable(Connection conn) throws SQLException
+  {
+    if(!DBUtils.hasTable(conn,SCHEMA_NAME, USERACL_TABLENAME))
+	{
+	  Statement stmt = null;
+	  try
+	  {
+	    stmt = conn.createStatement();
+		logger.info("create table "+USERACL_TABLENAME+".");
+		String sql = "create table "+USERACL_TABLENAME+"(USERNAME VARCHAR(30), DBGROUPNAME VARCHAR(30), VISIBLE SMALLINT DEFAULT 0, CREATED TIMESTAMP DEFAULT CURRENT TIMESTAMP, PRIMARY KEY(USERNAME, DBGROUPNAME))";
+		stmt.execute(sql);
+	  }finally
+	  {
+	    DBUtils.close(stmt);
+	  }
 	}
   }
 
@@ -529,26 +581,25 @@ public class MetaDB implements java.io.Serializable{
   public boolean deleteUser(String user)
   {
     if(user == null || DEFAULT_USER.equals(user))return false;
-	String sql1 = "delete from "+APPUSER_TABLENAME+" where USERNAME=?";
-	String sql2 = "delete from "+CRED_TABLENAME+" where owner=?";
+	String[] sql = new String[]{
+						"delete from "+APPUSER_TABLENAME+" where USERNAME=?",
+						"delete from "+CRED_TABLENAME+" where owner=?",
+						"delete from "+USERACL_TABLENAME+" where username=?"
+						};
 
 	Connection conn = null;
 	PreparedStatement pstmt = null;
 	try
 	{
 	  conn = getConnection();
-	  pstmt = conn.prepareStatement(sql1);
-	  pstmt.setString(1, user);
-	  pstmt.execute();
-	  conn.commit();
-	  DBUtils.close(pstmt); pstmt = null;
-	  
-	  pstmt = conn.prepareStatement(sql2);
-	  pstmt.setString(1, user);
-	  pstmt.execute();
-	  conn.commit();
-	  DBUtils.close(pstmt); pstmt = null;
-	  
+	  for(int i=0;i<sql.length;i++)
+	  {
+	    pstmt = conn.prepareStatement(sql[i]);
+	    pstmt.setString(1, user);
+	    pstmt.execute();
+	    conn.commit();
+	    DBUtils.close(pstmt); pstmt = null;
+	  }	  
 	  return true;
 	}catch(Exception ex)
 	{
@@ -695,8 +746,13 @@ public class MetaDB implements java.io.Serializable{
 	  String sql1 = "select * from "+CRED_TABLENAME+" where dbgroupname=?";
 	  String sql2 = "insert into "+CRED_TABLENAME+" (owner,dbgroupname,username,credential,verified) values(?,?,?,?,1)";
 	  String sql3 = "delete from "+CRED_TABLENAME+" where dbgroupname=?";
+	  String sql4 = "select * from "+USERACL_TABLENAME+" where dbgroupname=?";
+	  String sql5 = "insert into "+USERACL_TABLENAME+" (username,dbgroupname,visible) values(?,?,?)";
+	  String sql6 = "delete from "+USERACL_TABLENAME+" where dbgroupname=?";
+	  
 	  Connection conn = null;
 	  Map<String, String> credMap = new java.util.HashMap<String, String>();
+	  Map<String, Integer> aclMap = new java.util.HashMap<String, Integer>();
 	  Map<String, String> credUserMap = new java.util.HashMap<String, String>();
 	  PreparedStatement stmt = null;
 	  ResultSet rs = null;
@@ -718,12 +774,25 @@ public class MetaDB implements java.io.Serializable{
 				  credString = credString.substring(0, credString.lastIndexOf("::"));
 				  credString = credString.substring(credString.lastIndexOf("::")+2);
 				  credMap.put(owner, credString);
-				  logger.info("cred for "+owner+" is "+credString);
+				  //logger.info("cred for "+owner+" is "+credString);
 				  credUserMap.put(owner, user);
 			  }
 		  }
 		  rs.close(); rs = null;
 		  stmt.close(); stmt = null;
+		  
+		  stmt = conn.prepareStatement(sql4);
+		  stmt.setString(1, oldName.toLowerCase());
+		  rs = stmt.executeQuery();
+		  while(rs != null && rs.next())
+		  {
+			  String user = rs.getString("USERNAME");
+			  int visible = rs.getInt("VISIBLE");
+			  aclMap.put(user, visible);
+		  }
+		  rs.close(); rs = null;
+		  stmt.close(); stmt = null;
+		  
 		  logger.info("Update db group credentials: " + credUserMap.size());
 		  stmt = conn.prepareStatement(sql2);
 		  for(Map.Entry<String, String> entry: credMap.entrySet())
@@ -742,10 +811,28 @@ public class MetaDB implements java.io.Serializable{
 			  stmt.execute();
 		  }
 		  stmt.close(); stmt = null;
+		  
+		  logger.info("Update db acl: " + aclMap.size());
+		  stmt = conn.prepareStatement(sql5);
+		  for(Map.Entry<String, Integer> entry: aclMap.entrySet())
+		  {
+			  stmt.setString(1, entry.getKey());
+			  stmt.setString(2, newName.toLowerCase());
+			  stmt.setInt(3, entry.getValue());
+			  stmt.execute();
+		  }
+		  stmt.close(); stmt = null;
+		  
 		  stmt = conn.prepareStatement(sql3);
 		  stmt.setString(1, oldName.toLowerCase());
 		  stmt.execute();
 		  stmt.close(); stmt = null;
+		  
+		  stmt = conn.prepareStatement(sql6);
+		  stmt.setString(1, oldName.toLowerCase());
+		  stmt.execute();
+		  stmt.close(); stmt = null;
+
 	  }catch(Exception ex)
 	  {
 		  logger.log(Level.SEVERE,"Exception", ex);
@@ -762,16 +849,22 @@ public class MetaDB implements java.io.Serializable{
   
   public void removeDbGroup(String grpName)
   {
-	  String sql3 = "delete from "+CRED_TABLENAME+" where dbgroupname=?";
+	  String[] sql = new String[]{
+			  "delete from "+ CRED_TABLENAME+" where dbgroupname=?",
+			  "delete from "+ USERACL_TABLENAME+" where dbgroupname=?",
+	  };
 	  Connection conn = null;
 	  PreparedStatement stmt = null;
 	  try
 	  {
 		  conn = getConnection();
-		  stmt = conn.prepareStatement(sql3);
-		  stmt.setString(1, grpName.toLowerCase());
-		  stmt.execute();
-		  stmt.close(); stmt = null;
+		  for(int i=0; i<sql.length; i++)
+		  {
+			  stmt = conn.prepareStatement(sql[i]);
+			  stmt.setString(1, grpName.toLowerCase());
+			  stmt.execute();
+			  stmt.close(); stmt = null;
+		  }
 	  }catch(Exception ex)
 	  {
 		  logger.log(Level.SEVERE,"Exception", ex);
@@ -789,13 +882,13 @@ public class MetaDB implements java.io.Serializable{
    * @param owner
    * @return
    */
-  public List<String> listMyDBs(String owner)
+  public List<String> listMyDBs(String owner, boolean restricted)
   {
     Connection conn = null;
 	try
 	{	
 	  conn = getConnection();
-	  return listMyDBs(conn, owner);
+	  return listMyDBs(conn, owner, restricted);
 	}catch(Exception ex)
 	{
 	  logger.log(Level.SEVERE,"Exception", ex);
@@ -807,10 +900,137 @@ public class MetaDB implements java.io.Serializable{
 	return null;
   }
   
-  
-  private List<String> listMyDBs(Connection conn, String owner)
+  /**
+   * 
+   * @param username
+   * @param dbGroups the key is dbgroup name, the value is 1 or 0 (visible or not)
+   */
+  public void  updateUserAcls(String username, Map<String, Integer> dbGroups)
   {
-    String sql = "select dbgroupname from "+CRED_TABLENAME+" where owner=? order by dbgroupname";	
+	  Connection conn = null;
+	  PreparedStatement stmt = null;
+	  ResultSet rs = null;
+	  try
+	  {	
+		  conn = getConnection();
+		  //first we will mask all existing db as not visible
+		  String sql = "update " + USERACL_TABLENAME +" set visible=0 where username=?";
+		  stmt = conn.prepareStatement(sql);
+		  stmt.setString(1, username);
+		  stmt.execute();
+		  DBUtils.close(stmt); stmt = null;
+		  //Now lets grab the entries the user has so far		  
+		  sql = "select dbgroupname from " + USERACL_TABLENAME + " where username=?";
+		  stmt = conn.prepareStatement(sql);
+		  stmt.setString(1, username);
+		  rs = stmt.executeQuery();
+		  HashSet<String> existingGroups = new HashSet<String>();
+		  while(rs != null && rs.next())
+			  existingGroups.add(rs.getString(1));
+		  DBUtils.close(rs); rs = null;
+		  DBUtils.close(stmt); stmt = null;
+		  //first, let's update existing ones
+		  sql = "update " + USERACL_TABLENAME +" set visible=1 where username=? and dbgroupname=?";
+		  stmt = conn.prepareStatement(sql);
+ 		  for(Map.Entry<String, Integer> e: dbGroups.entrySet())
+		  {
+			  if(e.getValue() == 0 || !existingGroups.contains(e.getKey()))continue;
+			  stmt.setString(1, username);
+			  stmt.setString(2, e.getKey());
+			  stmt.execute();
+		  }
+		  DBUtils.close(stmt); stmt = null;
+
+		  //now new entries
+		  sql = "insert into " + USERACL_TABLENAME +" (username, dbgroupname, visible) values (?, ?, 1)";
+		  stmt = conn.prepareStatement(sql);
+ 		  for(Map.Entry<String, Integer> e: dbGroups.entrySet())
+		  {
+			  if(e.getValue() == 0 || existingGroups.contains(e.getKey()))continue;
+			  stmt.setString(1, username);
+			  stmt.setString(2, e.getKey());
+			  stmt.execute();
+		  }
+		  DBUtils.close(stmt); stmt = null;
+		  conn.commit();
+	  }catch(Exception ex)
+	  {
+		  logger.log(Level.SEVERE,"Exception", ex);
+	  }
+	  finally
+	  {
+		  DBUtils.close(rs);
+		  DBUtils.close(stmt);
+		  DBUtils.close(conn);
+	  }
+  }
+
+  /**
+   * Update visibility of a single dbgroup for a user
+   * @param username
+   * @param dbgroupname
+   * @param visible
+   */
+  public boolean  updateUserAcl(String username, String dbgroupname, boolean visible)
+  {
+	  Connection conn = null;
+	  PreparedStatement stmt = null;
+	  ResultSet rs = null;
+	  try
+	  {	
+		  conn = getConnection();
+		  //Now lets grab the entries the user has so far		  
+		  String sql = "select dbgroupname from " + USERACL_TABLENAME + " where username=? and dbgroupname=?";
+		  stmt = conn.prepareStatement(sql);
+		  stmt.setString(1, username);
+		  stmt.setString(2, dbgroupname);
+		  rs = stmt.executeQuery();
+		  boolean findOne = false;
+		  if(rs != null && rs.next())
+			  findOne = true;
+		  DBUtils.close(rs); rs = null;
+		  DBUtils.close(stmt); stmt = null;
+		  //first, let's update existing ones
+		  if(findOne)
+		  {
+		    sql = "update " + USERACL_TABLENAME +" set visible=? where username=? and dbgroupname=?";
+		    stmt = conn.prepareStatement(sql);
+ 		    stmt.setInt(1, visible?1:0);
+ 		    stmt.setString(2, username);
+			stmt.setString(3, dbgroupname);
+			stmt.execute();
+			DBUtils.close(stmt); stmt = null;
+		  }else
+		  {
+		    //now new entries
+		    sql = "insert into " + USERACL_TABLENAME +" (username, dbgroupname, visible) values (?, ?, ?)";
+		    stmt = conn.prepareStatement(sql);
+ 		    stmt.setString(1, username);
+			stmt.setString(2, dbgroupname);
+ 		    stmt.setInt(3, visible?1:0);
+			stmt.execute();
+		  }		  
+		  DBUtils.close(stmt); stmt = null;
+		  conn.commit();
+		  return true;
+	  }catch(Exception ex)
+	  {
+		  logger.log(Level.SEVERE,"Exception", ex);
+		  return false;
+	  }
+	  finally
+	  {
+		  DBUtils.close(rs);
+		  DBUtils.close(stmt);
+		  DBUtils.close(conn);
+	  }
+  }
+
+  private List<String> listMyDBs(Connection conn, String owner, boolean restricted)
+  {
+    String sql = "select dbgroupname from " + CRED_TABLENAME + " where owner=? order by dbgroupname";
+    if(restricted)
+    	sql = "select dbgroupname from " + USERACL_TABLENAME + " where visible=1 and username=? order by dbgroupname";
 	PreparedStatement pstmt = null;
 	ResultSet rs = null;
 	List<String> mydbs = new ArrayList<String>();

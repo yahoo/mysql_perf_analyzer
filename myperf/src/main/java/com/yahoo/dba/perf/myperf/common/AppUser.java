@@ -5,6 +5,9 @@
  */
 package com.yahoo.dba.perf.myperf.common;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * an AppUser is the user who is going to use this app. 
  * @author xrao
@@ -14,6 +17,7 @@ public class AppUser implements java.io.Serializable{
   private static final long serialVersionUID = 1L;
   public static final int PRIV_USER_STANDARD = 0; //standard user.
   public static final int PRIV_USER_POWER = 1;    //power user, can manage this app.
+  public static final int PRIV_USER_RESTRICTED = 2;    //restricted user, can only access database groups assgined by admin user.
   public static final String SESSION_ATTRIBUTE="APP_USER"; //session handle for AppUser
   public static final String SERVER_TS="SERVER_TS"; //server timestamp, use for login
   public static final String RANDOM_SEED="RANDOM_SEED"; //random seed
@@ -25,7 +29,7 @@ public class AppUser implements java.io.Serializable{
   private int userprivilege = PRIV_USER_STANDARD;//or uset type  
   private String email;
   private boolean verified = false; //for newly registered user
-  
+    
   public AppUser(){}
   
   public AppUser(String name)
@@ -109,6 +113,10 @@ public class AppUser implements java.io.Serializable{
     return this.userprivilege == PRIV_USER_POWER;
   }
 
+  public boolean isRestrictedUser()
+  {
+    return this.userprivilege == PRIV_USER_RESTRICTED;
+  }
   public String getEmail() 
   {
     return email;
@@ -142,12 +150,12 @@ public class AppUser implements java.io.Serializable{
 	return new String(mypwd);
   }
 
-public boolean isVerified() {
+  public boolean isVerified() {
 	return verified;
-}
+  }
 
-public void setVerified(boolean verified) {
+  public void setVerified(boolean verified) {
 	this.verified = verified;
-}
+  }
 
 }

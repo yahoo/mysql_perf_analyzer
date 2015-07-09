@@ -9,8 +9,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
+import com.yahoo.dba.perf.myperf.common.AppUser;
 import com.yahoo.dba.perf.myperf.common.ColumnDescriptor;
 import com.yahoo.dba.perf.myperf.common.DBGroupInfo;
 import com.yahoo.dba.perf.myperf.common.DBInstanceInfo;
@@ -33,7 +36,21 @@ public class StatusController extends MyPerfBaseController
 	  protected ModelAndView handleRequestImpl(HttpServletRequest req,
 					HttpServletResponse resp) throws Exception 
 	  {
-				
+		
+		AppUser appUser = retrieveAppUser(req);
+		HashSet<String> filteredGroups = new HashSet<String>();
+		boolean useFilter = false;
+		if(appUser != null && appUser.isRestrictedUser())
+		{
+			useFilter = true;
+			Set<String> mydbs = this.frameworkContext.getDbInfoManager()
+					.getMyDatabases(appUser.getName(), appUser.isRestrictedUser()).getMyDbList();
+			if(mydbs != null)
+			{
+				for(String s: mydbs)
+					filteredGroups.add(s);
+			}
+		}
 	    String dbgroup = req.getParameter("group");
 		if(dbgroup==null||dbgroup.trim().length()==0)dbgroup = "all";
         String dbhost = req.getParameter("host");
@@ -83,6 +100,7 @@ public class StatusController extends MyPerfBaseController
               String dbgroupName = dbinfo.getDbGroupName();
               String dbHostName = dbinfo.getHostName();
               if(!"all".equals(dbgroup) && !dbgroup.equalsIgnoreCase(dbgroupName))continue;
+              if(useFilter && !filteredGroups.contains(dbgroupName)) continue;
               InstanceStates stateSnaps = this.frameworkContext.getInstanceStatesManager().getStates(dbinfo.getDbid());
               if(stateSnaps==null)continue;
               //java.util.Date lastConnectTime = this.frameworkContext.getDbInfoManager().getLastAccessDate(dbgroupName, dbHostName);

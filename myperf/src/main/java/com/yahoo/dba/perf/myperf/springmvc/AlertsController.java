@@ -6,8 +6,10 @@
 package com.yahoo.dba.perf.myperf.springmvc;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,7 +54,23 @@ public class AlertsController extends MyPerfBaseController
 	ResultList rList = null;
 
 	qps = WebAppUtil.parseRequestParameter(req);
-    //starting and ending dates, and their defaults. All values are in UTC, assume format "yyyy-MM-dd HH"
+
+	AppUser appUser = retrieveAppUser(req);
+	HashSet<String> filteredGroups = new HashSet<String>();
+	boolean useFilter = false;
+	if(appUser != null && appUser.isRestrictedUser())
+	{
+		useFilter = true;
+		Set<String> mydbs = this.frameworkContext.getDbInfoManager()
+				.getMyDatabases(appUser.getName(), appUser.isRestrictedUser()).getMyDbList();
+		if(mydbs != null)
+		{
+			for(String s: mydbs)
+				filteredGroups.add(s);
+		}
+	}
+
+	//starting and ending dates, and their defaults. All values are in UTC, assume format "yyyy-MM-dd HH"
     String startDate = req.getParameter("start");
 	String endDate = req.getParameter("end");
 	List<Integer> dbIdList = new ArrayList<Integer>();
@@ -69,24 +87,30 @@ public class AlertsController extends MyPerfBaseController
 					DBInstanceInfo dbinfo = this.frameworkContext.getDbInfoManager().findDB(qps.getGroup(), qps.getHost());
 					if(dbinfo!=null)
 					{
-						dbIdList.add(dbinfo.getDbid());
-						DBInstanceInfo dbinfo2 = new DBInstanceInfo();
-						dbinfo2.setDbGroupName(dbinfo.getDbGroupName());
-						dbinfo2.setHostName(dbinfo.getHostName());
-						dbinfo2.setDbid(dbinfo.getDbid());
-						dbs.put(dbinfo2.getDbid(), dbinfo2);
+						if(!useFilter || filteredGroups.contains(dbinfo.getDbGroupName()))
+						{
+							dbIdList.add(dbinfo.getDbid());
+							DBInstanceInfo dbinfo2 = new DBInstanceInfo();
+							dbinfo2.setDbGroupName(dbinfo.getDbGroupName());
+							dbinfo2.setHostName(dbinfo.getHostName());
+							dbinfo2.setDbid(dbinfo.getDbid());
+							dbs.put(dbinfo2.getDbid(), dbinfo2);
+						}
 					}
 				}
 				if(dbIdList.size()==0)
 				{
 					for(DBInstanceInfo dbinfo:this.frameworkContext.getDbInfoManager().findGroup(qps.getGroup()).getInstances())
 					{
-						dbIdList.add(dbinfo.getDbid());
-						DBInstanceInfo dbinfo2 = new DBInstanceInfo();
-						dbinfo2.setDbGroupName(dbinfo.getDbGroupName());
-						dbinfo2.setHostName(dbinfo.getHostName());
-						dbinfo2.setDbid(dbinfo.getDbid());
-						dbs.put(dbinfo2.getDbid(), dbinfo2);
+						if(!useFilter || filteredGroups.contains(dbinfo.getDbGroupName()))
+						{
+							dbIdList.add(dbinfo.getDbid());
+							DBInstanceInfo dbinfo2 = new DBInstanceInfo();
+							dbinfo2.setDbGroupName(dbinfo.getDbGroupName());
+							dbinfo2.setHostName(dbinfo.getHostName());
+							dbinfo2.setDbid(dbinfo.getDbid());
+							dbs.put(dbinfo2.getDbid(), dbinfo2);
+						}
 					}
 				}
 			}
@@ -95,11 +119,14 @@ public class AlertsController extends MyPerfBaseController
 				for(String grp: this.frameworkContext.getDbInfoManager().listGroupNames())
 				for(DBInstanceInfo dbinfo:this.frameworkContext.getDbInfoManager().findGroup(grp).getInstances())
 				{
-					DBInstanceInfo dbinfo2 = new DBInstanceInfo();
-					dbinfo2.setDbGroupName(dbinfo.getDbGroupName());
-					dbinfo2.setHostName(dbinfo.getHostName());
-					dbinfo2.setDbid(dbinfo.getDbid());
-					dbs.put(dbinfo2.getDbid(), dbinfo2);
+					if(!useFilter || filteredGroups.contains(dbinfo.getDbGroupName()))
+					{
+						DBInstanceInfo dbinfo2 = new DBInstanceInfo();
+						dbinfo2.setDbGroupName(dbinfo.getDbGroupName());
+						dbinfo2.setHostName(dbinfo.getHostName());
+						dbinfo2.setDbid(dbinfo.getDbid());
+						dbs.put(dbinfo2.getDbid(), dbinfo2);
+					}
 				}
 			}
 		}catch(Exception ex){}

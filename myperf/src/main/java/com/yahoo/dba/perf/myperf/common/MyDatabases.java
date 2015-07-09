@@ -36,7 +36,7 @@ public class MyDatabases implements java.io.Serializable{
 	
 	synchronized public void removeDb(String name)
 	{
-		if(!this.myDbSet.contains(name))
+		if(this.myDbSet.contains(name))
 			this.myDbSet.remove(name);		
 	}
 	

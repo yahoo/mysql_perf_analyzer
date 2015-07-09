@@ -5,6 +5,7 @@
  */
 package com.yahoo.dba.perf.myperf.springmvc;
 
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,7 +37,7 @@ public class CredController extends MyPerfBaseController
 	if(!"retrieve".equals(task) && !"update".equals(task))
 	  return this.respondFailure("Only support retrieve and update tasks", request);
 
-	  AppUser appUser = AppUser.class.cast(request.getSession().getAttribute(AppUser.SESSION_ATTRIBUTE));
+	AppUser appUser = AppUser.class.cast(request.getSession().getAttribute(AppUser.SESSION_ATTRIBUTE));
 
 	if("retrieve".equals(task))
 	{
@@ -44,8 +45,16 @@ public class CredController extends MyPerfBaseController
 	  String mysqlUserName = cred != null? cred.getUsername():"";
 	  return this.respondSuccess(mysqlUserName, request);//use message to send mysql account name back
 	}
-	//now the only thing left is update
 	
+	//check for restricted user
+	if(appUser.isRestrictedUser())
+	{
+		Set<String> mydbs = this.frameworkContext.getDbInfoManager().getMyDatabases(appUser.getName(), true).getMyDbList();
+		if(mydbs == null || !mydbs.contains(dbGroupName))
+			return this.respondFailure("As a restricted user, you have no permission to use this db group yet: " +dbGroupName, request);
+	}
+	//now the only thing left is update
+		
     String username = request.getParameter("username");
     String pw = request.getParameter("pw");
 	
@@ -79,7 +88,7 @@ public class CredController extends MyPerfBaseController
 	cred.setPassword(pw);
 	cred.setAppUser(appUser.getName());
 	this.frameworkContext.getMetaDb().upsertDBCredential(cred);
-    this.frameworkContext.getDbInfoManager().getMyDatabases(cred.getAppUser()).addDb(cred.getDbGroupName());
+    this.frameworkContext.getDbInfoManager().getMyDatabases(cred.getAppUser(), appUser.isRestrictedUser()).addDb(cred.getDbGroupName());
 	logger.info("Add new credential for "+cred.getDbGroupName()+", app user "+cred.getAppUser());
 	if(testCred && testResult == null)
 	{
