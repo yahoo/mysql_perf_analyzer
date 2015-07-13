@@ -295,11 +295,49 @@ public class DBInfoManager implements java.io.Serializable
 			  if(visible)
 				  mydb.addDb(dbgroupname);
 			  else
+			  {
+				  revokeDBCredential(username, dbgroupname);
 				  mydb.removeDb(dbgroupname);
+			  }
 		  }
 		  return true;
 	  }
 	  return false;
 	  
 	}
+	
+	/**
+	 * This method will copy db credential when assign a DB to a restricted user or default admin/scanner user.
+	 *  Assume the assigner can access the underlying database.
+	 * @param restrictedUserName
+	 * @param username
+	 * @param dbGroup
+	 * @param dbuser
+	 * @param password
+	 */
+   public void copyManagedDBCredential(String targetUserName, boolean restrictedUser,
+			  String srcUsername, String dbGroup, String dbuser, String password)
+	{
+	  if(targetUserName == null || targetUserName.isEmpty() || targetUserName.equalsIgnoreCase(srcUsername)) 
+		  return;
+	  DBCredential cred2 = new DBCredential();
+	  cred2.setAppUser(targetUserName);
+	  cred2.setDbGroupName(dbGroup);
+	  cred2.setUsername(dbuser);
+	  cred2.setPassword(password);
+	  getMetaDb().upsertDBCredential(cred2);
+	  //note we handle the allowed database for restricted user in different way.
+	  if(!restrictedUser)
+		  getMyDatabases(cred2.getAppUser(), false).addDb(cred2.getDbGroupName());
+	}
+
+   /**
+    * For now, only used to handle restricted user
+    * @param owner
+    * @param dbGroupName
+    */
+   public void revokeDBCredential(String owner, String dbGroupName)
+   {
+      getMetaDb().removeDBCredential(owner, dbGroupName);  	   
+   }
 }

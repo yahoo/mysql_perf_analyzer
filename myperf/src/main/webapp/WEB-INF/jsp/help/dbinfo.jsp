@@ -72,6 +72,7 @@
   <p>
     This tab is created for organizations which want to limit database visibilities to individual users. Auto-complete is used to retrieve restricted user name list. 
     Once a user is selected, the analyzer will retrieve existing ACLs. Check desired database group to assign the access, or uncheck to revoke the access. 
+    Credential to access the assigned database server will be copied from the assigner at the same time.   
   </p>
 </body>
 </html>

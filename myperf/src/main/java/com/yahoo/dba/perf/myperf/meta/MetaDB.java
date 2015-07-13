@@ -1112,10 +1112,39 @@ public class MetaDB implements java.io.Serializable{
 	}			
   }
 
+  public void removeDBCredential(String owner, String dbGroupName)
+  {
+	if(owner == null || owner.isEmpty())return;
+	if(dbGroupName == null || dbGroupName.isEmpty())return;
+	
+	String sql = "delete from " + CRED_TABLENAME +" where  owner=? and dbgroupname=?";
+	Connection conn = null;
+	PreparedStatement pstmt = null;
+	try
+	{
+	  conn = getConnection();
+	  pstmt = conn.prepareStatement(sql);
+	  pstmt.setString(1, owner);
+	  pstmt.setString(2, dbGroupName.toLowerCase());
+	  pstmt.execute();
+	  conn.commit();
+	  DBUtils.close(pstmt); pstmt = null;
+	  this.credCache.remove(owner+"||"+dbGroupName.toLowerCase());
+	}catch(Exception ex)
+	{
+	  if(conn!=null)try{conn.rollback();}catch(Exception iex){}
+	  throw new RuntimeException(ex);
+	}finally
+	{
+	  DBUtils.close(pstmt);
+      DBUtils.close(conn);
+	}
+  }
+  
   private void updateDBCredentialInternal(DBCredential cred)
   {
 	if(cred==null)return;
-	String sql1 = "update "+CRED_TABLENAME+" set username=?,credential=?,verified=1 where owner=? and clustername=?";		
+	String sql1 = "update "+CRED_TABLENAME+" set username=?,credential=?,verified=1 where owner=? and dbgroupname=?";		
 	String pString = cred.getAppUser()==null?"NULL":cred.getAppUser();
 	pString += "::"+cred.getDbGroupName()
 	  		  +"::"+cred.getUsername()

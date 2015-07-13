@@ -674,6 +674,34 @@ public class MyPerfContext implements java.io.Serializable, InitializingBean,Dis
 		if(!MetaDB.DEFAULT_USER.equals(username) && //save one db search
 				DBUtils.findDBCredential(this, dbGroup, defaultUser) == null)
 		{
+			this.dbInfoManager.copyManagedDBCredential(defaultUser.getName(), 
+					false, username, dbGroup, dbuser, password);
+		}
+		
+		if(metricsUser != null && !MetaDB.DEFAULT_USER.equals(metricsUser.getName())
+				&& !username.equals(metricsUser.getName()) //save one db search
+				&& DBUtils.findDBCredential(this, dbGroup, metricsUser) == null)
+		{
+			this.dbInfoManager.copyManagedDBCredential(metricsUser.getName(), 
+					false, username, dbGroup, dbuser, password);
+		}
+
+  }
+
+  /**
+   * Keep as reference. Remove later
+   * @param username
+   * @param dbGroup
+   * @param dbuser
+   * @param password
+   */
+  public void saveManagedDBCredentialForScanner2(String username, String dbGroup, String dbuser, String password)
+  {
+		AppUser defaultUser = getUserManager().getUser(MetaDB.DEFAULT_USER);
+		AppUser metricsUser = getUserManager().getUser(getMyperfConfig().getMetricsScannerUser());
+		if(!MetaDB.DEFAULT_USER.equals(username) && //save one db search
+				DBUtils.findDBCredential(this, dbGroup, defaultUser) == null)
+		{
 			DBCredential cred2 = new DBCredential();
 			cred2.setAppUser(defaultUser.getName());
 			cred2.setDbGroupName(dbGroup);

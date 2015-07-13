@@ -256,6 +256,14 @@ public class DbController extends MyPerfBaseController
 			if(!this.frameworkContext.getDbInfoManager().updateRestricteduserAcl(username, grp, visible))
 			{
 				message = "Failed, please check log.";
+			}else if(visible)
+			{
+				//copy db credential. revoke is handled by update directly
+				AppUser appUser = retrieveAppUser(request);
+				DBCredential cred = this.frameworkContext.getMetaDb().retrieveDBCredential(appUser.getName(), grp);
+				if(cred != null)
+					this.frameworkContext.getDbInfoManager().copyManagedDBCredential(username, true, 
+						appUser.getName(), grp, cred.getUsername(), cred.getPassword());
 			}
 		}catch(Exception ex)
 		{
