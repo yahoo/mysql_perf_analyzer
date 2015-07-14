@@ -68,6 +68,10 @@ public class UserController  extends MyPerfBaseController{
 	if(appUser != null && appUser.isAdminUser() && "userlist".equalsIgnoreCase(actionSrc))
 		return this.retrieveUserList(req);
 	
+	//retrieve all users with detail
+	if(appUser != null && appUser.isAdminUser() && "listalldetails".equalsIgnoreCase(actionSrc))
+		return this.listAllUsers(req);
+	
 	//retrieve new user list
 	if(appUser != null && appUser.isAdminUser() && "newuserlist".equalsIgnoreCase(actionSrc))
 		return this.retrieveNewUserList(req);
@@ -596,6 +600,39 @@ public class UserController  extends MyPerfBaseController{
 		  ResultRow row = new ResultRow();
 		  row.setColumnDescriptor(desc);
 		  row.addColumn(u.getName());
+		  rs.addRow(row);
+	  }
+	  ModelAndView mv = new ModelAndView(this.jsonView);
+	  mv.addObject("json_result", ResultListUtil.toJSONString(rs, null, 0, "OK"));
+	  return mv;
+  }
+
+  private ModelAndView listAllUsers(HttpServletRequest req)
+  {
+	  List<AppUser> users = this.frameworkContext.getMetaDb().retrieveAllUsers();
+	  AppUser appUser = retrieveAppUser(req);
+
+	  ResultList rs = new ResultList();
+	  ColumnDescriptor desc = new ColumnDescriptor();
+	  desc.addColumn("USERNAME", false, 1);
+	  desc.addColumn("EMAIL", false, 2);
+	  desc.addColumn("USERTYPE", false, 3);
+	  desc.addColumn("CONFIRMED", false, 4);
+	  rs.setColumnDescriptor(desc);
+
+	  for(AppUser u : users)
+	  {
+		  ResultRow row = new ResultRow();
+		  row.setColumnDescriptor(desc);
+		  row.addColumn(u.getName());
+		  row.addColumn(u.getEmail());
+		  String userType = "Standard User";
+		  if(u.isAdminUser())
+			  userType = "Power User";
+		  else if(u.isRestrictedUser())
+			  userType = "Restricted User";
+		  row.addColumn(userType);
+		  row.addColumn(u.isVerified()?"Yes":"No");
 		  rs.addRow(row);
 	  }
 	  ModelAndView mv = new ModelAndView(this.jsonView);

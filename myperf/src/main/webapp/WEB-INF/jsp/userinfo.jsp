@@ -133,6 +133,15 @@
          <td></td><td><input type="submit" align="center" value="Submit" /></td>
        </tr>
      </table>
+<c:if test="${userInfo.adminUser}">
+     <hr />
+     <div id="userlist_div">
+       <a href="#userdetail_div" id="view_users_link" title="Click to view/hide all user details.">View Existing Users</a>
+       <div id="userdetail_div" style="display:none;">
+         <table id="myperf_userlist_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
+       </div>
+     </div>
+</c:if>     
    </fieldset>
   </form>
 </c:if>
@@ -149,6 +158,26 @@ var ALLUSERLIST=[
 var NEWUSERLIST=[
     <c:forEach var="u" items="${newUsers}" varStatus="stat">${stat.index>0?",":""} {label:"${u}", idx:${stat.index}}</c:forEach>
   ];
+  
+var myperf_userlistTable = new JSTable({
+   	   name: "myperf_userlist",
+   	   query:{
+   	     queryURL: "user.html",
+   	     paramFields:[{name:"a", value:"listalldetails"}]
+   	   }, 
+   	   handlers: {jquery:1}
+   	});
+
+$("#view_users_link").click(function()
+{
+  if(mydom("userdetail_div").style.display == "none")
+  {
+    myperf_userlistTable.sendQuery();
+    mydom("userdetail_div").style.display = "block";
+  }else
+    mydom("userdetail_div").style.display = "none";
+}
+);  
 </c:if>
 function setupAction()
 {
