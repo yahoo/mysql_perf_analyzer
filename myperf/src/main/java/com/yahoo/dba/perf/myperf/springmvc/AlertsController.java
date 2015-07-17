@@ -228,6 +228,7 @@ public class AlertsController extends MyPerfBaseController
 	  Float repllag = as.getAlertThreshold(group, host, "REPLLAG");
 	  Float thread = as.getAlertThreshold(group, host, "THREAD");
 	  Float diskusage = as.getAlertThreshold(group, host, "DISKUSAGE");
+	  Float aborted_cc = as.getAlertThreshold(group, host, "CONNECT_FAILURE");
 	  StringBuilder sb = new StringBuilder();
 	  sb.append("{");
 	  sb.append("\"message\":\"OK\",");
@@ -238,7 +239,8 @@ public class AlertsController extends MyPerfBaseController
 	  sb.append("\"diskusage\":\"").append(Math.round(diskusage)).append("\",");
 	  sb.append("\"thread\":\"").append(Math.round(thread)).append("\",");
 	  sb.append("\"slow\":\"").append(Math.round(slow)).append("\",");
-	  sb.append("\"repllag\":\"").append(Math.round(repllag)).append("\"");
+	  sb.append("\"repllag\":\"").append(Math.round(repllag)).append("\",");
+	  sb.append("\"aborted_cc\":\"").append(Math.round(aborted_cc)).append("\"");
 	  if(dbinfo != null)
 	  {
 		  sb.append(",\"alerts\":\"").append(dbinfo.isAlertEnabled()?"y":"n").append("\"");
@@ -278,6 +280,7 @@ public class AlertsController extends MyPerfBaseController
 			  as.updateAlertThreshold(group, host, "THREAD", Float.parseFloat(req.getParameter("thread")), true);
 			  as.updateAlertThreshold(group, host, "REPLLAG", Float.parseFloat(req.getParameter("repllag")), true);
 			  as.updateAlertThreshold(group, host, "SLOW", Float.parseFloat(req.getParameter("slow")), true);
+			  as.updateAlertThreshold(group, host, "CONNECT_FAILURE", Float.parseFloat(req.getParameter("aborted_cc")), true);
 			  message = "alert settings have been updated. ";
 		  }catch(Exception ex)
 		  {

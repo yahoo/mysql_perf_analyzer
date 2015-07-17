@@ -102,6 +102,7 @@
           <tr><td>Disk Usage(%): </td><td><input name="alert_settings_diskusage" id="alert_settings_diskusage" size="10" maxlength="4" /></td></tr>
           <tr><td>Concurrency(threads_running): </td><td><input name="alert_settings_thread" id="alert_settings_thread" size="10" maxlength="4" /></td></tr>
           <tr><td>Replication Lag(seconds): </td><td><input name="alert_settings_repllag" id="alert_settings_repllag" size="10" maxlength="4" /></td></tr>
+          <tr><td>Connection Failures(per second): </td><td><input name="alert_settings_aborted_cc" id="alert_settings_aborted_cc" size="10" maxlength="4" /></td></tr>
           <tr><td>Slow Queries(per minute): </td><td><input name="alert_settings_slow" id="alert_settings_slow" size="10" maxlength="4" /></td></tr>
           <tr id="tr_alerts_enabled"><td>Alerts </td><td><input type="checkbox" name="alerts_enabled" id="alerts_enabled" value="1" />&nbsp;check to enable</td></tr>
           <tr id="tr_metrics_enabled"><td>Metrics Gathering </td><td><input type="checkbox" name="metrics_enabled" id="metrics_enabled"/>&nbsp;check to enable</td></tr>
@@ -180,6 +181,7 @@ function retrieveSettings()
                 mydom("alert_settings_diskusage").value = jsonObj.diskusage;  
                 mydom("alert_settings_thread").value = jsonObj.thread;  
                 mydom("alert_settings_slow").value = jsonObj.slow;  
+                mydom("alert_settings_aborted_cc").value = jsonObj.aborted_cc;  
                 mydom("alert_settings_repllag").value = jsonObj.repllag;
                 if(jsonObj.alerts == null)
                 {
@@ -221,6 +223,7 @@ function updateSettings()
    		  mydata += "&diskusage="+ mydom("alert_settings_diskusage").value;
    		  mydata += "&thread="+ mydom("alert_settings_thread").value;
    		  mydata += "&slow="+ mydom("alert_settings_slow").value;
+   		  mydata += "&aborted_cc="+ mydom("alert_settings_aborted_cc").value;
    		  mydata += "&repllag="+ mydom("alert_settings_repllag").value;
    		  
       $.ajax({
