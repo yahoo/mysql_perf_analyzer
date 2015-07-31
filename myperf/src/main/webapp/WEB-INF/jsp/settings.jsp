@@ -95,6 +95,10 @@
           <td><input type="text" id="notificationEmails" name="notificationEmails" value="${config.alertNotificationEmails}"/></td>
         </tr>
         <tr>
+          <td>Reuse Monitor User Connections? </td>
+          <td><input type="checkbox" id="reuseMonUserConnction" name="reuseMonUserConnction" value="y" ${config.reuseMonUserConnction?"checked":""}  /></td>
+        </tr>
+        <tr>
           <td>Metrics Store: </td>
           <td><select name="metricsDbType" id="metricsDbType">
                 <option value="derby" ${config.metricsDbType!="mysql"?"selected":""}>Build In (Derby)</option>
@@ -463,6 +467,10 @@ function updateScanner()
   mydata += "&runtimeRecordRententionCount=" + escape(mydomval("runtimeRecordRententionCount"));
   mydata += "&threadCount="+escape(mydomval("threadCount"));
   mydata += "&notificationEmails=" + escape(mydomval("notificationEmails"));
+  if(mydom("reuseMonUserConnction").checked)
+    mydata += "&reuseMonUserConnction=y";
+  else
+    mydata += "&reuseMonUserConnction=n";
   mydata += "&metricsDbType=" + escape(mydomval("metricsDbType"));
   mydata += "&metricsDbHost=" + escape(mydomval("metricsDbHost"));
   mydata += "&metricsDbPort=" + escape(mydomval("metricsDbPort"));

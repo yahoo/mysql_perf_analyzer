@@ -135,19 +135,19 @@ public class AlertReportRunner implements Runnable{
 			}
 
 //TODO we need two snapshot to get useful data			
-//			if("CONNECT_FAILURE".equalsIgnoreCase(alertReason))
-//			{
-//				//dump client state if possible
-//				String sql = "select * from information_schema.client_statistics";
-//				DBUtils.close(rs);
-//				rs = stmt.executeQuery(sql);
-//				if(rs!=null)
-//				{
-//					clientList = ResultListUtil.fromSqlResultSet(rs, 5000);					
-//				}
-//				
-//				DBUtils.close(rs);
-//			}
+			if("CONNECT_FAILURE".equalsIgnoreCase(alertReason))
+			{
+				//dump summary of processlist if possible
+				String sql = "select user, host, command, count(*) conns from information_schema.processlist group by user, host, command";
+				DBUtils.close(rs);
+				rs = stmt.executeQuery(sql);
+				if(rs!=null)
+				{
+					clientList = ResultListUtil.fromSqlResultSet(rs, 5000);					
+				}
+				
+				DBUtils.close(rs);
+			}
 		}catch(Exception ex)
 		{
 			logger.log(Level.WARNING, "Error when retrieve alert detail", ex);

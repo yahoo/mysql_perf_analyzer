@@ -70,7 +70,7 @@ public class InnoController extends MyPerfBaseController
 	      logger.info(rList.getRows().get(0).getColumns().get(rList.getRows().get(0).getColumns().size()-1));
 	      listMap = parse(rList.getRows().get(0).getColumns().get(rList.getRows().get(0).getColumns().size()-1));
 	    }
-		WebAppUtil.closeDBConnection(req, connWrapper, false);		  
+		WebAppUtil.closeDBConnection(req, connWrapper, false, this.getFrameworkContext().getMyperfConfig().isReuseMonUserConnction());		  
 	  }
     }catch(Throwable th)
 	{
@@ -83,13 +83,13 @@ public class InnoController extends MyPerfBaseController
   		//check if the connection is still good
   		if(!DBUtils.checkConnection(connWrapper.getConnection()))
   		{
-  		  WebAppUtil.closeDBConnection(req, connWrapper, true);
+  		  WebAppUtil.closeDBConnection(req, connWrapper, true, false);
   		}
   		else
-  		  WebAppUtil.closeDBConnection(req, connWrapper, true);
+  		  WebAppUtil.closeDBConnection(req, connWrapper, true, false);
   	  }else
   	  {
-  	    if(connWrapper!=null)WebAppUtil.closeDBConnection(req, connWrapper, false);
+  	    if(connWrapper!=null)WebAppUtil.closeDBConnection(req, connWrapper, false,this.getFrameworkContext().getMyperfConfig().isReuseMonUserConnction());
   	  }
   	  status = Constants.STATUS_BAD;
   	  message = "Exception: "+th.getMessage();

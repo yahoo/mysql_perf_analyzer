@@ -153,7 +153,7 @@ public class WebAppUtil
 		  if(DBUtils.checkConnection(connWrapper.getConnection()))
 			  return connWrapper;
 		  		  
-		   closeDBConnection(req, connWrapper, true);
+		   closeDBConnection(req, connWrapper, true, false);
 		   connWrapper = null;		 
 	  }
 			
@@ -171,7 +171,7 @@ public class WebAppUtil
 		  connWrapper = conns.checkoutConnection(dbinfo, cred);
 		  if(!DBUtils.checkConnection(connWrapper.getConnection()))
 		  {
-			  closeDBConnection(req, connWrapper, true);
+			  closeDBConnection(req, connWrapper, true, false);
 			  connWrapper = conns.checkoutConnection(dbinfo, cred);
 		  }
 	  }
@@ -190,7 +190,7 @@ public class WebAppUtil
   }
 
 
-  public static void  closeDBConnection(HttpServletRequest req, DBConnectionWrapper conn, boolean hasError)
+  public static void  closeDBConnection(HttpServletRequest req, DBConnectionWrapper conn, boolean hasError, boolean reuse)
   {
     try
 	{
@@ -207,7 +207,8 @@ public class WebAppUtil
 	  else
 	  {
 	    if(hasError)conns.checkinConnectionOnError(conn);
-		else conns.checkinConnection(conn);
+		else if(reuse)conns.checkinConnection(conn);
+		else conns.checkinConnectionAndClose(conn);
 	  }
 	}catch(Throwable th)
 	{

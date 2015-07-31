@@ -120,7 +120,7 @@ public class QueryController extends MyPerfBaseController
 	    }
 	    else rList = this.frameworkContext.getQueryEngine().executeQueryGeneric(qps, connWrapper, qps.getMaxRows());
 	    logger.info("Done query "+qps.getSql() + " with "+(rList!=null?rList.getRows().size():0)+" records.");
-	    if(connWrapper != null)WebAppUtil.closeDBConnection(req, connWrapper, false);
+	    if(connWrapper != null)WebAppUtil.closeDBConnection(req, connWrapper, false, this.getFrameworkContext().getMyperfConfig().isReuseMonUserConnction());
 	}catch(Throwable ex)
 	{
 		logger.log(Level.SEVERE,"Exception", ex);
@@ -134,13 +134,13 @@ public class QueryController extends MyPerfBaseController
 				//check if the connection is still good
 				if(!DBUtils.checkConnection(connWrapper.getConnection()))
 				{
-					WebAppUtil.closeDBConnection(req, connWrapper, true);
+					WebAppUtil.closeDBConnection(req, connWrapper, true, false);
 				}
 				else
-					WebAppUtil.closeDBConnection(req, connWrapper, true);
+					WebAppUtil.closeDBConnection(req, connWrapper, true, false);
 			}else
 			{
-				WebAppUtil.closeDBConnection(req, connWrapper, false);
+				WebAppUtil.closeDBConnection(req, connWrapper, false, this.getFrameworkContext().getMyperfConfig().isReuseMonUserConnction());
 			}
 		}
 	    status = Constants.STATUS_BAD;

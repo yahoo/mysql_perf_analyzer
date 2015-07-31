@@ -507,7 +507,7 @@ function drawOneChart(chartInfo, jsondata)
         {
           var ki = i%num_keys;
           var mi = (i - ki)/num_keys;
-          if(mattr.length>1)
+          if(mattr.length>=mi)
             text = mattr[mi].display+"-"+keys[ki].name;
           else
             text = keys[ki].name;

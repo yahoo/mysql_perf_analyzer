@@ -763,7 +763,7 @@ public class MetricScannerRunner implements Runnable
 	  
 	  //TODO handle alerts
 	  if(!scanData.statusUpdated &&
-				(scanData.stateSnap.getSyscputime()>=0L||scanData.stateSnap.getThreads()>0))//at least we get something from scan
+				(scanData.stateSnap.getConnections()>=0L||scanData.stateSnap.getThreads()>0))//at least we get something from scan
 	  {
 		  InstanceStates ist = this.frameworkContext.getInstanceStatesManager().getStates(dbinfo.getDbid());
 		  if(ist!=null)
@@ -789,15 +789,20 @@ public class MetricScannerRunner implements Runnable
 			  }
 			  
 			  scanData.statusUpdated = true;
-			  if(lastAlertTime!=null &&( (lastAlertEndTime==null  && ist.getLastAlertEndTime()!=null)
-				||(ist.getLastAlertEndTime()==null && ist.getLastAlertTime()!=null && !ist.getLastAlertType().equalsIgnoreCase(lastAlertType))))
+			  //if(lastAlertTime!=null &&( (lastAlertEndTime==null  && ist.getLastAlertEndTime()!=null)
+			  //	||(ist.getLastAlertEndTime()==null && ist.getLastAlertTime()!=null && !ist.getLastAlertType().equalsIgnoreCase(lastAlertType))))
+			  if((lastAlertTime!=null && lastAlertEndTime == null) //existing an old alert
+				&& (ist.getLastAlertEndTime() != null //there is no more open alert
+				   || !ist.getLastAlertTime().equals(lastAlertTime) //new alert
+				)
+			  )
 			  {
 				 // if(!scanData.replDown)
 				  {
-					  //one alert end
+					  //mark all old alerts end, up to 
 					  this.frameworkContext.getMetricDb().markAlertEnd(Long.parseLong(sdf.format(lastAlertTime.getTime())), dbinfo.getDbid(), Long.parseLong(sdf.format(scanData.stateSnap.getTimestamp())));
 					  //mark anything one minute ago, too
-					  this.frameworkContext.getMetricDb().markAlertEnd(Long.parseLong(sdf.format(scanData.stateSnap.getTimestamp())) - 100, dbinfo.getDbid(), Long.parseLong(sdf.format(scanData.stateSnap.getTimestamp())));
+					  //this.frameworkContext.getMetricDb().markAlertEnd(Long.parseLong(sdf.format(scanData.stateSnap.getTimestamp())) - 100, dbinfo.getDbid(), Long.parseLong(sdf.format(scanData.stateSnap.getTimestamp())));
 					  //reset email/web notification
 					  ist.resetNotification();
 				  }

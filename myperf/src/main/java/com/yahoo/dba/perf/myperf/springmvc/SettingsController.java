@@ -182,6 +182,7 @@ private ModelAndView handleUpdateSNMP(HttpServletRequest req,
 	  config.setScannerThreadCount(threadCount);
 	  config.setMetricsDbType(req.getParameter("metricsDbType"));
 	  config.setAlertNotificationEmails(req.getParameter("notificationEmails"));
+	  config.setReuseMonUserConnction(!"n".equalsIgnoreCase(req.getParameter("reuseMonUserConnction")));
 	  if("mysql".equalsIgnoreCase(config.getMetricsDbType()) && dbChanged(req))
 	  {
 		  config.setMetricsDbHost(req.getParameter("metricsDbHost"));

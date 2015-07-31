@@ -447,7 +447,7 @@ public class UdmController extends MyPerfBaseController
 		{
 			DBUtils.close(rs);
 			DBUtils.close(stmt);
-			WebAppUtil.closeDBConnection(req, connWrapper, true);//close it anyway
+			WebAppUtil.closeDBConnection(req, connWrapper, true, false);//close it anyway
 		}
 	}
 
@@ -493,7 +493,7 @@ public class UdmController extends MyPerfBaseController
 			{
 				DBUtils.close(rs);
 				DBUtils.close(stmt);
-				WebAppUtil.closeDBConnection(req, connWrapper, true);//close it anyway
+				WebAppUtil.closeDBConnection(req, connWrapper, true, false);//close it anyway
 			}
 		}else if(AlertDefinition.SOURCE_METRICS.equals(def.getSource()))
 		{

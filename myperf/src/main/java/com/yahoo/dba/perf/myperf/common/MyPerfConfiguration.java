@@ -53,8 +53,10 @@ public class MyPerfConfiguration implements java.io.Serializable{
 	//suppress similar alerts from the same db for at least such time
 	private int emailAlertIntervalMinutes = 60;
 	private int webAlertIntervalMinutes = 5;
-	  
-
+	
+	//If set to false, connection to the managed database will not be cached and reused
+    private boolean reuseMonUserConnction = true;
+    
 	//Metrics storage DB
 	//Either use embedded derby db or mysql
 	private String metricsDbType = "derby";
@@ -74,6 +76,7 @@ public class MyPerfConfiguration implements java.io.Serializable{
 
 	public MyPerfConfiguration()
 	{
+		reuseMonUserConnction = true; //default to cache and reuse
 	}
 
 	/**
@@ -139,7 +142,8 @@ public class MyPerfConfiguration implements java.io.Serializable{
 			if(this.alertScanIntervalSeconds < 60)this.alertScanIntervalSeconds  = 300;//minimum 1 minute
 			this.recordRententionDays = Integer.parseInt(props.getProperty("recordRententionDays","60"));
 			this.scannerThreadCount =  Integer.parseInt(props.getProperty("scannerThreadCount","4"));
-
+			this.reuseMonUserConnction = !"n".equalsIgnoreCase(props.getProperty("reuseMonUserConnction", "y"));
+			
 			this.metricsDbType = props.getProperty("metricsDbType", this.metricsDbType);
 			if(!"derby".equalsIgnoreCase(this.metricsDbType))//if not derby db
 			{
@@ -180,7 +184,7 @@ public class MyPerfConfiguration implements java.io.Serializable{
 			pw.println("alertScanIntervalSeconds="+this.alertScanIntervalSeconds);
 			pw.println("recordRententionDays="+ this.recordRententionDays);
 			pw.println("scannerThreadCount="+ this.scannerThreadCount);
-			
+			pw.println("reuseMonUserConnction="+(reuseMonUserConnction?"y":"n"));
 			pw.println("metricsDbType="+ this.metricsDbType);
 			if(this.metricsDbHost!=null && !this.metricsDbHost.isEmpty())
 				pw.println("metricsDbHost="+ this.metricsDbHost);
@@ -330,6 +334,14 @@ public class MyPerfConfiguration implements java.io.Serializable{
 
 	public void setWebAlertIntervalMinutes(int webAlertIntervalMinutes) {
 		this.webAlertIntervalMinutes = webAlertIntervalMinutes;
+	}
+
+	public boolean isReuseMonUserConnction() {
+		return reuseMonUserConnction;
+	}
+
+	public void setReuseMonUserConnction(boolean reuseMonUserConnction) {
+		this.reuseMonUserConnction = reuseMonUserConnction;
 	}
 
 }

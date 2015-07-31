@@ -114,8 +114,8 @@ public class VardiffController extends MyPerfBaseController
 		  rList = this.frameworkContext.getQueryEngine().executeQueryGeneric(qps, connWrapper, qps.getMaxRows());
 		  rList2 = this.frameworkContext.getQueryEngine().executeQueryGeneric(qps, connWrapper2, qps.getMaxRows());
 		  logger.info("Done query "+qps.getSql() + " with "+(rList!=null?rList.getRows().size():0)+" records, "+(rList2!=null?rList2.getRows().size():0)+" records");
-		  WebAppUtil.closeDBConnection(req, connWrapper, false);
-		  WebAppUtil.closeDBConnection(req, connWrapper2, false);
+		  WebAppUtil.closeDBConnection(req, connWrapper, false, this.getFrameworkContext().getMyperfConfig().isReuseMonUserConnction());
+		  WebAppUtil.closeDBConnection(req, connWrapper2, false, this.getFrameworkContext().getMyperfConfig().isReuseMonUserConnction());
 		}catch(Throwable ex)
 		{
 		  logger.log(Level.SEVERE,"Exception", ex);
@@ -127,20 +127,20 @@ public class VardiffController extends MyPerfBaseController
 			//check if the connection is still good
 			if(!DBUtils.checkConnection(connWrapper.getConnection()))
 			{
-			  WebAppUtil.closeDBConnection(req, connWrapper, true);
+			  WebAppUtil.closeDBConnection(req, connWrapper, true, false);
 			}
 			else
-			  WebAppUtil.closeDBConnection(req, connWrapper, true);
+			  WebAppUtil.closeDBConnection(req, connWrapper, true, false);
 			if(!DBUtils.checkConnection(connWrapper2.getConnection()))
 			{
-			  WebAppUtil.closeDBConnection(req, connWrapper2, true);
+			  WebAppUtil.closeDBConnection(req, connWrapper2, true, false);
 			}
 			else
-			  WebAppUtil.closeDBConnection(req, connWrapper2, true);
+			  WebAppUtil.closeDBConnection(req, connWrapper2, true, false);
 		  }else
 		  {
-		    WebAppUtil.closeDBConnection(req, connWrapper, false);
-		    WebAppUtil.closeDBConnection(req, connWrapper2, false);
+		    WebAppUtil.closeDBConnection(req, connWrapper, false, this.getFrameworkContext().getMyperfConfig().isReuseMonUserConnction());
+		    WebAppUtil.closeDBConnection(req, connWrapper2, false, this.getFrameworkContext().getMyperfConfig().isReuseMonUserConnction());
 		  }
 		  status = Constants.STATUS_BAD;
 		  message = "Exception: "+ex.getMessage();
