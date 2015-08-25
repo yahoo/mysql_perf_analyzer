@@ -52,7 +52,8 @@
           <option value="vardiff">Global Variable - Diff</option>
           <option value="mysql_repl_master">Replication - Master</option>          
           <option value="mysql_repl_slave">Replication - Slave</option>          
-          <option value="innodbStatus">InnoDB Status</option>          
+          <option value="mysql_repl_show">Replication - Topology</option>          
+          <option value="innodbStatus">InnoDB Engine Status</option>          
           <option value="mysql_innodb_trx">InnoDB Transactions</option>          
           <option value="mysql_innodb_mutex">InnoDB Mutext</option>          
           <option value="mysql_innodb_locks">InnoDB Locks</option>          
@@ -79,8 +80,7 @@
         <li><a href="#mysql_global_status_metrics_tbl_div" title="MySQL global status. Use Refresh button to see delta changes.">Global Status</a></li>
         <li><a href="#mysql_global_variables_tbl_div" title="MySQL global variables.">Global Variables</a></li>
         <li><a href="#vardiff_tbl_div" title="MySQL global variables.">Variable Diffs</a></li>
-        <li><a href="#mysql_repl_master_tbl_div" title="MySQL Matster Status.">Repl - Master</a></li>
-        <li><a href="#mysql_repl_slave_tbl_div" title="MySQL Slave Status.">Repl - Slave</a></li>
+        <li><a href="#repl_tab" title="MySQL Replication Status.">Replication</a></li>
         <li><a href="#inno_status_tbl_tab" title="MySQL InnoDB engine status.">InnoDB Engine Status</a></li>
         <li><a href="#innodbtab" title="MySQL InnoDB statistics.">InnoDB Statistics</a></li>
         <li><a href="#userstatstab" title="MySQL User statistics from Percona and MariaDB, etc.">User Stats</a></li>
@@ -124,14 +124,25 @@
          <table id="vardiff_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
     </div><!-- global variable comparison -->
     
-    <div id="mysql_repl_master_tbl_div">
-         <table id="mysql_repl_master_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
-    </div><!-- repl master -->
+    <div id="repl_tab" class="clearTabView">
+    	<ul>
+    		<li><a href="#mysql_repl_master_tbl_div" title="SHOW MASTER STATUS">Master Status</a></li>
+    		<li><a href="#mysql_repl_slave_tbl_div" title="SHOW SLAVE STATUS + SHOW MASTER STATUS FROM MASTER">Slave Status</a></li>
+    		<li><a href="#mysql_repl_show_tbl_div" title="Replication topology and status">Replication Topology</a></li>
+    	</ul>
+    	<div id="mysql_repl_master_tbl_div">
+         	<table id="mysql_repl_master_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
+	    </div><!-- repl master -->
 
-    <div id="mysql_repl_slave_tbl_div">
-         <table id="mysql_repl_slave_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
-    </div><!-- mysql_repl_slave -->
+    	<div id="mysql_repl_slave_tbl_div">
+        	 <table id="mysql_repl_slave_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
+    	</div><!-- mysql_repl_slave -->
 
+    	<div id="mysql_repl_show_tbl_div">
+        	 <table id="mysql_repl_show_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
+    	</div><!-- mysql_repl_show -->
+    </div><!-- end of repl tab -->
+    
     <div id="inno_status_tbl_tab" class="clearTabView">
       <ul>
         <li><a href="#inno_status_summary_tbl_div" title="MySQL Innodb Engine Status Summary">Summary</a></li>
@@ -302,8 +313,9 @@ function messagehandler(datatable, status, message)
       reportStatus(false, "common_msg", "");
 }
 
-var topTabTableMapping = {};//used to mapping the top action select list
-var topTabActionMapping = {};//used to mapping the top action select list
+var topTabTableMapping = {};//use the value from select list to find tab
+var topTabActionMapping = {};//When top tab changes, mapping the select list index
+var replStatusTabActionMapping = {};//used to mapping the top action select list
 var innoStatusTabActionMapping = {};//used to mapping the top action select list
 var userStatusTabActionMapping = {};//used to mapping the top action select list
 
@@ -315,6 +327,16 @@ $('#sessiontab').tabs({
        mydom("session_activity").selectedIndex = topTabActionMapping[idx].index;
    }   
  });  
+
+$('#repl_tab').tabs({
+   activate: function( event, ui ) 
+   {
+     var idx = $('#repl_tab').tabs("option", "active");
+     if(replStatusTabActionMapping[idx] != null)
+       mydom("session_activity").selectedIndex = replStatusTabActionMapping[idx].index;
+   }   
+});
+ 
 $('#inno_status_tbl_tab').tabs();
 $('#innodbtab').tabs({
    activate: function( event, ui ) 
@@ -378,7 +400,7 @@ function contextmenu_mysql_processlist(obj)
   mydom("plan_sql").value = sql;
   //TODO tab selection
   mydom('btn_explain').click();
-  $('#sessiontab').tabs("option", "active", 9);
+  $('#sessiontab').tabs("option", "active", 8);
 }//contextmenu_mysql_processlist
 
 
@@ -498,8 +520,9 @@ var mysql_repl_masterTable = new JSTable({
    	   handlers: {jquery:1,statusMessageHandler:messagehandler}
    	});//TODO formatter
 
-topTabTableMapping["mysql_repl_master"] = {table: mysql_repl_masterTable, tab:4};
+topTabTableMapping["mysql_repl_master"] = {table: mysql_repl_masterTable, tab:4, subtab:"repl_tab", subidx:0};
 topTabActionMapping[4] = {table: mysql_repl_masterTable, index:4};
+replStatusTabActionMapping[0] = {table: mysql_repl_masterTable, index:4};
 
 var mysql_repl_slaveTable = new JSTable({
    	   name: "mysql_repl_slave",
@@ -513,8 +536,22 @@ var mysql_repl_slaveTable = new JSTable({
    	   handlers: {jquery:1,statusMessageHandler:messagehandler}
    	});//TODO formatter
 
-topTabTableMapping["mysql_repl_slave"] = {table: mysql_repl_slaveTable, tab:5};
-topTabActionMapping[5] = {table: mysql_repl_slaveTable, index:5};
+topTabTableMapping["mysql_repl_slave"] = {table: mysql_repl_slaveTable, tab:4, subtab:"repl_tab", subidx:1};
+replStatusTabActionMapping[1] = {table: mysql_repl_slaveTable, index:5};
+
+var mysql_repl_showTable = new JSTable({
+   	   name: "mysql_repl_show",
+   	   query:{
+   	     queryURL: "query.html",
+   	     sqlId: "mysql_repl_show",
+   	     paramFields:[]
+   	   }, 
+   	   db: {dbGroupId: "dbgroup", dbHost: "host"},
+   	   handlers: {jquery:1,statusMessageHandler:messagehandler}
+   	});//TODO formatter
+
+topTabTableMapping["mysql_repl_show"] = {table: mysql_repl_showTable, tab:4, subtab:"repl_tab", subidx:2};
+replStatusTabActionMapping[2] = {table: mysql_repl_showTable, index:6};
 
 function jqueryStylingSlaveStatus(obj)
 {
@@ -539,8 +576,8 @@ var innodbEngineStatusTable = new JSTable({
    	   formatter:{columnFormatters:{"inno_status_txs.SQL":jqueryFormatSqlText, "inno_status_txs.LOCKS":jqueryFormatSqlText}},
    	   handlers: {jquery:1,statusMessageHandler:messagehandler}
    	});//TODO formatter
-topTabTableMapping["innodbStatus"] = {table: innodbEngineStatusTable, tab:6};
-topTabActionMapping[6] = {table: innodbEngineStatusTable, index:6};
+topTabTableMapping["innodbStatus"] = {table: innodbEngineStatusTable, tab:5};
+topTabActionMapping[5] = {table: innodbEngineStatusTable, index:7};
 
 var mysql_innodb_trxTable = new JSTable({
    	   name: "mysql_innodb_trx",
@@ -554,9 +591,9 @@ var mysql_innodb_trxTable = new JSTable({
    	   handlers: {jquery:1,statusMessageHandler:messagehandler}
    	});//TODO formatter
 
-topTabTableMapping["mysql_innodb_trx"] = {table: mysql_innodb_trxTable, tab:7};
-topTabActionMapping[7] = {table: mysql_innodb_trxTable, index:7};
-innoStatusTabActionMapping[0] = {table: mysql_innodb_trxTable, index:7};
+topTabTableMapping["mysql_innodb_trx"] = {table: mysql_innodb_trxTable, tab:6, subtab:"innodbtab", subidx:0};
+topTabActionMapping[6] = {table: mysql_innodb_trxTable, index:8};
+innoStatusTabActionMapping[0] = {table: mysql_innodb_trxTable, index:8};
 
 var mysql_innodb_mutexTable = new JSTable({
    	   name: "mysql_innodb_mutex",
@@ -571,8 +608,8 @@ var mysql_innodb_mutexTable = new JSTable({
    	   diff: {keyColumns:["NAME"], valueColumns:["VALUE", "COUNT"]}
    	});//TODO formatter
 
-topTabTableMapping["mysql_innodb_mutex"] = {table: mysql_innodb_mutexTable, tab:7};
-innoStatusTabActionMapping[1] = {table: mysql_innodb_mutexTable, index:8};
+topTabTableMapping["mysql_innodb_mutex"] = {table: mysql_innodb_mutexTable, tab:6, subtab:"innodbtab", subidx:1};
+innoStatusTabActionMapping[1] = {table: mysql_innodb_mutexTable, index:9};
 
 var mysql_innodb_locksTable = new JSTable({
    	   name: "mysql_innodb_locks",
@@ -586,8 +623,8 @@ var mysql_innodb_locksTable = new JSTable({
    	   handlers: {jquery:1,statusMessageHandler:messagehandler}
    	});//TODO formatter
 
-topTabTableMapping["mysql_innodb_locks"] = {table: mysql_innodb_locksTable, tab:7};
-innoStatusTabActionMapping[2] = {table: mysql_innodb_locksTable, index:9};
+topTabTableMapping["mysql_innodb_locks"] = {table: mysql_innodb_locksTable, tab:6, subtab:"innodbtab", subidx:2};
+innoStatusTabActionMapping[2] = {table: mysql_innodb_locksTable, index:10};
 
 var mysql_innodb_buffer_pool_statusTable = new JSTable({
    	   name: "mysql_innodb_buffer_pool_status",
@@ -601,8 +638,8 @@ var mysql_innodb_buffer_pool_statusTable = new JSTable({
    	   handlers: {jquery:1,statusMessageHandler:messagehandler}
    	});//TODO formatter
 
-topTabTableMapping["mysql_innodb_buffer_pool_status"] = {table: mysql_innodb_buffer_pool_statusTable, tab:7};
-innoStatusTabActionMapping[3] = {table: mysql_innodb_buffer_pool_statusTable, index:10};
+topTabTableMapping["mysql_innodb_buffer_pool_status"] = {table: mysql_innodb_buffer_pool_statusTable, tab:6, subtab:"innodbtab", subidx:3};
+innoStatusTabActionMapping[3] = {table: mysql_innodb_buffer_pool_statusTable, index:11};
 
 var mysql_innodb_metricsTable = new JSTable({
    	   name: "mysql_innodb_metrics",
@@ -617,8 +654,8 @@ var mysql_innodb_metricsTable = new JSTable({
    	   diff: {keyColumns:["NAME"], valueColumns:["COUNT"]}
    	});//TODO formatter
 
-topTabTableMapping["mysql_innodb_metrics"] = {table: mysql_innodb_metricsTable, tab:7};
-innoStatusTabActionMapping[4] = {table: mysql_innodb_metricsTable, index:11};
+topTabTableMapping["mysql_innodb_metrics"] = {table: mysql_innodb_metricsTable, tab:6, subtab:"innodbtab", subidx:4};
+innoStatusTabActionMapping[4] = {table: mysql_innodb_metricsTable, index:12};
 
 var mysql_user_statisticsTable = new JSTable({
    	   name: "mysql_user_statistics",
@@ -631,9 +668,9 @@ var mysql_user_statisticsTable = new JSTable({
 	   formatter:{},
    	   handlers: {jquery:1,statusMessageHandler:messagehandler}
    	});//TODO formatter
-topTabTableMapping["mysql_user_statistics"] = {table: mysql_user_statisticsTable, tab:8};
-topTabActionMapping[8] = {table: mysql_user_statisticsTable, index:13};
-userStatusTabActionMapping[0] = {table: mysql_user_statisticsTable, index:12};
+topTabTableMapping["mysql_user_statistics"] = {table: mysql_user_statisticsTable, tab:7, subtab:"userstatstab", subidx:0};
+topTabActionMapping[7] = {table: mysql_user_statisticsTable, index:13};
+userStatusTabActionMapping[0] = {table: mysql_user_statisticsTable, index:13};
 
 var mysql_user_timeTable = new JSTable({
    	   name: "mysql_user_time",
@@ -647,8 +684,8 @@ var mysql_user_timeTable = new JSTable({
    	   handlers: {jquery:1,statusMessageHandler:messagehandler},
    	   diff: {keyColumns:["USER"], valueColumns:["TOTAL_CONNECTIONS","CONNECTED_TIME", "BUSY_TIME", "CPU_TIME"]}
    	});//TODO formatter
-topTabTableMapping["mysql_user_time"] = {table: mysql_user_timeTable, tab:8};
-userStatusTabActionMapping[1] = {table: mysql_user_timeTable, index:13};
+topTabTableMapping["mysql_user_time"] = {table: mysql_user_timeTable, tab:7, subtab:"userstatstab", subidx:1};
+userStatusTabActionMapping[1] = {table: mysql_user_timeTable, index:14};
 
 var mysql_client_statisticsTable = new JSTable({
    	   name: "mysql_client_statistics",
@@ -661,8 +698,8 @@ var mysql_client_statisticsTable = new JSTable({
 	   formatter:{},
    	   handlers: {jquery:1,statusMessageHandler:messagehandler}
    	});//TODO formatter
-topTabTableMapping["mysql_client_statistics"] = {table: mysql_client_statisticsTable, tab:8};
-userStatusTabActionMapping[2] = {table: mysql_client_statisticsTable, index:14};
+topTabTableMapping["mysql_client_statistics"] = {table: mysql_client_statisticsTable, tab:7, subtab:"userstatstab", subidx:2};
+userStatusTabActionMapping[2] = {table: mysql_client_statisticsTable, index:15};
 
 var mysql_client_conn_statisticsTable = new JSTable({
    	   name: "mysql_client_conn_statistics",
@@ -676,8 +713,8 @@ var mysql_client_conn_statisticsTable = new JSTable({
    	   handlers: {jquery:1,statusMessageHandler:messagehandler},
    	   diff: {keyColumns:["CLIENT"], valueColumns:["TOTAL_CONNECTIONS", "DENIED_CONNECTIONS", "LOST_CONNECTIONS","CONNECTED_TIME"]}
    	});//TODO formatter
-topTabTableMapping["mysql_client_conn_statistics"] = {table: mysql_client_conn_statisticsTable, tab:8};
-userStatusTabActionMapping[3] = {table: mysql_client_conn_statisticsTable, index:15};
+topTabTableMapping["mysql_client_conn_statistics"] = {table: mysql_client_conn_statisticsTable, tab:7, subtab:"userstatstab", subidx:3};
+userStatusTabActionMapping[3] = {table: mysql_client_conn_statisticsTable, index:16};
 
 var mysql_table_statisticsTable = new JSTable({
    	   name: "mysql_table_statistics",
@@ -691,8 +728,8 @@ var mysql_table_statisticsTable = new JSTable({
    	   handlers: {jquery:1,statusMessageHandler:messagehandler},
    	   diff: {keyColumns:["TABLE_NAME"], valueColumns:["ROWS_READ","ROWS_CHANGED", "ROWS_CHANGED_X_INDEXES"]}
    	});//TODO formatter
-topTabTableMapping["mysql_table_statistics"] = {table: mysql_table_statisticsTable, tab:8};
-userStatusTabActionMapping[4] = {table: mysql_table_statisticsTable, index:16};
+topTabTableMapping["mysql_table_statistics"] = {table: mysql_table_statisticsTable, tab:7, subtab:"userstatstab", subidx:4};
+userStatusTabActionMapping[4] = {table: mysql_table_statisticsTable, index:17};
 
 var mysql_index_statisticsTable = new JSTable({
    	   name: "mysql_index_statistics",
@@ -706,8 +743,8 @@ var mysql_index_statisticsTable = new JSTable({
    	   handlers: {jquery:1,selectHandler: selectRow_mysql_index_statistics,statusMessageHandler:messagehandler},
    	   diff: {keyColumns:["INDEX_NAME"], valueColumns:["ROWS_READ"]}
    	});//TODO formatter
-topTabTableMapping["mysql_index_statistics"] = {table: mysql_index_statisticsTable, tab:8};
-userStatusTabActionMapping[5] = {table: mysql_index_statisticsTable, index:17};
+topTabTableMapping["mysql_index_statistics"] = {table: mysql_index_statisticsTable, tab:7, subtab:"userstatstab", subidx:5};
+userStatusTabActionMapping[5] = {table: mysql_index_statisticsTable, index:18};
 
 function selectRow_mysql_index_statistics(obj)
 {
@@ -754,6 +791,8 @@ $('#btn_session_activity').click(function()
     return;
   }
   $('#sessiontab').tabs("option", "active", mapping.tab);
+  if(mapping.subtab!=null && mapping.subidx!=null)
+    $('#'+mapping.subtab).tabs("option", "active", mapping.subidx);
   if(mapping.table.diff != null)
     mapping.table.baseDataObj[mapping.table.name] = null;
   if(act =='global_variables')

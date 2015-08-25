@@ -69,6 +69,7 @@ public class PerfController extends MyPerfBaseController
 	mv.addObject("help_key", pg);
 	mv.addObject("config", this.frameworkContext.getMyperfConfig());
     mv.addObject("scanner_running", this.frameworkContext.getAutoScanner().isRunning());
+	mv.addObject("setup", this.frameworkContext.getMyperfConfig().isConfigured()?1:0);
     
 	if("sp".equals(pg)||"scatterplot".equals(pg)||"m".equals(pg)||"metrics".equalsIgnoreCase(pg))
 		mv.addObject("udms", this.frameworkContext.getMetricsList());

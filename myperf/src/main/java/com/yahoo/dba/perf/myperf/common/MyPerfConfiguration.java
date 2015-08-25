@@ -57,6 +57,11 @@ public class MyPerfConfiguration implements java.io.Serializable{
 	//If set to false, connection to the managed database will not be cached and reused
     private boolean reuseMonUserConnction = true;
     
+    //maximum age for replication topology cache, hard code for now to 5 minutes
+    private long replTopologyCacheMaxAge = 300000L;
+    //how far we want to probe the topology
+    private int replTopologyMaxDepth = 3;
+    
 	//Metrics storage DB
 	//Either use embedded derby db or mysql
 	private String metricsDbType = "derby";
@@ -342,6 +347,22 @@ public class MyPerfConfiguration implements java.io.Serializable{
 
 	public void setReuseMonUserConnction(boolean reuseMonUserConnction) {
 		this.reuseMonUserConnction = reuseMonUserConnction;
+	}
+
+	public long getReplTopologyCacheMaxAge() {
+		return replTopologyCacheMaxAge;
+	}
+
+	public void setReplTopologyCacheMaxAge(long replTopologyCacheMaxAge) {
+		this.replTopologyCacheMaxAge = replTopologyCacheMaxAge;
+	}
+
+	public int getReplTopologyMaxDepth() {
+		return replTopologyMaxDepth;
+	}
+
+	public void setReplTopologyMaxDepth(int replTopologyMaxDepth) {
+		this.replTopologyMaxDepth = replTopologyMaxDepth;
 	}
 
 }

@@ -92,7 +92,8 @@ public class AlertReportRunner implements Runnable{
 			stmt = connection.getConnection().createStatement();
 			stmt.setFetchSize(5000);
 			stmt.setMaxRows(5000);
-			rs = stmt.executeQuery("select * from information_schema.processlist limit 5000");
+			//rs = stmt.executeQuery("select * from information_schema.processlist limit 5000");
+			rs = stmt.executeQuery("select * from information_schema.processlist"); //remove limit to handle the case of very large connections
 			boolean hasRowInfo = rs!=null && hasRowInfo(rs);
 			boolean hasRowRead = rs!=null && hasRowsRead(rs);
 			while(rs!=null && rs.next())

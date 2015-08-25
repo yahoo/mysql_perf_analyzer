@@ -13,6 +13,9 @@
   <sql handle="mysql_repl_lag" paramCount="0" replace="n" errorInline="n" comments="Query MySQL slave status and lag">
     <queryProcessor>ReplLagQueryProcessor</queryProcessor>
   </sql>
+  <sql handle="mysql_repl_show" paramCount="0" replace="n" errorInline="n" comments="Query MySQL slave topology">
+    <queryProcessor>ReplShowProcessor</queryProcessor>
+  </sql>
   <sql handle="mysql_processlist" paramCount="0" comments="Display MySQL processlist">
     <text>select * from information_schema.processlist limit 3000</text>
   </sql>

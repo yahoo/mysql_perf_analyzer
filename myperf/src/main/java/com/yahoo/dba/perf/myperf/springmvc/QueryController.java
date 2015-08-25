@@ -38,6 +38,7 @@ public class QueryController extends MyPerfBaseController
 	  CUSTOMER_PROCESSOR.put("TableMetaProcessor", new TableMetaProcessor());
 	  CUSTOMER_PROCESSOR.put("SNMPQueryProcessor", new com.yahoo.dba.perf.myperf.snmp.SNMPQueryProcessor());
 	  CUSTOMER_PROCESSOR.put("ReplLagQueryProcessor", new com.yahoo.dba.perf.myperf.db.ReplLagQueryProcessor());
+	  CUSTOMER_PROCESSOR.put("ReplShowProcessor", new com.yahoo.dba.perf.myperf.db.ReplShowProcessor());
 
 	  POST_PROCESSOR.put("mysql_innodb_mutex", new InnoDbMutexPostProccessor());
   }

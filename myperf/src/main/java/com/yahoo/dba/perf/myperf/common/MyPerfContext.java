@@ -68,8 +68,8 @@ public class MyPerfContext implements java.io.Serializable, InitializingBean,Dis
   
   //database connection settings
   private long connectionIdleTime = 600000L;
-  private long connectionTimeout = 60000L;
-  private long connectionReadTimeout = 60000L;
+  private long connectionTimeout = 5000L;//reduced to 5 seconds
+  private long connectionReadTimeout = 10000L;
   private int queryTimeout = 300;
   private int queryFetchSize = 5000;
 

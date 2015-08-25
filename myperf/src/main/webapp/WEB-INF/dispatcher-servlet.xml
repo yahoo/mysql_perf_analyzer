@@ -9,8 +9,8 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
     <bean id="frameworkContext" class="com.yahoo.dba.perf.myperf.common.MyPerfContext">
       <property name="connectionIdleTime" value="600000" />
-      <property name="connectionTimeout" value="60000" />
-      <property name="connectionReadTimeout" value="300000" />
+      <property name="connectionTimeout" value="5000" />
+      <property name="connectionReadTimeout" value="10000" />
       <property name="queryTimeout" value="300" />
       <property name="queryFetchSize" value="5000" />
       <property name="logLevel" value="INFO" />

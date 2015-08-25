@@ -669,18 +669,31 @@ public class MetricScannerRunner implements Runnable
 		  return false;//log the error
 		}
 		logger.fine("Scan for host ("+scanData.dbinfo+") as user "+cred.getUsername());
+	  long connStartTime = System.currentTimeMillis();
+	  long connEndTime = -1L;
+	  long connTime = -1L;
 	  try
 	  {
 	      scanData.conn = conns.checkoutConnection(scanData.dbinfo, cred);
+	      connEndTime = System.currentTimeMillis();
+	      connTime = connEndTime - connStartTime;
 	  }catch(Throwable iex)
 	  {
-		  //logger.log(Level.WARNING, "Failed to connect to "+scanData.dbinfo, iex);
-		  //reportOffline(dbinfo);
+		  String msg = iex.getMessage();
+		  if(msg != null && msg.indexOf("Access denied") >= 0)
+		  {
+			  logger.log(Level.WARNING, "Failed  attempt to connect to "+scanData.dbinfo, iex);
+			  return false;
+		  }
+	      connEndTime = System.currentTimeMillis();
+	      connTime = connEndTime - connStartTime;
 	  }
-	  if(scanData.conn==null)//try again
+	  if(scanData.conn==null && connTime < this.frameworkContext.getConnectionTimeout())//try again, if last attempt is within connection timeout seconds
 	  {
 		  try
 		  {
+			  logger.info("Retry to connect to " + scanData.dbinfo+", last try time "+connTime +"(" + connStartTime+", " + connEndTime+")"
+					  +", timeout " + this.frameworkContext.getConnectionTimeout());
 			  scanData.conn = conns.checkoutConnection(scanData.dbinfo, cred);
 		  }catch(Throwable iex)
 		  {
@@ -688,6 +701,10 @@ public class MetricScannerRunner implements Runnable
 			  reportOffline(scanData.dbinfo);			  
 		  }
 		  
+	  }else if(scanData.conn==null)
+	  {
+		  logger.warning("Failed connection to " + scanData.dbinfo+", but will not retry since last try used " + connTime +"ms");
+		  reportOffline(scanData.dbinfo);			  
 	  }
 	  return scanData.conn!=null;
 	  

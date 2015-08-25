@@ -242,7 +242,12 @@ function drawOneChart(chartInfo, jsondata)
           var interval = ts[i+1].getTime() - ts[i].getTime();
           if(num_keys == 0)
           {
-            data[j][i] = data[j][i+1]>=data[j][i]?data[j][i+1]-data[j][i]:data[j][i+1];
+            //data[j][i] = data[j][i+1]>=data[j][i]?data[j][i+1]-data[j][i]:data[j][i+1];
+            //note directly use raw data can have unwanted spike when there is issue with data collection
+            if(data[j][i+1]>=data[j][i])data[j][i] = data[j][i+1]-data[j][i];
+            else if(i>0) data[j][i] = data[j][i-1];
+            else   data[j][i]  = 0;
+              
             if(interval>0)
                data[j][i] = eval((data[j][i]*avgAdjust*mattr[j].adj/interval).toFixed(3));
           }else
@@ -250,7 +255,11 @@ function drawOneChart(chartInfo, jsondata)
             for(var k = 0; k<num_keys; k++)
             {
               var jk = j*num_keys+k;
-              data[jk][i] = data[jk][i+1]>=data[jk][i]?data[jk][i+1]-data[jk][i]:data[jk][i+1];
+              //data[jk][i] = data[jk][i+1]>=data[jk][i]?data[jk][i+1]-data[jk][i]:data[jk][i+1];
+              if(data[jk][i+1]>=data[jk][i])data[jk][i] = data[jk][i+1]-data[jk][i];
+              else if(i>0) data[jk][i] = data[jk][i-1];
+              else data[jk][i] = 0;
+              
               if(interval>0)
                 data[jk][i] = eval((data[jk][i]*avgAdjust*mattr[j].adj/interval).toFixed(3));
             }
