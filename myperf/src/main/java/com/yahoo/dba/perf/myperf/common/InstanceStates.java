@@ -110,7 +110,7 @@ public class InstanceStates implements java.io.Serializable{
       		  double val = ((double)(this.currSnapshot.getAbortedConnectsClients() - this.prevSnapshot.getAbortedConnectsClients())*1000)/(double)(this.currSnapshot.getTimestamp() - this.prevSnapshot.getTimestamp());
       		  aborted_cc = val;      		  
       	  }
-      	  if(deadlocks >0)//will generate alert if any deadlocks detected
+      	  if(deadlocks > thresholds.get("DEADLOCK"))//will generate alert if any deadlocks detected
       	  {
       		alertType = "DEADLOCKS";
       		alertValue = String.valueOf(deadlocks);

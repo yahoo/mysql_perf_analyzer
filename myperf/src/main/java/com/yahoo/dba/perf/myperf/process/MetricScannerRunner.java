@@ -633,7 +633,14 @@ public class MetricScannerRunner implements Runnable
 	long q_startTime = System.currentTimeMillis();
 	if(mg.getKeyColumn() == null || mg.getKeyColumn().isEmpty())
 	{
-	  Map<String, String> kvPairs = this.frameworkContext.getQueryEngine().executeQueryWithKeyValuPairs(qps, scanData.conn, mg.getMetricNameColumn(), mg.getMetricValueColumn());
+		Map<String, String> kvPairs = null;	
+	  if("mysql_global_status".equalsIgnoreCase(mg.getSql()))
+	  {
+		  qps.setSql("mysql_show_global_status");//hardwire to adapt to mysql-5.7
+		  kvPairs = this.frameworkContext.getQueryEngine().executeQueryWithKeyValuPairs(qps, scanData.conn, mg.getMetricNameColumn(), "VALUE", true);
+	  }
+	  else
+		  kvPairs = this.frameworkContext.getQueryEngine().executeQueryWithKeyValuPairs(qps, scanData.conn, mg.getMetricNameColumn(), mg.getMetricValueColumn(), false);
 	  storeKVTabularData(scanData, mg, null,kvPairs, (int)(System.currentTimeMillis() - q_startTime));    
   	  if ("STATUS".equalsIgnoreCase(mg.getGroupName()))
   	  {

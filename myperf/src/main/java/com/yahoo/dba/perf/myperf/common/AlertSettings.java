@@ -22,9 +22,10 @@ public class AlertSettings {
 	public static final int ABORTED_CONNECTS_THRESHOLDS = 10;//600/minute
 	public static final int DEADLOCKS_THRESHOLDS = 0;//since we use greater than, so any positive detection should be alerted
 	public static final int DISK_USED_PCT_THRESHOLD = 90;
+	public static final int DEADLOCK_THRESHOLD = 0;
 	
 	public static final String[] COMMON_ALERTS = new String[]{"CPU", "IO", "LOADAVG", "THREAD", "REPLLAG", 
-		"SLOW", "CONNECT_FAILURE", "DEADLOCKS","DISKUSAGE"};
+		"SLOW", "CONNECT_FAILURE", "DEADLOCKS","DISKUSAGE", "DEADLOCK"};
 
 	private static final HashMap<String, Float> DEFAULT_THRESHOLD = new HashMap<String, Float>();
 	private static Logger logger = Logger.getLogger(AlertSettings.class.getName());
@@ -40,6 +41,7 @@ public class AlertSettings {
 		DEFAULT_THRESHOLD.put("CONNECT_FAILURE", new Float(ABORTED_CONNECTS_THRESHOLDS));
 		DEFAULT_THRESHOLD.put("DEADLOCKS", new Float(DEADLOCKS_THRESHOLDS));
 		DEFAULT_THRESHOLD.put("DISKUSAGE", new Float(DISK_USED_PCT_THRESHOLD));
+		DEFAULT_THRESHOLD.put("DEADLOCK", new Float(DEADLOCK_THRESHOLD));
 	}
 	
 	static class HostSettings

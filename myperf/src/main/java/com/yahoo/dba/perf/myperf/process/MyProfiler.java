@@ -34,6 +34,7 @@ public class MyProfiler implements java.io.Serializable
   private boolean useProfiling;//if true, set profiling as 1
   private String sqlText;//query to be profiled, for now, we only support SELECT
   private String dbUser;
+  private long connectionTime = 0L; //time used for connection
   
   private transient Connection connection;
 	
@@ -167,7 +168,10 @@ public class MyProfiler implements java.io.Serializable
     java.util.Properties prop = new java.util.Properties();
 	prop.put("socketTimeout", "600000");//make it 10 minutes. 1 minute is too short for profiling
 	prop.put("interactiveClient", "true");
+	long connStartTime = System.currentTimeMillis();
     connection = ConnectionFactory.connect(dbinfo, dbuser, dbpwd, frameworkContext, prop);
+	long connEndTime = System.currentTimeMillis();
+	this.connectionTime = connEndTime - connStartTime;
     if(readOnly)
     	connection.setReadOnly(true);
   }
@@ -340,12 +344,13 @@ public class MyProfiler implements java.io.Serializable
       DBUtils.close(rs);
       long execStart = System.currentTimeMillis();
       rs = stmt.executeQuery(this.sqlText);
+      long execEnd = System.currentTimeMillis();
       int count = 0;
       while(rs!=null && rs.next())
       {
     	  count++;
       }
-      long execEnd = System.currentTimeMillis();
+      long fetchEnd = System.currentTimeMillis();
       DBUtils.close(rs);
       //rs = stmt.executeQuery("select variable_name, variable_value from information_schema.session_status where variable_value!='0' and variable_value regexp '[0-9\\.]' limit 1000");
       rs = stmt.executeQuery("show status");
@@ -378,7 +383,9 @@ public class MyProfiler implements java.io.Serializable
       }
 
       res.put("_RETURNED_ROWS", new BigDecimal(count));
-      res.put("_TIME_USED_MS", new BigDecimal(execEnd - execStart));
+      res.put("_TIME_EXEC_MS", new BigDecimal(execEnd - execStart));
+      res.put("_TIME_FETCH_MS", new BigDecimal(fetchEnd - execEnd));
+      res.put("_TIME_CONN_MS", new BigDecimal(this.connectionTime));
       
       ResultList rList = new ResultList();
       ColumnDescriptor desc = new ColumnDescriptor();

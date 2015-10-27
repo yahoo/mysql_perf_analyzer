@@ -1018,6 +1018,7 @@ function traversePlanObj(curSrcObj, curTgtObj, query_block_id)
           if(query_block_id!=null)
           {
             child.label = '<span class="step">'+query_block_id+'</span> '+ child.label;
+            child.name = child.label;
             query_block_id = null;
           }
           curTgtObj.children[curTgtObj.children.length] = child;  
@@ -1146,7 +1147,30 @@ function traversePlanObj(curSrcObj, curTgtObj, query_block_id)
               traversePlanObj(val[i], obj,query_block_id);
             }
           }          
-        }else
+        }else if(key=='attached_subqueries')
+        {
+          var child = new Object();
+          child.label = label;
+          child.name = child.label;
+          curTgtObj.children[curTgtObj.children.length] = child;  
+          var val = curSrcObj[key];
+          if(val!=null)
+          {
+            child.children = new Array();
+            for(var i=0;i<val.length;i++)
+            {
+              var obj = new Object();
+              obj.label = "Subquery: (dependent: "+nullToEmpty(val[i]['dependent'])+", cacheable: "+nullToEmpty(val[i]['cacheable'])+")";
+              //if(val[i]['query_block'] != null && val[i]['query_block']['table'] != null)
+              //  obj.label = '<span class="step">'+val[i]['query_block']['select_id'] + '</span> '+ obj.label;              
+              obj.name = obj.label;
+              obj.children = new Array();
+              child.children[i] = obj;
+              traversePlanObj(val[i], obj,query_block_id);
+            }
+          }
+        }
+        else
         {
           reportStatus(true, "com_message", "The version of MySQL might not support EXPLAIN JSON");
         }

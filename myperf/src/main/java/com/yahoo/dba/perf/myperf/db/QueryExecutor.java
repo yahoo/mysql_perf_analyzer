@@ -218,10 +218,11 @@ public class QueryExecutor
    * @param conn
    * @param keyColumn
    * @param valueColumn
+   * @param normalizeKey if true, key will be convert to uppercase
    * @return
    * @throws SQLException
    */
-  public  Map<String, String> executeQueryWithKeyValuPairs(QueryParameters qps, DBConnectionWrapper conn, String keyColumn, String valueColumn)throws SQLException
+  public  Map<String, String> executeQueryWithKeyValuPairs(QueryParameters qps, DBConnectionWrapper conn, String keyColumn, String valueColumn, boolean normalizeKey)throws SQLException
   {
     PreparedStatement pstmt = null;
 	Statement stmt = null;
@@ -285,7 +286,9 @@ public class QueryExecutor
 	  {
 	    while(rs!=null && rs.next())
 	    {
-		  metrics.put(rs.getString(keyColumn.toLowerCase()), rs.getString(valueColumn.toLowerCase()));
+	      String key = rs.getString(keyColumn.toLowerCase());
+	      if(normalizeKey)key = key.toUpperCase();
+		  metrics.put(key, rs.getString(valueColumn.toLowerCase()));
 	    }
 	  }else
 	  {

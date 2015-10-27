@@ -153,11 +153,11 @@ public class VardiffController extends MyPerfBaseController
 		HashMap<String, String> param2 = new HashMap<String, String>(rList2.getRows().size());
 		for(ResultRow r: rList.getRows())
 		{
-		  param1.put(r.getColumns().get(0), r.getColumns().get(1));	
+		  param1.put(r.getColumns().get(0).toUpperCase(), r.getColumns().get(1));	
 		}
 		for(ResultRow r: rList2.getRows())
 		{
-		  param2.put(r.getColumns().get(0), r.getColumns().get(1));	
+		  param2.put(r.getColumns().get(0).toUpperCase(), r.getColumns().get(1));	
 		}
 		ColumnDescriptor desc = new ColumnDescriptor();
 		desc.addColumn("VARIABLE_NAME", false, 1);

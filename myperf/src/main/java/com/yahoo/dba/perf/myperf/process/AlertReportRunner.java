@@ -91,7 +91,7 @@ public class AlertReportRunner implements Runnable{
 		{
 			stmt = connection.getConnection().createStatement();
 			stmt.setFetchSize(5000);
-			stmt.setMaxRows(5000);
+			//stmt.setMaxRows(5000);
 			//rs = stmt.executeQuery("select * from information_schema.processlist limit 5000");
 			rs = stmt.executeQuery("select * from information_schema.processlist"); //remove limit to handle the case of very large connections
 			boolean hasRowInfo = rs!=null && hasRowInfo(rs);
@@ -174,7 +174,8 @@ public class AlertReportRunner implements Runnable{
 				ar.setReplicationSummary(repMap);
 			ar.saveAsText();
 		}
-		this.context.emailAlert(alertEntry);
+		if(this.dbInfo.isAlertEnabled())
+			this.context.emailAlert(alertEntry);
 	}
 	
 	public DBConnectionWrapper getConnection() {

@@ -114,26 +114,40 @@
   <sql handle="mysql_repl_slave" paramCount="0" expandRow="y" comments="Display MySQL slave status">
     <text>show slave status</text>
   </sql>
+  <sql handle="mysql_show_global_status_ps" paramCount="0" comments="Display MySQL global status">
+    <queryProcessor>MySQLStatusQueryProcessor</queryProcessor>
+  </sql>
+  <sql handle="mysql_show_global_status" paramCount="0" comments="Display MySQL global status">
+    <text>show global status</text>
+  </sql>
   <sql handle="mysql_global_status" paramCount="0" comments="Display MySQL global status">
     <text>select variable_name, variable_value from information_schema.global_status</text>
+    <vsql minVersion="5.7">select UPPER(variable_name) VARIABLE_NAME, variable_value from performance_schema.global_status</vsql>
   </sql>
   <sql handle="mysql_global_status_metrics2" paramCount="1" replace="y" comments="Display MySQL global status">
     <text>select variable_name, variable_value from information_schema.global_status 
     where upper(variable_name) like '%&amp;p_1%' and variable_value!='0' and variable_value regexp '[0-9\.]' limit 5000</text>
+    <vsql minVersion="5.7">select UPPER(variable_name) VARIABLE_NAME, variable_value from performance_schema.global_status 
+    where upper(variable_name) like '%&amp;p_1%' and variable_value!='0' and variable_value regexp '[0-9\.]' limit 5000</vsql>    
     <param name="keyword" dataType="non_breakable_string"/>
   </sql>
   <sql handle="mysql_global_status_metrics" paramCount="1" replace="y" comments="Display MySQL global status">
     <text>select variable_name, variable_value from information_schema.global_status 
     where upper(variable_name) like '%&amp;p_1%'</text>
+    <vsql minVersion="5.7">select UPPER(variable_name) VARIABLE_NAME, variable_value from performance_schema.global_status 
+    where upper(variable_name) like '%&amp;p_1%'</vsql>    
     <param name="keyword" dataType="non_breakable_string"/>
   </sql>
   <sql handle="mysql_global_variables" paramCount="1" replace="y" comments="Display MySQL global variables">
     <text>select variable_name, variable_value from information_schema.global_variables 
       where variable_name like '%&amp;p_1%'</text>
+    <vsql minVersion="5.7">select variable_name, variable_value from performance_schema.global_variables 
+      where variable_name like '%&amp;p_1%'</vsql>
     <param name="filter_keyword" dataType="non_breakable_string"/>
   </sql>
   <sql handle="mysql_all_global_variables"  paramCount="0" comments="Retrieve MySQL global variables">
     <text>select variable_name, variable_value from information_schema.global_variables</text>
+    <vsql minVersion="5.7">select variable_name, variable_value from performance_schema.global_variables</vsql>
   </sql>
   <sql handle="mysql_innodb_trx" paramCount="0" comments="Display MySQL innodb transactions">
     <text>select * from information_schema.innodb_trx</text>
@@ -387,7 +401,49 @@
     <text>select CONCAT(object_type, ':', object_schema, '.', object_name) NAME, 
              count_star, sum_timer_wait/1000000000 WAIT_MS, min_timer_wait/1000000000 MIN_WAIT_MS, max_timer_wait/1000000000 MAX_WAIT_MS, avg_timer_wait/1000000000 AVG_WAIT_MS,
              count_read, sum_timer_read/1000000000 READ_MS, min_timer_read/1000000000 MIN_READ_MS, avg_timer_read/1000000000 AVG_READ_MS, max_timer_read/1000000000 MAX_READ_MS,
-             count_write, sum_timer_write/1000000000 WRITE_MS, min_timer_write/1000000000 MIN_WRITE_MS, avg_timer_write/1000000000 AVG_WRITE_MS, max_timer_write/1000000000 MAX_WRITE_MS
+             count_write, sum_timer_write/1000000000 WRITE_MS, min_timer_write/1000000000 MIN_WRITE_MS, avg_timer_write/1000000000 AVG_WRITE_MS, max_timer_write/1000000000 MAX_WRITE_MS,
+             count_read_normal, sum_timer_read_normal/1000000000 R_NOMRAL_MS, min_timer_read_normal/1000000000 MIN_R_NORMAL_MS, avg_timer_read_normal/1000000000 AVG_R_NORMAL_MS, max_timer_read_normal/1000000000 MAX_R_NORMAL_MS,
+             count_read_with_shared_locks, sum_timer_read_with_shared_locks/1000000000 R_SHARED_LOCKS_MS, min_timer_read_with_shared_locks/1000000000 MIN_R_SHARED_LOCKS_MS, avg_timer_read_with_shared_locks/1000000000 AVG_R_SHARED_LOCKS_MS, max_timer_read_with_shared_locks/1000000000 MAX_R_SHARED_LOCKS_MS,
+             count_read_high_priority, sum_timer_read_high_priority/1000000000 R_HIGH_PRIORITY_MS, min_timer_read_high_priority/1000000000 MIN_R_HIGH_PRIORITY_MS, avg_timer_read_high_priority/1000000000 AVG_R_HIGH_PRIORITY_MS, max_timer_read_high_priority/1000000000 MAX_R_HIGH_PRIORITY_MS,
+             count_read_no_insert, sum_timer_read_no_insert/1000000000 R_NO_INSERT_MS, min_timer_read_no_insert/1000000000 MIN_R_NO_INSERT_MS, avg_timer_read_no_insert/1000000000 AVG_R_NO_INSERT_MS, max_timer_read_no_insert/1000000000 MAX_R_NO_INSERT_MS,
+             count_read_external, sum_timer_read_external/1000000000 R_EXTERNAL_MS, min_timer_read_external/1000000000 MIN_R_EXTERNAL_MS, avg_timer_read_external/1000000000 AVG_R_EXTERNAL_MS, max_timer_read_external/1000000000 MAX_R_EXTERNAL_MS,
+             count_write_allow_write, sum_timer_write_allow_write/1000000000 W_ALLOW_W_MS, min_timer_write_allow_write/1000000000 MIN_W_ALLOW_W_MS, avg_timer_write_allow_write/1000000000 AVG_W_ALLOW_W_MS, max_timer_write_allow_write/1000000000 MAX_W_ALLOW_W_MS,
+             count_write_concurrent_insert, sum_timer_write_concurrent_insert/1000000000 W_CONC_INSERT_MS, min_timer_write_concurrent_insert/1000000000 MIN_W_CONC_INSERT_MS, avg_timer_write_concurrent_insert/1000000000 AVG_W_CONC_INSERT_MS, max_timer_write_concurrent_insert/1000000000 MAX_W_CONC_INSERT_MS,
+             count_write_low_priority, sum_timer_write_low_priority/1000000000 W_LOW_PRIORITY_MS, min_timer_write_low_priority/1000000000 MIN_W_LOW_PRIORITY_MS, avg_timer_write_low_priority/1000000000 AVG_W_LOW_PRIORITY_MS, max_timer_write_low_priority/1000000000 MAX_W_LOW_PRIORITY_MS,
+             count_write_normal, sum_timer_write_normal/1000000000 W_NORMAL_MS, min_timer_write_normal/1000000000 MIN_W_NORMAL_MS, avg_timer_write_normal/1000000000 AVG_W_NORMAL_MS, max_timer_write_normal/1000000000 MAX_W_NORMAL_MS,
+             count_write_external, sum_timer_write_external/1000000000 W_EXTERNAL_MS, min_timer_write_external/1000000000 MIN_W_EXTERNAL_MS, avg_timer_write_external/1000000000 AVG_W_EXTERNAL_MS, max_timer_write_external/1000000000 MAX_W_EXTERNAL_MS
           from performance_schema.table_lock_waits_summary_by_table where count_star&gt;0 order by  1 limit 5000</text>
+  </sql>
+  <sql handle="mysql_perf_digest_single" paramCount="2" expandRow="y" comments="Display performance data for a given digest, so that we can track changes">
+    <text>select COUNT_STAR, SUM_TIMER_WAIT, SUM_LOCK_TIME, SUM_ERRORS, SUM_WARNINGS, SUM_ROWS_AFFECTED,
+           SUM_ROWS_SENT, SUM_ROWS_EXAMINED, SUM_CREATED_TMP_DISK_TABLES, SUM_CREATED_TMP_TABLES,
+           SUM_SELECT_FULL_JOIN, SUM_SELECT_FULL_RANGE_JOIN, SUM_SELECT_RANGE, SUM_SELECT_RANGE_CHECK,
+           SUM_SELECT_SCAN, SUM_SORT_MERGE_PASSES, SUM_SORT_RANGE, SUM_SORT_ROWS, SUM_SORT_SCAN, 
+           SUM_NO_INDEX_USED, SUM_NO_GOOD_INDEX_USED
+    from  performance_schema.events_statements_summary_by_digest
+    where SCHEMA_NAME=&amp;p_1 and DIGEST=&amp;p_2</text>
+     <param name="schema_name" dataType="non_breakable_string"/> 
+     <param name="digest" dataType="non_breakable_string"/> 
+  </sql>
+  <sql handle="mysql_perf_memory_summary_global_by_event_name" paramCount="0" comments="Display MySQL global memory allocation by event name">
+    <text>select "NOT SUPPORTED" AS ERROR</text>
+    <vsql minVersion="5.7">
+      select event_name, count_alloc, count_free, sum_number_of_bytes_alloc, sum_number_of_bytes_free,
+      low_count_used, current_count_used, high_count_used, low_number_of_bytes_used,current_number_of_bytes_used,
+      high_number_of_bytes_used 
+      from performance_schema.memory_summary_global_by_event_name
+      where count_alloc &gt; 0
+    </vsql>
+  </sql>
+  <sql handle="mysql_perf_memory_summary_by_thread_by_event_name" paramCount="1" replace="y" comments="Display MySQL global memory allocation by event name and thread">
+    <text>select "NOT SUPPORTED" AS ERROR</text>
+    <vsql minVersion="5.7">
+      select thread_id, event_name, count_alloc, count_free, sum_number_of_bytes_alloc, sum_number_of_bytes_free,
+      low_count_used, current_count_used, high_count_used, low_number_of_bytes_used, current_number_of_bytes_used,
+      high_number_of_bytes_used 
+      from performance_schema.memory_summary_by_thread_by_event_name
+      where count_alloc &gt; 0 and thread_id like '&amp;p_1'
+    </vsql>
+     <param name="thread_id" dataType="non_breakable_string"/> 
   </sql>
 </sqls>

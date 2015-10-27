@@ -55,6 +55,8 @@
           <option value="mysql_perf_table_lock_summary">Table Lock Summary</option>
           <option value="mysql_perf_mutex">Mutex</option>
           <option value="mysql_perf_rwlock">RW Locks</option>
+          <option value="mysql_perf_memory_summary_global_by_event_name">Global Memory</option>
+          <option value="mysql_perf_memory_summary_by_thread_by_event_name">Thread Memory</option>          
           <option value="digest">Top Queries</option>
         </select>
         <input type="button" id="btn_ps_activity" value="&#9658;"/>
@@ -71,13 +73,10 @@
         <li><a href="#thread_tab" title="MySQL Performance schema Thread list">Threads</a></li>
         <li><a href="#mysql_perf_events_waits_current_tbl_div" title="MySQL Performance schema Current Events">Events Waits</a></li>
         <li><a href="#mysql_perf_events_waits_summary_tbl_div" title="MySQL Performance schema Events summary">Events Waits Summary</a></li>
-        <li><a href="#mysql_perf_objects_summary_tbl_div" title="MySQL Performance schema Table/Index Access summary">Table/Index Access Summary</a></li>
-        <li><a href="#mysql_perf_table_io_summary_tbl_div" title="MySQL Performance schema Table IO summary">Table IO </a></li>
-        <li><a href="#mysql_perf_index_io_summary_tbl_div" title="MySQL Performance schema Index IO summary">Index Usage</a></li>
-        <li><a href="#mysql_perf_filesum_inst_tbl_div" title="MySQL Performance schema File summary">File IO</a></li>
-        <li><a href="#mysql_perf_table_lock_summary_tbl_div" title="MySQL Performance schema Index IO summary">Table Locks</a></li>        
+        <li><a href="#mysql_table_tab_div" title="Table and file IO">Table/File IO</a></li>
         <li><a href="#mysql_perf_mutex_tbl_div" title="MySQL Performance schema currently locked mutex">Mutex</a></li>
         <li><a href="#mysql_perf_rwlock_tbl_div" title="MySQL Performance schema RW Locks">RW Locks</a></li>
+        <li><a href="#mysql_mem_tab_div" title="MySQL memory allocation">Memory</a></li>
         <li><a href="#top_query" title="MySQL Performance schema top queries">Top Queries</a></li>
     </ul>
     <div id="setup_tbl_div">
@@ -161,32 +160,63 @@
     	 <span><input type="button" id="btn_events_waits_summary" value="Refresh" title="Click to see differences"/> (Click Refresh to see changes)</span>
          <table id="mysql_perf_events_waits_summary_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
       </div>
-      <div id="mysql_perf_objects_summary_tbl_div" class="datatableContainer">
+      
+      <div id="mysql_table_tab_div" class="clearTabView">
+        <ul>
+          <li><a href="#mysql_perf_objects_summary_tbl_div" title="MySQL Performance schema Table/Index Access summary">Table/Index Access Summary</a></li>
+          <li><a href="#mysql_perf_table_io_summary_tbl_div" title="MySQL Performance schema Table IO summary">Table IO </a></li>
+          <li><a href="#mysql_perf_index_io_summary_tbl_div" title="MySQL Performance schema Index IO summary">Index Usage</a></li>
+          <li><a href="#mysql_perf_filesum_inst_tbl_div" title="MySQL Performance schema File summary">File IO</a></li>
+          <li><a href="#mysql_perf_table_lock_summary_tbl_div" title="MySQL Performance schema Index IO summary">Table Locks</a></li>        
+        </ul>           
+        <div id="mysql_perf_objects_summary_tbl_div" class="datatableContainer">
     	 <span><input type="button" id="btn_mysql_perf_objects_summary" value="Refresh" title="Click to see differences"/> (Click Refresh to see changes)</span>
          <table id="mysql_perf_objects_summary_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
-      </div>
-      <div id="mysql_perf_table_io_summary_tbl_div" class="datatableContainer">
+        </div>
+        <div id="mysql_perf_table_io_summary_tbl_div" class="datatableContainer">
     	 <span><input type="button" id="btn_mysql_perf_table_io_summary" value="Refresh" title="Click to see differences"/> (Click Refresh to see changes)</span>
          <table id="mysql_perf_table_io_summary_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
-      </div>
-      <div id="mysql_perf_index_io_summary_tbl_div" class="datatableContainer">
+        </div>
+        <div id="mysql_perf_index_io_summary_tbl_div" class="datatableContainer">
     	 <span><input type="button" id="btn_mysql_perf_index_io_summary" value="Refresh" title="Click to see differences"/> (Click Refresh to see changes)</span>
          <table id="mysql_perf_index_io_summary_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
-	  </div>
-	  <div id="mysql_perf_filesum_inst_tbl_div" class="datatableContainer">
+	    </div>
+	    <div id="mysql_perf_filesum_inst_tbl_div" class="datatableContainer">
          <table id="mysql_perf_filesum_inst_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
-	  </div>
-      <div id="mysql_perf_table_lock_summary_tbl_div" class="datatableContainer">
+	    </div>
+        <div id="mysql_perf_table_lock_summary_tbl_div" class="datatableContainer">
     	 <span><input type="button" id="btn_mysql_perf_table_lock_summary" value="Refresh" title="Click to see differences"/> (Click Refresh to see changes)</span>
          <table id="mysql_perf_table_lock_summary_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
-	  </div>
+	    </div>
+	  </div><!--   mysql_table_tab_div -->
+	  
 	  <div id="mysql_perf_mutex_tbl_div" class="datatableContainer">
          <table id="mysql_perf_mutex_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
 	  </div>
 	  <div id="mysql_perf_rwlock_tbl_div" class="datatableContainer">
          <table id="mysql_perf_rwlock_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
 	  </div>
-        
+      
+      <div id="mysql_mem_tab_div" class="clearTabView">
+        <ul>
+          <li><a href="#mysql_perf_memory_summary_global_by_event_name_tbl_div" title="MySQL Performance Global Memory Allocation">Global</a></li>
+          <li><a href="#mysql_perf_memory_summary_by_thread_by_event_name_tbl_div" title="MySQL Performance Thread Memory Allocation">Thread</a></li>
+        </ul>           
+        <div id="mysql_perf_memory_summary_global_by_event_name_tbl_div" class="datatableContainer">
+    	 <span><input type="button" id="btn_mem_global" value="Refresh" title="Click to see differences"/> (Click Refresh to see changes)
+                &nbsp;&nbsp; <input type="button" id="btn_mem_global_reset" value="Reset" title="Click to Restart"/>
+    	 </span>
+         <table id="mysql_perf_memory_summary_global_by_event_name_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
+        </div>
+        <div id="mysql_perf_memory_summary_by_thread_by_event_name_tbl_div" class="datatableContainer">
+    	 <span>Thread ID: <input type="text" id="mem_thread_id" value="%" /> 
+                &nbsp;&nbsp; <input type="button" id="btn_mem_thread" value="Refresh" title="Click to see differences"/>
+                &nbsp;&nbsp; <input type="button" id="btn_mem_thread_reset" value="Reset" title="Click to Restart"/>
+         </span>
+         <table id="mysql_perf_memory_summary_by_thread_by_event_name_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
+        </div>
+      </div><!-- mysql_mem_tab_div -->
+      
       <div id="top_query" class="datatableContainer">
 		  <span>	
 	        <span>
@@ -222,12 +252,29 @@
 	                          <option value="20">20</option>
 	                          <option value="50">50</option>
 	                          <option value="100">100</option>
+	                          <option value="200">200</option>
+	                          <option value="500">500</option>
 	                          <option value="1000">1000</option>
 	                        </select></span>
     	    <span><input type="button" id="btn_track_top_q" value="Search"/></span>  
     	  </span>
-         <table id="mysql_perf_digests_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
-	   </div>
+    	 <div id="digest_tab" class="clearTabView">
+    	   <ul>
+    	     <li><a href="#mysql_perf_digests_tbl_div" title="Top digest summary">Digest Summary</a></li>
+    	     <li><a href="#mysql_perf_digest_single_tbl_div" title="Changes for individual digest">Changes</a></li>
+    	   </ul>
+    	   <div id="mysql_perf_digests_tbl_div">
+             <table id="mysql_perf_digests_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
+           </div>
+           <div id="mysql_perf_digest_single_tbl_div">
+             <span>Schema Name:&nbsp;<input id="digest_schema_name"/>&nbsp;Digest:&nbsp;<input id="digest_digest" size="20" />
+             &nbsp;<input type="button" id="btn_digest_refresh" value="Refresh" title="Refresh to see changes" />
+             &nbsp;<input type="button" id="btn_digest_reset" value="Reset" title="Reset to retrieve summary data" />
+             </span>
+             <table id="mysql_perf_digest_single_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
+           </div>  
+         </div><!-- end of digest tab-->         
+	   </div><!-- end of top query -->
         
 </div>
 
@@ -254,7 +301,12 @@ $('#pstabs').tabs(
    activate: function( event, ui ) 
    {
      var idx = $('#pstabs').tabs("option", "active");
-     mydom('ps_activity').selectedIndex = idx;
+     if(idx <= 4)
+	     mydom('ps_activity').selectedIndex = idx;
+	 else if(idx >= 5 && idx <= 7)
+	     mydom('ps_activity').selectedIndex =  idx + 4;   
+	 else
+	     mydom('ps_activity').selectedIndex =  13;   
    }   
  }
 );
@@ -269,7 +321,30 @@ $('#ps_setup_tab').tabs
  }
 );
 
+$('#mysql_table_tab_div').tabs
+(
+ {
+   activate: function( event, ui ) 
+   {
+     var idx = $('#mysql_table_tab_div').tabs("option", "active");
+     mydom('ps_activity').selectedIndex = 4 + idx;
+   }   
+ }
+);
+$('#mysql_mem_tab_div').tabs
+(
+{
+   activate: function( event, ui ) 
+   {
+     var idx = $('#mysql_mem_tab_div').tabs("option", "active");
+     mydom('ps_activity').selectedIndex = 11 + idx;
+   }   
+ }
+);
+
 $('#thread_tab').tabs();
+
+$('#digest_tab').tabs();
 
 var mysql_perf_threadsTable = new JSTable({
    	   name: "mysql_perf_threads",
@@ -543,11 +618,74 @@ var mysql_perf_table_lock_summaryTable = new JSTable({
    	   }, 
    	   db: {dbGroupId: "dbgroup", dbHost: "host"},
    	   handlers: {jquery:1, statusMessageHandler:messagehandler},
-   	   searchable: 'y',
+   	   searchable: 'n',
    	   showRowDataOnClick:"y",
-   	   diff: {keyColumns:["NAME"], valueColumns:["COUNT_STAR","WAIT_MS","COUNT_READ", "READ_MS", "COUNT_WRITE", "WRITE_MS"]},
+   	   diff: {keyColumns:["NAME"], valueColumns:["COUNT_STAR","WAIT_MS","COUNT_READ", "READ_MS", "COUNT_WRITE", "WRITE_MS",
+   	   "COUNT_READ_NORMAL", "R_NOMRAL_MS", "COUNT_READ_WITH_SHARED_LOCKS", "R_SHARED_LOCKS_MS", "COUNT_READ_HIGH_PRIORITY", "R_HIGH_PRIORITY_MS",
+   	   "COUNT_READ_NO_INSERT", "R_NO_INSERT_MS", "COUNT_READ_EXTERNAL", "R_EXTERNAL_MS", "COUNT_WRITE_ALLOW_WRITE", "W_ALLOW_W_MS",
+   	   "COUNT_WRITE_CONCURRENT_INSERT", "W_CONC_INSERT_MS",  "COUNT_WRITE_LOW_PRIORITY", "W_LOW_PRIORITY_MS",
+   	   "COUNT_WRITE_NORMAL","W_NORMAL_MS", "COUNT_WRITE_EXTERNAL","W_EXTERNAL_MS"]},
    	   formatter:{commonFormatter:jqueryFormatNumber}
    	});//TODO format number
+
+
+var mysql_perf_memory_summary_global_by_event_nameTable = new JSTable({
+   	   name: "mysql_perf_memory_summary_global_by_event_name",
+   	   query:{
+   	     queryURL: "query.html",
+   	     sqlId: "mysql_perf_memory_summary_global_by_event_name",
+   	     paramFields:[]
+   	   }, 
+   	   db: {dbGroupId: "dbgroup", dbHost: "host"},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler},
+   	   searchable: 'n',
+   	   showRowDataOnClick:"y",
+   	   diff: {keyColumns:["EVENT_NAME"], valueColumns:["COUNT_ALLOC","COUNT_FREE","SUM_NUMBER_OF_BYTES_ALLOC", "SUM_NUMBER_OF_BYTES_FREE", 
+   	   "LOW_COUNT_USED", "CURRENT_COUNT_USED", "HIGH_COUNT_USED", "LOW_NUMBER_OF_BYTES_USED", "CURRENT_NUMBER_OF_BYTES_USED", 
+   	   "HIGH_NUMBER_OF_BYTES_USED"]},
+   	   formatter:{commonFormatter:jqueryFormatNumber}
+   	});
+
+$('#btn_mem_global').click(function()
+{
+  mysql_perf_memory_summary_global_by_event_nameTable.sendQuery();
+});
+$('#btn_mem_global_reset').click(function()
+{
+  mysql_perf_memory_summary_global_by_event_nameTable.baseDataObj['mysql_perf_memory_summary_global_by_event_name'] = null;
+  mysql_perf_memory_summary_global_by_event_nameTable.sendQuery();
+});
+var mysql_perf_memory_summary_by_thread_by_event_nameTable = new JSTable({
+   	   name: "mysql_perf_memory_summary_by_thread_by_event_name",
+   	   query:{
+   	     queryURL: "query.html",
+   	     sqlId: "mysql_perf_memory_summary_by_thread_by_event_name",
+   	     paramFields:[{name:"p_1", valueField:"mem_thread_id"}]
+   	   }, 
+   	   db: {dbGroupId: "dbgroup", dbHost: "host"},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler},
+   	   searchable: 'n',
+   	   showRowDataOnClick:"y",
+   	   diff: {keyColumns:["THREAD_ID", "EVENT_NAME"], valueColumns:["COUNT_ALLOC","COUNT_FREE","SUM_NUMBER_OF_BYTES_ALLOC", "SUM_NUMBER_OF_BYTES_FREE", 
+   	   "LOW_COUNT_USED", "CURRENT_COUNT_USED", "HIGH_COUNT_USED", "LOW_NUMBER_OF_BYTES_USED", "CURRENT_NUMBER_OF_BYTES_USED", 
+   	   "HIGH_NUMBER_OF_BYTES_USED"]}
+   	});
+
+$('#btn_mem_thread').click(function()
+{
+  mysql_perf_memory_summary_by_thread_by_event_nameTable.sendQuery();
+});
+
+$('#btn_mem_thread_reset').click(function()
+{
+  var thid = mydomval('mem_thread_id');
+  if(thid == null || thid == "")
+  {
+    mydom('mem_thread_id').value = "%";
+  } 
+  mysql_perf_memory_summary_by_thread_by_event_nameTable.baseDataObj['mysql_perf_memory_summary_by_thread_by_event_name'] = null;
+  mysql_perf_memory_summary_by_thread_by_event_nameTable.sendQuery();
+});
 
 $('#btn_mysql_perf_table_lock_summary').click(function()
 {
@@ -588,16 +726,58 @@ var mysql_perf_digestsTable = new JSTable({
    	     paramFields:[{name:"p_1", valueField:"top_q_time"},{name:"p_2", valueField:"top_q_records"}]
    	   }, 
    	   db: {dbGroupId: "dbgroup", dbHost: "host"},
-   	   handlers: {jquery:1, statusMessageHandler:messagehandler},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler,contextMenuHandler:[
+   	       {key: "digest_diff", label: "See Changes", handler: contextmenu_mysql_perf_digests}	       
+   	     ]},
    	   searchable: 'y',
    	   showRowDataOnClick:"y",
    	   formatter:{commonFormatter:jqueryFormatNumber,columnFormatters:{"DIGEST_TEXT":jqueryFormatSqlText}}
    	});//TODO format number
 
+var mysql_perf_digest_singleTable = new JSTable({
+   	   name: "mysql_perf_digest_single",
+   	   query:{
+   	     queryURL: "query.html",
+   	     sqlId: "mysql_perf_digest_single",
+   	     paramFields:[{name:"p_1", valueField:"digest_schema_name"},{name:"p_2", valueField:"digest_digest"}]
+   	   }, 
+   	   db: {dbGroupId: "dbgroup", dbHost: "host"},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler},
+   	   searchable: 'n',
+   	   showRowDataOnClick:"n",
+   	   formatter:{commonFormatter:jqueryFormatNumber},
+   	   diff: {keyColumns:["NAME"], valueColumns:["VALUE"]}   	   
+   	});//TODO format number
+   	
+function contextmenu_mysql_perf_digests(obj)
+{
+  if(obj == null || obj.datatable == null)return;
+  var schema_name = obj.datatable.getCellValueByColumnName(obj.row, 'SCHEMA_NAME');
+  var digest = obj.datatable.getCellValueByColumnName(obj.row, 'DIGEST');
+  mydom('digest_schema_name').value = schema_name;
+  mydom('digest_digest').value = digest;
+  $('#digest_tab').tabs("option", "active", 1);
+  mysql_perf_digest_singleTable.baseDataObj['mysql_perf_digest_single'] = null;
+  mysql_perf_digest_singleTable.sendQuery();  
+}//contextmenu_mysql_perf_digests
+  	
+$('#btn_digest_refresh').click(function()
+{
+  mysql_perf_digest_singleTable.sendQuery();
+});
+
+$('#btn_digest_reset').click(function()
+{
+  mysql_perf_digest_singleTable.baseDataObj['mysql_perf_digest_single'] = null;
+  mysql_perf_digest_singleTable.sendQuery();
+});
+
+
 $('#btn_track_top_q').click(function()
 {
   if(!checkDBSelection(mydomval("dbgroup"), host=mydomval("host")))
     return;
+  $('#digest_tab').tabs("option", "active", 0);
   mysql_perf_digestsTable.sendQuery();
 });
 
@@ -634,37 +814,56 @@ $('#btn_ps_activity').click(function()
     mysql_perf_objects_summaryTable.baseDataObj['mysql_perf_objects_summary'] = null;
     mysql_perf_objects_summaryTable.sendQuery();
     $('#pstabs').tabs("option", "active", 4);
+    $('#mysql_table_tab_div').tabs("option", "active", 0);
   }else if(act=='mysql_perf_table_io_summary')
   {
     mysql_perf_table_io_summaryTable.baseDataObj['mysql_perf_table_io_summary'] = null;
     mysql_perf_table_io_summaryTable.sendQuery();
-    $('#pstabs').tabs("option", "active", 5);
+    $('#pstabs').tabs("option", "active", 4);
+    $('#mysql_table_tab_div').tabs("option", "active", 1);
   }else if(act=='mysql_perf_index_io_summary')
   {
     mysql_perf_index_io_summaryTable.baseDataObj['mysql_perf_index_io_summary'] = null;
     mysql_perf_index_io_summaryTable.sendQuery();
-    $('#pstabs').tabs("option", "active", 6);
+    $('#pstabs').tabs("option", "active", 4);
+    $('#mysql_table_tab_div').tabs("option", "active", 2);
   }else if(act=='mysql_perf_filesum_inst')
   {
     mysql_perf_filesum_instTable.sendQuery();
-    $('#pstabs').tabs("option", "active", 7);
+    $('#pstabs').tabs("option", "active", 4);
+    $('#mysql_table_tab_div').tabs("option", "active", 3);
   }else  if(act=='mysql_perf_table_lock_summary')
   {
     mysql_perf_table_lock_summaryTable.baseDataObj['mysql_perf_table_lock_summary'] = null;
     mysql_perf_table_lock_summaryTable.sendQuery();
-    $('#pstabs').tabs("option", "active", 8);    
+    $('#pstabs').tabs("option", "active", 4);    
+    $('#mysql_table_tab_div').tabs("option", "active", 4);
   } else if(act=='mysql_perf_mutex')
   {
     mysql_perf_mutexTable.sendQuery();
-    $('#pstabs').tabs("option", "active", 9); 
+    $('#pstabs').tabs("option", "active", 5); 
   }else if(act=='mysql_perf_rwlock')
   {
     mysql_perf_rwlockTable.sendQuery();
-    $('#pstabs').tabs("option", "active", 10); 
-  }else if(act=='digest')
+    $('#pstabs').tabs("option", "active", 6); 
+  }else if(act=='mysql_perf_memory_summary_global_by_event_name')
+  {
+    mysql_perf_memory_summary_global_by_event_nameTable.baseDataObj['mysql_perf_memory_summary_global_by_event_name'] = null;
+    mysql_perf_memory_summary_global_by_event_nameTable.sendQuery();
+    $('#pstabs').tabs("option", "active", 7); 
+    $('#mysql_mem_tab_div').tabs("option", "active", 0);
+  }else if(act=='mysql_perf_memory_summary_by_thread_by_event_name')
+  {
+    mysql_perf_memory_summary_by_thread_by_event_nameTable.baseDataObj['mysql_perf_memory_summary_by_thread_by_event_name'] = null;
+    mysql_perf_memory_summary_by_thread_by_event_nameTable.sendQuery();
+    $('#pstabs').tabs("option", "active", 7); 
+    $('#mysql_mem_tab_div').tabs("option", "active", 1);
+  }
+  else if(act=='digest')
   {
   	mysql_perf_digestsTable.sendQuery();
-    $('#pstabs').tabs("option", "active", 11);
+    $('#pstabs').tabs("option", "active", 8);
+    $('#digest_tab').tabs("option", "active", 0);
   }
   
 });

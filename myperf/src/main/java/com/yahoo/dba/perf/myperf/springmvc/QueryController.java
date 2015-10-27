@@ -39,7 +39,8 @@ public class QueryController extends MyPerfBaseController
 	  CUSTOMER_PROCESSOR.put("SNMPQueryProcessor", new com.yahoo.dba.perf.myperf.snmp.SNMPQueryProcessor());
 	  CUSTOMER_PROCESSOR.put("ReplLagQueryProcessor", new com.yahoo.dba.perf.myperf.db.ReplLagQueryProcessor());
 	  CUSTOMER_PROCESSOR.put("ReplShowProcessor", new com.yahoo.dba.perf.myperf.db.ReplShowProcessor());
-
+	  CUSTOMER_PROCESSOR.put("MySQLStatusQueryProcessor", new com.yahoo.dba.perf.myperf.db.MySQLStatusQueryProcessor());
+	  
 	  POST_PROCESSOR.put("mysql_innodb_mutex", new InnoDbMutexPostProccessor());
   }
   
@@ -107,7 +108,7 @@ public class QueryController extends MyPerfBaseController
 					
 	try
 	{
-		logger.info("execute query "+qps.getSql());
+		logger.info("execute query "+qps.getSql()+", " + qps.getSqlParams());
 	    if(sql!=null && sql.getQueryProcessor()!=null 
 	    		&& CUSTOMER_PROCESSOR.containsKey(sql.getQueryProcessor())) //custom processor
 	    {
