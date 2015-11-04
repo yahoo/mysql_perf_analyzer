@@ -120,6 +120,10 @@
   <sql handle="mysql_show_global_status" paramCount="0" comments="Display MySQL global status">
     <text>show global status</text>
   </sql>
+  <sql handle="mysql_show_global_status_2" paramCount="1" replace="y" comments="Display MySQL global status">
+    <text>show global status like '%&amp;p_1%'</text>
+    <param name="keyword" dataType="non_breakable_string"/>
+  </sql>
   <sql handle="mysql_global_status" paramCount="0" comments="Display MySQL global status">
     <text>select variable_name, variable_value from information_schema.global_status</text>
     <vsql minVersion="5.7">select UPPER(variable_name) VARIABLE_NAME, variable_value from performance_schema.global_status</vsql>
