@@ -47,6 +47,7 @@ public class AlertSettings {
 	static class HostSettings
 	{
 		private HashMap<String, Float> thresholds = new HashMap<String, Float>();
+		private String notificationEmails; //emails to alert if something happens
 		
 		public Float getThreshold(String alertType)
 		{
@@ -59,11 +60,20 @@ public class AlertSettings {
 		{
 			this.thresholds.put(alertType, threshold);
 		}
+
+		public String getNotificationEmails() {
+			return notificationEmails;
+		}
+
+		public void setNotificationEmails(String notificationEmails) {
+			this.notificationEmails = notificationEmails;
+		}
 	}
 	static class GroupSettings
 	{
 		private HashMap<String, Float> groupThresholds = new HashMap<String, Float>();
 		private HashMap<String, HostSettings> hostSettings = new HashMap<String, HostSettings>();	
+		private String notificationEmails; //emails to alert if something happens
 		
 		public HostSettings getHostSettings(String dbhost)
 		{
@@ -88,6 +98,21 @@ public class AlertSettings {
 			if(!this.hostSettings.containsKey(dbhost))
 				this.hostSettings.put(dbhost, new HostSettings());
 			this.hostSettings.get(dbhost).updateThreshold(alertType, threshold);
+		}
+
+		public void updateHostNotificationEmails(String dbhost, String emails)
+		{
+			if(!this.hostSettings.containsKey(dbhost))
+				this.hostSettings.put(dbhost, new HostSettings());
+			this.hostSettings.get(dbhost).setNotificationEmails(emails);
+		}
+
+		public String getNotificationEmails() {
+			return notificationEmails;
+		}
+
+		public void setNotificationEmails(String notificationEmails) {
+			this.notificationEmails = notificationEmails;
 		}
 	}
 	
@@ -122,6 +147,28 @@ public class AlertSettings {
 		return threshold;
 			
 	}
+
+	synchronized public String getNotificationEmails(String dbgroup, String dbhost)
+	{
+		//do we have group?
+		if(!this.groupSettings.containsKey(dbgroup))
+			return this.context.getMyperfConfig().getAlertNotificationEmails();
+		
+		GroupSettings grpSetting = groupSettings.get(dbgroup);
+		HostSettings hostSetting = grpSetting.getHostSettings(dbhost);
+		String emails = null;
+		if(hostSetting != null)
+			emails = hostSetting.getNotificationEmails();
+		if(emails == null || emails.isEmpty())
+			emails = grpSetting.getNotificationEmails();
+		if(emails != null && !emails.isEmpty())
+			return emails;
+		return this.context.getMyperfConfig().getAlertNotificationEmails();
+	}
+	synchronized public String getNotificationEmails(DBInstanceInfo dbinfo)
+    {
+		  return getNotificationEmails(dbinfo.getDbGroupName(), dbinfo.getHostName());  
+    }
 
 	synchronized public Float getAlertThreshold(DBInstanceInfo dbinfo, String alertType)
     {
@@ -166,6 +213,42 @@ public class AlertSettings {
 		return true;
 	}
 	
+	synchronized public boolean updateAlertNotification(String dbgroup, String dbhost, String emails, boolean save)
+	{
+		String alertSettingString = "(" + dbgroup +", "+dbhost +", "+emails + ", " + save + ")"; 
+		String prevValue = getNotificationEmails(dbgroup, dbhost);
+		if(prevValue != null && prevValue.equalsIgnoreCase(emails))
+		{
+			logger.info("No changes, ignore: " + emails);
+			return false;//ignore if no changes
+		}
+		
+		if(dbgroup==null || dbgroup.isEmpty())return false;
+		if(this.context.getDbInfoManager().findGroup(dbgroup)==null)
+		{
+			logger.info("Unknow DB GROUP, ignore: " + emails);
+			return false;//no such dbgroup
+		}
+		if(dbhost==null || dbhost.isEmpty())dbhost = "all";
+		if(!"all".equals(dbhost) && this.context.getDbInfoManager().findDB(dbgroup, dbhost)==null)
+		{
+			logger.info("Unknown DB, ignore: " + emails);
+			return false;//no such db
+		}
+		if(!this.groupSettings.containsKey(dbgroup))
+			this.groupSettings.put(dbgroup, new GroupSettings());
+		GroupSettings grpSetting  = this.groupSettings.get(dbgroup);
+		if("all".equals(dbhost))
+		{
+			if(save)this.context.getMetricDb().upsertAlertNotification(dbgroup, dbhost, emails);
+			grpSetting.setNotificationEmails(emails);
+		}else
+		{
+			if(save)this.context.getMetricDb().upsertAlertNotification(dbgroup, dbhost, emails);
+			grpSetting.updateHostNotificationEmails(dbhost, emails);
+		}
+		return true;
+	}
 
 	public MyPerfContext getContext() {
 		return context;

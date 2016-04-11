@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,6 +40,7 @@ public class MetricScannerRunner implements Runnable
   private UserDBConnections conns;
   private Map<String,Map<String, MetricsBuffer>> buffer ;
   private int snap_id;
+  private AtomicBoolean running = new AtomicBoolean();
   
   protected java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyyMMddHHmmss");
 
@@ -61,11 +63,12 @@ public class MetricScannerRunner implements Runnable
 
   private void scan()
   {
+	running.set(true);
     conns = new UserDBConnections();
 	conns.setAppUser(appUser.getName());
 	conns.setFrameworkContext(frameworkContext);
 	int count = 0;
-	while(!dbqueue.isEmpty())
+	while(!dbqueue.isEmpty() && running.get())
 	{
 	  try
 	  {
@@ -85,6 +88,11 @@ public class MetricScannerRunner implements Runnable
 	logger.info(Thread.currentThread()+" done scan metrics: "+count+" servers.");
   }
 
+  public void shutdown()
+  {
+	  logger.info("Shutdown");
+	  running.set(false);
+  }
 
   private Map<String, Float> getAlertThreshold(DBInstanceInfo dbinfo)
   {
@@ -687,7 +695,7 @@ public class MetricScannerRunner implements Runnable
 	  }catch(Throwable iex)
 	  {
 		  String msg = iex.getMessage();
-		  if(msg != null && msg.indexOf("Access denied") >= 0)
+		  if(msg != null && (msg.indexOf("Access denied") >= 0 || Constants.CONN_MSG_NORETRY.equals(msg)))
 		  {
 			  logger.log(Level.WARNING, "Failed  attempt to connect to "+scanData.dbinfo, iex);
 			  return false;

@@ -15,6 +15,7 @@
 <style>
   #scanner_cfg_tbl td{padding:10px;}
   #alert_info_tbl td{padding:10px;}
+  #alert_info_tbl th {text-align:left;}
   .snmpv3 {display:none;}
 </style>
 </head>
@@ -171,6 +172,7 @@
               <tr><td>Connection Failures(per second): </td><td><input name="alert_settings_aborted_cc" id="alert_settings_aborted_cc" size="10" maxlength="4" /></td></tr>
               <tr><td>Slow Queries(per minute): </td><td><input name="alert_settings_slow" id="alert_settings_slow" size="10" maxlength="4" /></td></tr>
               <tr><td>Deadlocks(per period): </td><td><input name="alert_settings_deadlock" id="alert_settings_deadlock" size="10" maxlength="4" /></td></tr>
+              <tr><td>Emails(comma separated): </td><td><input name="alert_settings_emails" id="alert_settings_emails" size="60"/></td></tr>
               <tr id="tr_alerts_enabled"><td>Alerts </td><td><input type="checkbox" name="alerts_enabled" id="alerts_enabled" value="1" />&nbsp;check to enable</td></tr>
               <tr id="tr_metrics_enabled"><td>Metrics Gathering </td><td><input type="checkbox" name="metrics_enabled" id="metrics_enabled"/>&nbsp;check to enable</td></tr>
               <tr id="tr_snmp_enabled"><td>SNMP Gathering </td><td><input type="checkbox" name="snmp_enabled" id="snmp_enabled"/>&nbsp;check to enable</td></tr>
@@ -300,6 +302,7 @@ function retrieveSettings()
                 mydom("alert_settings_deadlock").value = jsonObj.deadlock;  
                 mydom("alert_settings_aborted_cc").value = jsonObj.aborted_cc;  
                 mydom("alert_settings_repllag").value = jsonObj.repllag;
+                mydom("alert_settings_emails").value = jsonObj.emails;
                 if(jsonObj.alerts == null)
                 {
                   mydom("tr_alerts_enabled").style.display="none";
@@ -385,6 +388,7 @@ function updateSettings()
    		  mydata += "&deadlock="+ mydom("alert_settings_deadlock").value;
    		  mydata += "&aborted_cc="+ mydom("alert_settings_aborted_cc").value;
    		  mydata += "&repllag="+ mydom("alert_settings_repllag").value;
+   		  mydata += "&emails="+escape(mydom("alert_settings_emails").value);
    		  
       $.ajax({
         url: 'alerts.html',

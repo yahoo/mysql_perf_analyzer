@@ -140,32 +140,51 @@ public class StatusController extends MyPerfBaseController
             		  vals.add(df.format(val));
             	  }else
             	  {
-            		  vals.add("0.00");
+            		  vals.add("0.00"); 
             	  }
 
             	  if(snaps[0].getSyscputime()>=0L && snaps[1].getSyscputime()>=0L)
             	  {
-            		  double val = ((double)(snaps[1].getSyscputime() - snaps[0].getSyscputime())*100)/(double)(snaps[1].getTotalcputime() - snaps[0].getTotalcputime());
-            		  vals.add(df.format(val));
-            		  syscpu = val;
+            		  if(snaps[0].getSyscputime() == snaps[1].getSyscputime()) 
+            		  {
+            			  syscpu = 0.0; vals.add("0.00");
+            		  }else
+            		  {
+            			  double val = ((double)(snaps[1].getSyscputime() - snaps[0].getSyscputime())*100)/(double)(snaps[1].getTotalcputime() - snaps[0].getTotalcputime());
+            			  vals.add(df.format(val));
+            			  syscpu = val;
+            		  }
             	  }else
             	  {
             		  vals.add("0.00");
             	  }
             	  if(snaps[0].getUsercputime()>=0L && snaps[1].getUsercputime()>=0L)
             	  {
-            		  double val = ((double)(snaps[1].getUsercputime() - snaps[0].getUsercputime())*100)/(double)(snaps[1].getTotalcputime() - snaps[0].getTotalcputime());
-            		  vals.add(df.format(val));
-            		  usercpu = val;
+            		  if(snaps[0].getUsercputime() == snaps[1].getUsercputime() )
+            		  {
+            			  usercpu = 0.0; vals.add("0.00");
+            			  
+            		  }else
+            		  {
+            			  double val = ((double)(snaps[1].getUsercputime() - snaps[0].getUsercputime())*100)/(double)(snaps[1].getTotalcputime() - snaps[0].getTotalcputime());
+            			  vals.add(df.format(val));
+            			  usercpu = val;
+            		  }
             	  }else
             	  {
             		  vals.add("0.00");
             	  }
             	  if(snaps[0].getIotime()>=0L && snaps[1].getIotime()>=0L)
             	  {
-            		  double val = ((double)(snaps[1].getIotime() - snaps[0].getIotime())*100)/(double)(snaps[1].getTotalcputime() - snaps[0].getTotalcputime());
-            		  vals.add(df.format(val));
-            		  iowaits = val;
+            		  if(snaps[0].getIotime() == snaps[1].getIotime())
+            		  {
+            			  iowaits = 0.0; vals.add("0.00");
+            		  }else
+            		  {
+            			  double val = ((double)(snaps[1].getIotime() - snaps[0].getIotime())*100)/(double)(snaps[1].getTotalcputime() - snaps[0].getTotalcputime());
+            			  vals.add(df.format(val));
+            			  iowaits = val;
+            		  }
             	  }else
             	  {
             		  vals.add("0.00");

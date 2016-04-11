@@ -120,6 +120,8 @@ public class MetricScanner{
 		  }
 		}		
 	}
+	
+	private MetricScannerRunner[] metricsScannerRunners = null;
 	public void scan(int snap_id)
 	{
 		Set<String> clusternames = frameworkContext.getDbInfoManager().getMyDatabases(appUser.getName(), false).getMyDbList();
@@ -155,6 +157,7 @@ public class MetricScanner{
 		int mythreadcnt = this.threadCount;
 		if(dbqueue.size()<mythreadcnt)mythreadcnt = dbqueue.size();
 		Thread th[] = new Thread[mythreadcnt];
+		metricsScannerRunners = new MetricScannerRunner[mythreadcnt];
 		for(int i=0;i<mythreadcnt;i++)
 		{
 			MetricScannerRunner runner = new 
@@ -165,6 +168,7 @@ public class MetricScanner{
 			runner.setBuffer(buffer);
 //			runner.setBuiltinMetrics(builtinMetrics);
 			th[i] = new Thread(runner);
+			metricsScannerRunners[i] = runner;
 			th[i].setName("MetricScannerRunner - "+i);
 			th[i].start();
 		}
@@ -172,6 +176,16 @@ public class MetricScanner{
 	
 		logger.info("Done gather metrics");
 		this.frameworkContext.getAutoScanner().getMetricDb().flush();//notify persistent store
+	}
+	public void shutdown()
+	{
+		if(this.metricsScannerRunners != null)
+		{
+			for(MetricScannerRunner runner: this.metricsScannerRunners)
+			{
+				if(runner != null)runner.shutdown();
+			}
+		}
 	}
 	public int getThreadCount() {
 		return threadCount;

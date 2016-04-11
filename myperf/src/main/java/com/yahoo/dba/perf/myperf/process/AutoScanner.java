@@ -27,7 +27,11 @@ import com.yahoo.dba.perf.myperf.metrics.MetricsDbBase;
 public class AutoScanner {
 	private static Logger logger = Logger.getLogger(AutoScanner.class.getName());
 //	public static final char lineSeparator = '\n';
-
+    private static final String SCHEDULER_METRICS = "METRICS";
+    private static final String SCHEDULER_ALERT = "ALERT";
+    private static final String SCHEDULER_RETENTION = "RETENTION";
+    private static final String SCHEDULER_MONITOR = "MONITOR";
+    
 	private MyPerfContext context;
 	private AppUser appUser;//The scanner will run as this user and use this user's credentials
 	                        //If the user changed, the scanner needs to be restarted.
@@ -44,11 +48,18 @@ public class AutoScanner {
 	private ScheduledExecutorService scheduler2;
 	private ScheduledExecutorService monitorScheduler; //monitor if scanner hangs
 
+	private MetricsScanTask metricsTask = null;
+	private AlertScanTask alertTask = null;
+	private MetricsRetentionTask retentionTask = null;
+	private GlobalVariableChangeScanTask configScanTask = null;
+	private MonitorTask monitorTask = null;
+
 	//store data. the first key is dbgroupname;dbhost, the second key is metrics group name
 	private HashMap<String, Map<String,MetricsBuffer>> buffer = new HashMap<String, Map<String,MetricsBuffer>> ();
 
 	private boolean firstScan = true;//we just started
 	private long lastScanTime = System.currentTimeMillis();
+	private long lastAlertScanTime = System.currentTimeMillis();
 	private long maxScanIdleTime = 3600000L;
 	
 	public AutoScanner(MyPerfContext context)
@@ -109,51 +120,100 @@ public class AutoScanner {
 		}
 	}
 	
-	private void startSchedulers()
+	private void startMetricScheduler()
 	{
 		metricsScheduler = Executors.newSingleThreadScheduledExecutor();//we only need a single thread
-		alertScheduler = Executors.newSingleThreadScheduledExecutor();//we only need a single thread
-		scheduler2 = Executors.newSingleThreadScheduledExecutor();//we only need a single thread
-		this.monitorScheduler = Executors.newScheduledThreadPool(2);
 		
-		Runnable metricsTask = new MetricsScanTask();
-		Runnable alertTask = new AlertScanTask();
-		Runnable retentionTask = new MetricsRetentionTask(this.context,  context.getMyperfConfig().getRecordRententionDays(), null);
-		Runnable configScanTask = new GlobalVariableChangeScanTask(this.context, this.appUser);
-		Runnable monitorTask = new MonitorTask();
+		metricsTask = new MetricsScanTask();
 		
 		int secOfTheDay = getCurrentSeconds();
 		int interval = context.getMyperfConfig().getScannerIntervalSeconds();
 		maxScanIdleTime = interval * 3000;
-		if(maxScanIdleTime < 300000L) maxScanIdleTime = 300000L;//minumum check time 5 minutes
+		if(maxScanIdleTime < 300000L) maxScanIdleTime = 300000L;//minimum check time 5 minutes
 		logger.info("maximun alowed hange time: "+maxScanIdleTime);
 		
 		int metricsDelay = (int)Math.ceil(((double)secOfTheDay)/(interval))*interval - secOfTheDay;
-		int alertDelay = (int)Math.ceil(((double)secOfTheDay)/(context.getMyperfConfig().getAlertScanIntervalSeconds()))*context.getMyperfConfig().getAlertScanIntervalSeconds() - secOfTheDay;
-		int configDelay = (int)Math.ceil(((double)secOfTheDay)/(720*60))*720*60 - secOfTheDay;
-		int configDelay2 = (int)Math.ceil(((double)secOfTheDay)/(1440*60))*1440*60 - secOfTheDay;
-		int monitorDelay = (int)Math.ceil(((double)secOfTheDay)/(600))*600 - secOfTheDay; //monitor delay
 		//configDelay2 = 10;
 		ScheduledFuture<?> metricsTaskFuture = metricsScheduler.scheduleAtFixedRate(metricsTask, 
 				metricsDelay, interval, TimeUnit.SECONDS);
 		logger.info("AutoScanner started: runtime scan for each " + interval
 				+" seconds with delay of  "+metricsDelay +" seconds, run as user "
-				+ context.getMyperfConfig().getMetricsScannerUser());
+				+ context.getMyperfConfig().getMetricsScannerUser());		
+	}
+	
+	private void startAlertScheduler()
+	{
+		alertScheduler = Executors.newSingleThreadScheduledExecutor();//we only need a single thread
+		
+		alertTask = new AlertScanTask();
+		
+		int secOfTheDay = getCurrentSeconds();
+		int interval = context.getMyperfConfig().getScannerIntervalSeconds();
+		maxScanIdleTime = interval * 3000;
+		if(maxScanIdleTime < 300000L) maxScanIdleTime = 300000L;//minimum check time 5 minutes
+		logger.info("maximun alowed hange time: "+maxScanIdleTime);
+		
+		int alertDelay = (int)Math.ceil(((double)secOfTheDay)/(context.getMyperfConfig().getAlertScanIntervalSeconds()))*context.getMyperfConfig().getAlertScanIntervalSeconds() - secOfTheDay;
 		ScheduledFuture<?> alertTaskFuture = alertScheduler.scheduleAtFixedRate(alertTask, 
 				alertDelay, context.getMyperfConfig().getAlertScanIntervalSeconds(), TimeUnit.SECONDS);
 		logger.info("AlertScanner started: runtime scan for each " + context.getMyperfConfig().getAlertScanIntervalSeconds()
 				+" seconds with delay of  " + alertDelay +" seconds, run as user "
-				+ context.getMyperfConfig().getMetricsScannerUser());
+				+ context.getMyperfConfig().getMetricsScannerUser());		
+	}
+
+	private void startConfigRetentionScheduler()
+	{
+		scheduler2 = Executors.newSingleThreadScheduledExecutor();//we only need a single thread
+		
+		retentionTask = new MetricsRetentionTask(this.context,  context.getMyperfConfig().getRecordRententionDays(), null);
+		configScanTask = new GlobalVariableChangeScanTask(this.context, this.appUser);
+		
+		int secOfTheDay = getCurrentSeconds();
+		int interval = context.getMyperfConfig().getScannerIntervalSeconds();
+		maxScanIdleTime = interval * 3000;
+		if(maxScanIdleTime < 300000L) maxScanIdleTime = 300000L;//minimum check time 5 minutes
+		logger.info("maximun alowed hange time: "+maxScanIdleTime);
+		
+		int configDelay = (int)Math.ceil(((double)secOfTheDay)/(720*60))*720*60 - secOfTheDay;
+		int configDelay2 = (int)Math.ceil(((double)secOfTheDay)/(1440*60))*1440*60 - secOfTheDay;
+		int monitorDelay = (int)Math.ceil(((double)secOfTheDay)/(600))*600 - secOfTheDay; //monitor delay
 		ScheduledFuture<?> runtimeTaskFuture2 = scheduler2.scheduleAtFixedRate(retentionTask, 
 				configDelay2+60, 24*3600, TimeUnit.SECONDS);//once a day
 		ScheduledFuture<?> runtimeTaskFuture3 = scheduler2.scheduleAtFixedRate(configScanTask, 
 				configDelay+120, 12*3600, TimeUnit.SECONDS);//twice a day
 		logger.info("Rentention Task and configuratiion scan task scheduled.");
 		
+		
+	}
+
+	private void startMonitorScheduler()
+	{
+		this.monitorScheduler = Executors.newScheduledThreadPool(2);
+		
+		monitorTask = new MonitorTask();
+		
+		int secOfTheDay = getCurrentSeconds();
+		int interval = context.getMyperfConfig().getScannerIntervalSeconds();
+		maxScanIdleTime = interval * 3000;
+		if(maxScanIdleTime < 300000L) maxScanIdleTime = 300000L;//minimum check time 5 minutes
+		logger.info("maximun alowed hange time: "+maxScanIdleTime);
+		
+		int monitorDelay = (int)Math.ceil(((double)secOfTheDay)/(600))*600 - secOfTheDay; //monitor delay
+		//configDelay2 = 10;
+		
 		ScheduledFuture<?> monitorTaskFuture = this.monitorScheduler.scheduleAtFixedRate(monitorTask, 
 				monitorDelay, 600, TimeUnit.SECONDS);//each 10 minutes
 		
 	}
+
+	private void startSchedulers()
+	{
+		this.startMetricScheduler();
+		this.startAlertScheduler();
+		this.startConfigRetentionScheduler();
+		this.startMonitorScheduler();
+	}
+
 	private static int getCurrentSeconds()
 	{
 		Calendar rightNow = Calendar.getInstance();
@@ -171,10 +231,33 @@ public class AutoScanner {
 		logger.info("Stopping AutoScanner");
 		
 		forceStop();
-		this.monitorScheduler.shutdownNow();
+		forceStopScheduler(SCHEDULER_MONITOR);
 		this.running = false;
 		this.metricDb.destroy();
 		logger.info("AutoScanner Stopped.");
+	}
+	synchronized public void forceStopScheduler(String name)
+	{
+		ScheduledExecutorService svc = null;
+		if(SCHEDULER_METRICS.equals(name))
+			svc = this.metricsScheduler;
+		else if(SCHEDULER_ALERT.equals(name))
+			svc = this.alertScheduler;
+		if(SCHEDULER_RETENTION.equals(name))
+			svc = this.scheduler2;
+		if(SCHEDULER_MONITOR.equals(name))
+			svc = this.monitorScheduler;
+		if(svc == null) return;
+		try
+		{
+			logger.info("Shutdown scheduler " + name);
+			svc.shutdownNow();
+			svc.awaitTermination(5, TimeUnit.SECONDS);
+		}catch(Exception ex)
+		{
+			logger.info("AutoScanner failed to shutdown in 5 sec.");			
+		}
+		
 	}
 	
 	/**
@@ -182,32 +265,10 @@ public class AutoScanner {
 	 */
 	synchronized public void forceStop()
 	{
-		//stop the scheduler and scanners
-		metricsScheduler.shutdownNow();
-		this.alertScheduler.shutdownNow();
-		scheduler2.shutdownNow();
-		try
-		{
-			metricsScheduler.awaitTermination(5, TimeUnit.SECONDS);
-		}catch(Exception ex)
-		{
-			logger.info("AutoScanner failed to shutdown in 5 sec.");			
-		}
-		try
-		{
-			scheduler2.awaitTermination(5, TimeUnit.SECONDS);
-		}catch(Exception ex)
-		{
-			logger.info("AutoScanner failed to shutdown daily scheduler in 5 sec.");			
-		}
-		try
-		{
-			alertScheduler.awaitTermination(5, TimeUnit.SECONDS);
-		}catch(Exception ex)
-		{
-			logger.info("AutoScanner failed to shutdown alert scheduler in 5 sec.");			
-		}
 		
+		forceStopScheduler(SCHEDULER_ALERT);
+		forceStopScheduler(SCHEDULER_METRICS);
+		forceStopScheduler(SCHEDULER_RETENTION);
 	}
 	
 	public MyPerfContext getContext() {
@@ -239,10 +300,11 @@ public class AutoScanner {
 
 	private final class MetricsScanTask implements Runnable
 	{
+		private MetricScanner scanner = null;
 		public void run() {
 			lastScanTime = System.currentTimeMillis();
 			Thread.currentThread().setName("RunetimeScanTask");
-			MetricScanner scanner = new MetricScanner();
+			scanner = new MetricScanner();
 			scanner.setAppUser(appUser);
 			scanner.setFrameworkContext(context);
 			scanner.setThreadCount(context.getMyperfConfig().getScannerThreadCount());
@@ -256,14 +318,20 @@ public class AutoScanner {
 				logger.log(Level.SEVERE, "Exception during auto metric scan", ex);
 			}
 		}
-		
+		public void shutdown()
+		{
+			if(this.scanner != null)
+				this.scanner.shutdown();
+		}
 	}
 
 	private final class AlertScanTask implements Runnable
 	{
+		private AlertScanner scanner = null;
 		public void run() {
+			lastAlertScanTime = System.currentTimeMillis();
 			Thread.currentThread().setName("AlertScanTask");
-			AlertScanner scanner = new AlertScanner();
+			scanner = new AlertScanner();
 			scanner.setAppUser(appUser);
 			scanner.setFrameworkContext(context);
 			scanner.setThreadCount(context.getMyperfConfig().getScannerThreadCount());
@@ -285,8 +353,10 @@ public class AutoScanner {
 			long currentTime = System.currentTimeMillis();
 			if(currentTime - lastScanTime >= maxScanIdleTime)//if last run is 3 times of interval
 			{
-				logger.severe("Scanner hangs, shut it down.");
-				forceStop();
+				logger.severe("Metrics Scanner hangs, shut it down.");
+				if(metricsTask != null)
+					metricsTask.shutdown();
+				forceStopScheduler(SCHEDULER_METRICS);				
 				try
 				{
 					Thread.sleep(60000L);
@@ -295,7 +365,21 @@ public class AutoScanner {
 					
 				}
 				//restart schedulers
-				startSchedulers();
+				startMetricScheduler();
+			}
+			if(currentTime - lastAlertScanTime >= maxScanIdleTime)//if last run is 3 times of interval
+			{
+				logger.severe("Alert Scanner hangs, shut it down.");
+				forceStopScheduler(SCHEDULER_ALERT);
+				try
+				{
+					Thread.sleep(60000L);
+				}catch(Exception ex)
+				{
+					
+				}
+				//restart schedulers
+				startAlertScheduler();
 			}
 		}
 	

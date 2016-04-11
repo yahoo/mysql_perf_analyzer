@@ -89,9 +89,9 @@
   <table id="all_alerts_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
 </div>
 </div>
-<div id="alert_settings" style="position:absolute;top:70px;left:20px;width:480px;background-color:white;border:1px solid silver;display:none;z-index:1000;">
+<div id="alert_settings" style="position:absolute;top:70px;left:20px;width:600px;background-color:white;border:1px solid silver;display:none;z-index:1000;">
    <div id="alert_settings_title" style="position:relative;padding:8px 28px 8px 8px;min-height:13px;height:13px;font-weight:bold;color:white;background-color:#3961c5;">Alert Settings</div>
-   <div id="alert_settings_main" style="font-size:12px;margin-top:10px;padding-left:20px;padding-right:8px;width:480px;height:240px;">
+   <div id="alert_settings_main" style="font-size:12px;margin-top:10px;padding-left:20px;padding-right:8px;width:580px;height:240px;">
      <span style="font-weight:bold;" id="alert_settings_msg"></span>   
      <div id="alert_settings_tbl">
         <table id="alert_info_tbl">
@@ -105,6 +105,7 @@
           <tr><td>Connection Failures(per second): </td><td><input name="alert_settings_aborted_cc" id="alert_settings_aborted_cc" size="10" maxlength="4" /></td></tr>
           <tr><td>Slow Queries(per minute): </td><td><input name="alert_settings_slow" id="alert_settings_slow" size="10" maxlength="4" /></td></tr>
           <tr><td>Deadlocks (per period): </td><td><input name="alert_settings_deadlock" id="alert_settings_deadlock" size="10" maxlength="4" /></td></tr>
+          <tr><td>Emails(comma separated): </td><td><input name="alert_settings_emails" id="alert_settings_emails" size="60"/></td></tr>
           <tr id="tr_alerts_enabled"><td>Alerts </td><td><input type="checkbox" name="alerts_enabled" id="alerts_enabled" value="1" />&nbsp;check to enable</td></tr>
           <tr id="tr_metrics_enabled"><td>Metrics Gathering </td><td><input type="checkbox" name="metrics_enabled" id="metrics_enabled"/>&nbsp;check to enable</td></tr>
           <tr id="tr_snmp_enabled"><td>SNMP Gathering </td><td><input type="checkbox" name="snmp_enabled" id="snmp_enabled"/>&nbsp;check to enable</td></tr>
@@ -185,6 +186,8 @@ function retrieveSettings()
                 mydom("alert_settings_deadlock").value = jsonObj.deadlock;  
                 mydom("alert_settings_aborted_cc").value = jsonObj.aborted_cc;  
                 mydom("alert_settings_repllag").value = jsonObj.repllag;
+                mydom("alert_settings_emails").value = jsonObj.emails;
+                
                 if(jsonObj.alerts == null)
                 {
                   mydom("tr_alerts_enabled").style.display="none";
@@ -226,6 +229,7 @@ function updateSettings()
    		  mydata += "&thread="+ mydom("alert_settings_thread").value;
    		  mydata += "&slow="+ mydom("alert_settings_slow").value;
    		  mydata += "&deadlock="+ mydom("alert_settings_deadlock").value;
+   		  mydata += "&emails="+escape(mydom("alert_settings_emails").value);
    		  mydata += "&aborted_cc="+ mydom("alert_settings_aborted_cc").value;
    		  mydata += "&repllag="+ mydom("alert_settings_repllag").value;
    		  

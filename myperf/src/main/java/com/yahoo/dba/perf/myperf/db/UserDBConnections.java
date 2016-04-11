@@ -124,7 +124,20 @@ public class UserDBConnections {
       return createConnectionInternal(dbinfo, cred);
 	}catch(Exception ex)
 	{
-	  logger.log(Level.SEVERE,"Exception when connecting to ("+dbinfo+")", ex);
+		  if(ex.getCause() != null)
+		  {
+			  Throwable cause = ex.getCause();
+			  String msg = cause.getMessage();
+			  //suppress log messages for certain error
+			  if(cause instanceof java.net.UnknownHostException 
+					  || (cause instanceof java.net.ConnectException && msg != null && msg.indexOf("Connection refused") >=0))
+			  {
+				  logger.log(Level.SEVERE,"Exception cause when connecting to ("+dbinfo+"): msg, no retry.");
+				  throw new RuntimeException(Constants.CONN_MSG_NORETRY);
+			  }else
+				  logger.info("Ex: " + ex.getCause().getClass().getName()+", " + ex.getCause().getMessage());
+		  }
+		  logger.log(Level.SEVERE,"Exception when connecting to ("+dbinfo+")", ex);
 	  throw new RuntimeException(ex.getMessage());
 	}
   }

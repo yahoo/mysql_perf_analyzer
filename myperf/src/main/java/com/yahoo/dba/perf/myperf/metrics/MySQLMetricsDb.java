@@ -165,5 +165,10 @@ public class MySQLMetricsDb  extends MetricsDbBase implements java.io.Serializab
 	protected boolean isLimitSupport() {
 		return true;
 	}
+	@Override
+	protected String[] buildAlertNotificationDDL() {
+	    return new String[]{"CREATE TABLE ALERT_NOTIFICATION ("
+		         + "ID INT NOT NULL AUTO_INCREMENT, DBGROUP VARCHAR(30) NOT NULL, HOSTNAME VARCHAR(100), EMAILS VARCHAR(1000) NOT NULL,  PRIMARY KEY(ID), UNIQUE KEY (DBGROUP, HOSTNAME))"};
+	}
 
 }

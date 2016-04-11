@@ -109,6 +109,8 @@ public class AlertScannerRunner implements Runnable
 	      scanData.conn = conns.checkoutConnection(scanData.dbinfo, cred);
 	  }catch(Throwable iex)
 	  {
+		  if(Constants.CONN_MSG_NORETRY.equals(iex.getMessage()))
+			  return false;
 		  //logger.log(Level.WARNING, "Failed to connect to "+scanData.dbinfo, iex);
 		  //reportOffline(dbinfo);
 	  }

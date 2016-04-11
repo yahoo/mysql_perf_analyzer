@@ -72,8 +72,9 @@ public abstract class MetricsDbBase implements  Runnable
 	  protected static final String DBINFO_TABLENAME="DBINFOS";
 	  protected static final String ALERTSETTING_TABLENAME="ALERTSETTINGS";
 	  protected static final String ALERT_SUBSCRIPT = "ALERT_SUBSCRIPT";
+	  protected static final String ALERT_NOTIFICATION = "ALERT_NOTIFICATION";
 
-	private static final String METRICS_SUBSCRIPT = "METRICS_SUBSCRIPT";
+  	  protected static final String METRICS_SUBSCRIPT = "METRICS_SUBSCRIPT";
 
 	  //data to store
 	  protected Map<String, java.util.concurrent.ArrayBlockingQueue<MetricsData>> dataQueues = new HashMap<String, java.util.concurrent.ArrayBlockingQueue<MetricsData>>();
@@ -273,7 +274,7 @@ public abstract class MetricsDbBase implements  Runnable
 	  private String insertSQL(MetricsGroup mg)
 	  {
 	    StringBuilder sb = new StringBuilder();
-	    sb.append("insert into ");
+	    sb.append("insert ignore into ");
 	    if(mg.isUdmFlagged())
 	    	sb.append("UDM");
 	    else
@@ -347,6 +348,7 @@ public abstract class MetricsDbBase implements  Runnable
 
 	  abstract protected String[] buildAlertSubScriptionDDL();//create alert subscription table
 	  abstract protected String[] buildMetricsSubscrptionDDL();//create metrics subscription table for UDM and on demand metrics
+	  abstract protected String[] buildAlertNotificationDDL();//create alert notification table
 
 	  protected String buildDDL(MetricsGroup mg)
 	  {
@@ -507,6 +509,19 @@ public abstract class MetricsDbBase implements  Runnable
 	        }
 	        DBUtils.close(stmt);
 	        logger.info("Created metric table METRICS_SUBSCRIPT" );
+	      }
+	      //buildAlertNotificationDDL
+	      if(!DBUtils.hasTable(conn, schemaName, "ALERT_NOTIFICATION"))
+	      {
+	        stmt = conn.createStatement();
+	        String[] ddls = this.buildAlertNotificationDDL();
+	        for(String ddl: ddls)
+	        {
+	        	logger.info("Create metric table ALERT_NOTIFICATION: "+ddl);
+	        	stmt.execute(ddl);
+	        }
+	        DBUtils.close(stmt);
+	        logger.info("Created metric table ALERT_NOTIFICATION" );
 	      }
 	      if(!DBUtils.hasTable(conn, schemaName, DBINFO_TABLENAME))
 	      {
@@ -682,7 +697,9 @@ public abstract class MetricsDbBase implements  Runnable
 	        	  continue;//go to next type
 	          }
 	          //builtin metrics
-	          String sql = this.insertSQL.get(s);
+	          try
+	          {
+  	            String sql = this.insertSQL.get(s);
 	            stmt = storeConnection.prepareStatement(sql);
 	            for(MetricsData mdata:q2)
 	            {
@@ -728,7 +745,15 @@ public abstract class MetricsDbBase implements  Runnable
 			      }//one row
 		          stmt.execute();
 		          stmt.clearBatch();
-	            }//for loop
+	            }//for(MetricsData mdata:q2)
+	          }catch(Exception ex)
+	          {
+	    	      logger.log(Level.WARNING, "Exception when store metrics: " + s, ex);
+	        	  if(ex instanceof com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException)
+	        	  {
+	        		  //constraint error, skip
+	        	  }
+	          }
 	            //try{
 	        	//  stmt.executeBatch();
 	            //}catch(Exception iex)
@@ -2183,6 +2208,64 @@ public abstract class MetricsDbBase implements  Runnable
 		}			
 	  }
 
+	  public void upsertAlertNotification(String dbgroup, String dbhost, String emails)
+	  {
+		String sql2 = "update " + ALERT_NOTIFICATION+ " set EMAILS=? where DBGROUP=? and HOSTNAME=?";
+		String sql3 = "insert into " + ALERT_NOTIFICATION+" (DBGROUP,HOSTNAME,EMAILS) values(?,?,?)";
+			
+		logger.info("Store or update alert notifications for db "+ dbgroup+", "+dbhost);
+		Connection conn = null;	
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		boolean findOne = false;
+		try
+		{
+		  conn = this.createConnection(true);
+		  //first, check if we have record
+		  pstmt = conn.prepareStatement("select EMAILS from "+ ALERT_NOTIFICATION +" where DBGROUP=? and HOSTNAME=?");
+		  pstmt.setString(1, dbgroup);
+		  pstmt.setString(2, dbhost);
+		  rs = pstmt.executeQuery();
+		  if(rs!=null && rs.next())
+		  {
+			  findOne = true;
+		  }
+		  DBUtils.close(rs);
+		  DBUtils.close(pstmt); pstmt = null;
+		  
+		  if(findOne)
+		  {
+		    pstmt = conn.prepareStatement(sql2);
+		    int idx = 1;
+			pstmt.setString(idx++, emails);
+			pstmt.setString(idx++, dbgroup);
+			pstmt.setString(idx++, dbhost);
+			pstmt.execute();
+			//conn.commit();
+		  }else
+		  {
+			int idx = 1;
+		    pstmt = conn.prepareStatement(sql3);
+			pstmt.setString(idx++, dbgroup);
+			pstmt.setString(idx++, dbhost);
+			pstmt.setString(idx++, emails);			
+			pstmt.execute();
+			//conn.commit();
+		  }
+		}catch(Exception ex)
+		{
+		  logger.info("Failed to save alert notification for "+dbgroup+", "+dbhost);
+		  logger.log(Level.SEVERE,"Exception", ex);
+		  if(conn!=null)try{conn.rollback();}catch(Exception iex){}
+		  throw new RuntimeException(ex);
+		}finally
+		{
+		  DBUtils.close(pstmt);
+		  DBUtils.close(conn);
+		}			
+	  }
+
+	  
 	  public void loadAlertSetting(AlertSettings alertSettings)
 	  {
 		logger.info("Loadalert settings from db");
@@ -2205,6 +2288,17 @@ public abstract class MetricsDbBase implements  Runnable
 			  alertSettings.updateAlertThreshold(dbgroup, dbhost, alertType, threshold, false);//we don't want to store it back, so last arg is false
 			  count++;
 		  }
+		  DBUtils.close(rs);
+		  rs = pstmt.executeQuery("select DBGROUP, HOSTNAME, EMAILS from "+ ALERT_NOTIFICATION);
+		  while(rs!=null && rs.next())
+		  {
+			  String dbgroup = rs.getString("DBGROUP");
+			  String dbhost = rs.getString("HOSTNAME");
+			  String emails = rs.getString("EMAILS");
+			  alertSettings.updateAlertNotification(dbgroup, dbhost, emails, false);//we don't want to store it back, so last arg is false
+			  count++;
+		  }
+		  
 		}catch(Exception ex)
 		{
 		  logger.info("Failed to load alert settings ");

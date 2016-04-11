@@ -610,7 +610,8 @@ public class MyPerfContext implements java.io.Serializable, InitializingBean,Dis
 	  return;
 	}catch(Exception ex){}
 	  
-	String receiver = getMyperfConfig().getAlertNotificationEmails();
+	//String receiver = getMyperfConfig().getAlertNotificationEmails();
+	String receiver = this.alertSettings.getNotificationEmails(alert.getDbGroup(), alert.getDbHost());
 	if(receiver!=null && !receiver.isEmpty())
 	{
 		String subject = this.getAlertEmailSubject(alert);

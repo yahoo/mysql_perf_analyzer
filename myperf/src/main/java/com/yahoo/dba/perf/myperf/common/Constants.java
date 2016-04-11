@@ -33,5 +33,7 @@ public class Constants
   public static final String URL_PATH_ALERT_TYPE = "ALERT_TYPE";
 
   public static final String SESSION_DEBUG="sess_debug";
+  
+  public static final String CONN_MSG_NORETRY = "CONN_NO_RETRY";
 
 }

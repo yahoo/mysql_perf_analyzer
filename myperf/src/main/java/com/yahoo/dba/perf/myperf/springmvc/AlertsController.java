@@ -242,7 +242,9 @@ public class AlertsController extends MyPerfBaseController
 	  sb.append("\"slow\":\"").append(Math.round(slow)).append("\",");
 	  sb.append("\"deadlock\":\"").append(Math.round(deadlock)).append("\",");
 	  sb.append("\"repllag\":\"").append(Math.round(repllag)).append("\",");
-	  sb.append("\"aborted_cc\":\"").append(Math.round(aborted_cc)).append("\"");
+	  sb.append("\"aborted_cc\":\"").append(Math.round(aborted_cc)).append("\",");
+	  sb.append("\"emails\":\"").append(as.getNotificationEmails(group, host)).append("\"");
+	  
 	  if(dbinfo != null)
 	  {
 		  sb.append(",\"alerts\":\"").append(dbinfo.isAlertEnabled()?"y":"n").append("\"");
@@ -284,6 +286,7 @@ public class AlertsController extends MyPerfBaseController
 			  as.updateAlertThreshold(group, host, "SLOW", Float.parseFloat(req.getParameter("slow")), true);
 			  as.updateAlertThreshold(group, host, "DEADLOCK", Float.parseFloat(req.getParameter("deadlock")), true);
 			  as.updateAlertThreshold(group, host, "CONNECT_FAILURE", Float.parseFloat(req.getParameter("aborted_cc")), true);
+			  as.updateAlertNotification(group, host, req.getParameter("emails"), true);
 			  message = "alert settings have been updated. ";
 		  }catch(Exception ex)
 		  {
