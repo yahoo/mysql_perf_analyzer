@@ -105,6 +105,11 @@ Installation and Usage Instructions
 
 9. The analyzer relies on Linux SNMP to gather OS level data. Check snmpd service status.
 
+10. Hipchat integration: if you use hipchat for work related collaboration, you can create a hipchat room to
+    receive alerts from MySQL Perf Analyzer. Check https://developer.atlassian.com/hipchat/tutorials/building-a-simple-add-on-using-a-wizard 
+    regarding how to setup hipchat integration. After you have hipchat notification URL and auth token, you can configure
+    MySQL Perf Analyzer to send notification to your room, using Settings page. 
+
 Known Limitations
 ------
 1. SNMP is based on the Linux specification.

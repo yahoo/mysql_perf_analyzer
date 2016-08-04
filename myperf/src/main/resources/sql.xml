@@ -17,10 +17,15 @@
     <queryProcessor>ReplShowProcessor</queryProcessor>
   </sql>
   <sql handle="mysql_processlist" paramCount="0" comments="Display MySQL processlist">
-    <text>select * from information_schema.processlist limit 3000</text>
+    <text>select * from information_schema.processlist limit 5000</text>
+  </sql>
+  <sql handle="mysql_repl_mts" paramCount="0" comments="Display MySQL Multithread repl status">
+    <text>select id, relay_log_name, relay_log_pos, master_log_name, master_log_pos, checkpoint_relay_log_name, checkpoint_relay_log_pos, checkpoint_master_log_name, 
+    checkpoint_master_log_pos, checkpoint_seqno, checkpoint_group_size,  hex(Checkpoint_group_bitmap) bitmap 
+    from mysql.slave_worker_info</text>
   </sql>
   <sql handle="mysql_active_processlist" paramCount="0" comments="Display MySQL active processlist">
-    <text>select * from information_schema.processlist where command!='Sleep' limit 3000</text>
+    <text>select * from information_schema.processlist where command!='Sleep' limit 5000</text>
   </sql>
   <sql handle="mysql_long_running_processlist" paramCount="1" comments="Display MySQL processlist for queries running for more than specified time">
     <text>select * from information_schema.processlist where command!='Sleep' and command!='Binlog Dump' and command!='Connect' and command!='Daemon'

@@ -73,6 +73,10 @@ public class MyPerfConfiguration implements java.io.Serializable{
 	private String metricsDbUserName;
 	private String metricsDbPassword;
 
+	//hipchat integration
+	private String hipchatUrl; //must be in the format like https://xxx.hipchat.com/v2/room/{roomnumber}/notification?
+	private String hipchatAuthToken; //we will append authToken to construct the full url
+	  
 	//If the app is just installed, it might not have been configured
 	private boolean configured = false;
 	
@@ -158,6 +162,10 @@ public class MyPerfConfiguration implements java.io.Serializable{
 				this.setMetricsDbUserName(props.getProperty("metricsDbUserName"));
 				this.setMetricsDbPassword(ctx.getMetaDb().dec(props.getProperty("metricsDbPassword")));
 			}
+			this.hipchatUrl = props.getProperty("hipchatUrl", null);
+			String tmpAuthTocken = props.getProperty("hipchatAuthToken", null);
+			if(tmpAuthTocken != null && !tmpAuthTocken.isEmpty())
+				this.hipchatAuthToken = ctx.getMetaDb().dec(tmpAuthTocken);
 			return true;
 		}catch(Exception ex)
 		{
@@ -201,6 +209,11 @@ public class MyPerfConfiguration implements java.io.Serializable{
 				pw.println("metricsDbUserName="+ this.metricsDbUserName);
 			if(this.metricsDbPassword!=null && !this.metricsDbPassword.isEmpty())
 				pw.println("metricsDbPassword="+ ctx.getMetaDb().enc(this.metricsDbPassword));
+			if(this.hipchatUrl!= null && !this.hipchatUrl.isEmpty())
+				pw.println("hipchatUrl="+this.hipchatUrl);
+			if(this.hipchatAuthToken!= null && !this.hipchatAuthToken.isEmpty())
+				pw.println("hipchatAuthToken="+ctx.getMetaDb().enc(this.hipchatAuthToken));
+			
 			return true;
 		}catch(Exception ex)
 		{
@@ -363,6 +376,22 @@ public class MyPerfConfiguration implements java.io.Serializable{
 
 	public void setReplTopologyMaxDepth(int replTopologyMaxDepth) {
 		this.replTopologyMaxDepth = replTopologyMaxDepth;
+	}
+
+	public String getHipchatUrl() {
+		return hipchatUrl;
+	}
+
+	public void setHipchatUrl(String hipchatUrl) {
+		this.hipchatUrl = hipchatUrl;
+	}
+
+	public String getHipchatAuthToken() {
+		return hipchatAuthToken;
+	}
+
+	public void setHipchatAuthToken(String hipchatAuthToken) {
+		this.hipchatAuthToken = hipchatAuthToken;
 	}
 
 }

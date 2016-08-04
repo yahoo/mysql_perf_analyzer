@@ -30,6 +30,7 @@ public class StateSnapshot implements java.io.Serializable{
 	private long queries = 0L;
 	private long questions = 0L;
 	private long deadlocks = 0L;
+	private long swapout = -1L; //memory swap out, use ssRawSwapOut
 	private long max_conn_error = -1L;//-1 means not recorded yet
 	
 	private long uptime = 0L;//need it to calculate diff if restart
@@ -118,6 +119,7 @@ public class StateSnapshot implements java.io.Serializable{
 		ss.setReplIo(this.replIo);
 		ss.setReplSql(this.replSql);
 		ss.setDeadlocks(deadlocks);
+		ss.setSwapout(this.swapout);
 		ss.setUptime(uptime);
 		ss.setMax_conn_error(max_conn_error);
 		if(this.metricsMap != null)
@@ -221,6 +223,7 @@ public class StateSnapshot implements java.io.Serializable{
 				  +CommonUtils.getMapValueLong(snmpMap,"ssCpuRawIdle",-1L)
 				  +CommonUtils.getMapValueLong(snmpMap,"ssCpuRawNice",-1L)
 				  +CommonUtils.getMapValueLong(snmpMap,"ssCpuRawSoftIRQ",0L));
+		  this.setSwapout(CommonUtils.getMapValueLong(snmpMap,"ssRawSwapOut",0L));
 		  
 	}
 
@@ -266,5 +269,11 @@ public class StateSnapshot implements java.io.Serializable{
 	}
 	public void setMax_conn_error(long max_conn_error) {
 		this.max_conn_error = max_conn_error;
+	}
+	public long getSwapout() {
+		return swapout;
+	}
+	public void setSwapout(long swapout) {
+		this.swapout = swapout;
 	}
 }

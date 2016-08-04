@@ -96,6 +96,14 @@
           <td><input type="text" id="notificationEmails" name="notificationEmails" value="${config.alertNotificationEmails}"/></td>
         </tr>
         <tr>
+          <td><label for="hipchatUrl" title="hipchat room integration URL, for example, in the form of https://my_company.hipchat.com/v2/room/my_room_number/notification?">Alert Hipchat URL: </label></td>
+          <td><input type="text" id="hipchatUrl" name="hipchatUrl" value="${config.hipchatUrl}"/></td>
+        </tr>
+        <tr>
+          <td><lable for="hipchatAuthToken" title="hipchat room integration authtoken">Alert Hipchat AuthToken: </label></td>
+          <td><input type="password" id="hipchatAuthToken" name="hipchatAuthToken"/></td>
+        </tr>
+        <tr>
           <td>Reuse Monitor User Connections? </td>
           <td><input type="checkbox" id="reuseMonUserConnction" name="reuseMonUserConnction" value="y" ${config.reuseMonUserConnction?"checked":""}  /></td>
         </tr>
@@ -172,6 +180,7 @@
               <tr><td>Connection Failures(per second): </td><td><input name="alert_settings_aborted_cc" id="alert_settings_aborted_cc" size="10" maxlength="4" /></td></tr>
               <tr><td>Slow Queries(per minute): </td><td><input name="alert_settings_slow" id="alert_settings_slow" size="10" maxlength="4" /></td></tr>
               <tr><td>Deadlocks(per period): </td><td><input name="alert_settings_deadlock" id="alert_settings_deadlock" size="10" maxlength="4" /></td></tr>
+              <tr><td>Swap(out, per period): </td><td><input name="alert_settings_swapout" id="alert_settings_swapout" size="10" /></td></tr>
               <tr><td>Emails(comma separated): </td><td><input name="alert_settings_emails" id="alert_settings_emails" size="60"/></td></tr>
               <tr id="tr_alerts_enabled"><td>Alerts </td><td><input type="checkbox" name="alerts_enabled" id="alerts_enabled" value="1" />&nbsp;check to enable</td></tr>
               <tr id="tr_metrics_enabled"><td>Metrics Gathering </td><td><input type="checkbox" name="metrics_enabled" id="metrics_enabled"/>&nbsp;check to enable</td></tr>
@@ -300,6 +309,7 @@ function retrieveSettings()
                 mydom("alert_settings_thread").value = jsonObj.thread;  
                 mydom("alert_settings_slow").value = jsonObj.slow;  
                 mydom("alert_settings_deadlock").value = jsonObj.deadlock;  
+                mydom("alert_settings_swapout").value = jsonObj.swapout;  
                 mydom("alert_settings_aborted_cc").value = jsonObj.aborted_cc;  
                 mydom("alert_settings_repllag").value = jsonObj.repllag;
                 mydom("alert_settings_emails").value = jsonObj.emails;
@@ -386,6 +396,7 @@ function updateSettings()
    		  mydata += "&thread="+ mydom("alert_settings_thread").value;
    		  mydata += "&slow="+ mydom("alert_settings_slow").value;
    		  mydata += "&deadlock="+ mydom("alert_settings_deadlock").value;
+   		  mydata += "&swapout="+ mydom("alert_settings_swapout").value;
    		  mydata += "&aborted_cc="+ mydom("alert_settings_aborted_cc").value;
    		  mydata += "&repllag="+ mydom("alert_settings_repllag").value;
    		  mydata += "&emails="+escape(mydom("alert_settings_emails").value);
@@ -478,6 +489,9 @@ function updateScanner()
     mydata += "&reuseMonUserConnction=y";
   else
     mydata += "&reuseMonUserConnction=n";
+  mydata += "&hipchatUrl=" + escape(mydomval("hipchatUrl"));
+  mydata += "&hipchatAuthToken=" + escape(mydomval("hipchatAuthToken"));
+    
   mydata += "&metricsDbType=" + escape(mydomval("metricsDbType"));
   mydata += "&metricsDbHost=" + escape(mydomval("metricsDbHost"));
   mydata += "&metricsDbPort=" + escape(mydomval("metricsDbPort"));

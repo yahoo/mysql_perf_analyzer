@@ -196,6 +196,34 @@ private ModelAndView handleUpdateSNMP(HttpServletRequest req,
 		  if(pwd!=null && !pwd.isEmpty())
 			config.setMetricsDbPassword(req.getParameter("metricsDbPassword"));
 	  }
+	//hipchat
+	  {
+		  boolean hipchatChanged = false;
+		  String hipchatUrl = req.getParameter("hipchatUrl");
+		  if(hipchatUrl != null){
+			  hipchatUrl = hipchatUrl.trim();
+			  if(!hipchatUrl.endsWith("?"))
+				  hipchatUrl += "?";
+		  }
+		  if((hipchatUrl == null && config.getHipchatUrl() != null)
+				  || (hipchatUrl != null && !hipchatUrl.equals(config.getHipchatUrl())))
+				  hipchatChanged = true;
+		  config.setHipchatUrl(hipchatUrl);
+		  //only change authtoken if provided.
+		  String hipchatAuthToken = req.getParameter("hipchatAuthToken");
+		  if(hipchatAuthToken != null)hipchatAuthToken = hipchatAuthToken.trim();
+		  if(hipchatAuthToken != null && !hipchatAuthToken.isEmpty())
+		  {
+			  if(!hipchatAuthToken.equals(config.getHipchatAuthToken()))
+				  hipchatChanged = true;
+			  config.setHipchatAuthToken(hipchatAuthToken);
+		  }
+		  if(hipchatChanged)
+		  {
+			  logger.info("HipChat configuration changed to " + config.getHipchatUrl());
+			  this.frameworkContext.getHipchat().init(this.frameworkContext);
+		  }
+	  }
 	  config.store(this.frameworkContext);		
 	  message = "The configuration has been updated. Please (re)start the auto scanner scheduler.";
 	  return this.respondSuccess(message, req);

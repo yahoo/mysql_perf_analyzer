@@ -85,6 +85,9 @@ public class InstanceStates implements java.io.Serializable{
       	  double slowCount = 0.0f;
       	  double aborted_cc = 0.0f;//aborted client and connects
       	  long deadlocks = this.currSnapshot.getDeadlocks() - this.prevSnapshot.getDeadlocks();
+      	  //note if swapout =  -1, we don't have any record yet
+      	  long swapout = this.prevSnapshot.getSwapout()>=0L?
+      			  this.currSnapshot.getSwapout() - this.prevSnapshot.getSwapout():0L;
       	  if(this.prevSnapshot.getSyscputime()>=0L && this.currSnapshot.getSyscputime()>=0L)
       	  {
       		  double val = ((double)(this.currSnapshot.getSyscputime() - this.prevSnapshot.getSyscputime())*100)/(double)(this.currSnapshot.getTotalcputime() - this.prevSnapshot.getTotalcputime());
@@ -123,7 +126,12 @@ public class InstanceStates implements java.io.Serializable{
       	  {
       		  alertType = "IO";
       		  alertValue = String.format("%.3f",iowaits);
-      	  }else if(slowCount>=thresholds.get("SLOW"))
+      	  }else if(swapout > thresholds.get("SWAPOUT"))
+      	  {
+      		  alertType = "SWAPOUT";
+      		  alertValue = String.valueOf(swapout);
+      	  }
+    	  else if(slowCount>=thresholds.get("SLOW"))
       	  {
       		  alertType = "SLOW";
       		  alertValue = String.format("%.3f",slowCount);      		  

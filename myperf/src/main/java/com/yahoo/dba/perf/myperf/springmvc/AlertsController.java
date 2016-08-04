@@ -226,6 +226,7 @@ public class AlertsController extends MyPerfBaseController
 	  Float loadavg = as.getAlertThreshold(group, host, "LOADAVG");
 	  Float slow = as.getAlertThreshold(group, host, "SLOW");
 	  Float deadlock = as.getAlertThreshold(group, host, "DEADLOCK");
+	  Float swapout = as.getAlertThreshold(group, host, "SWAPOUT");
 	  Float repllag = as.getAlertThreshold(group, host, "REPLLAG");
 	  Float thread = as.getAlertThreshold(group, host, "THREAD");
 	  Float diskusage = as.getAlertThreshold(group, host, "DISKUSAGE");
@@ -241,6 +242,7 @@ public class AlertsController extends MyPerfBaseController
 	  sb.append("\"thread\":\"").append(Math.round(thread)).append("\",");
 	  sb.append("\"slow\":\"").append(Math.round(slow)).append("\",");
 	  sb.append("\"deadlock\":\"").append(Math.round(deadlock)).append("\",");
+	  sb.append("\"swapout\":\"").append(Math.round(swapout)).append("\",");
 	  sb.append("\"repllag\":\"").append(Math.round(repllag)).append("\",");
 	  sb.append("\"aborted_cc\":\"").append(Math.round(aborted_cc)).append("\",");
 	  sb.append("\"emails\":\"").append(as.getNotificationEmails(group, host)).append("\"");
@@ -285,6 +287,7 @@ public class AlertsController extends MyPerfBaseController
 			  as.updateAlertThreshold(group, host, "REPLLAG", Float.parseFloat(req.getParameter("repllag")), true);
 			  as.updateAlertThreshold(group, host, "SLOW", Float.parseFloat(req.getParameter("slow")), true);
 			  as.updateAlertThreshold(group, host, "DEADLOCK", Float.parseFloat(req.getParameter("deadlock")), true);
+			  as.updateAlertThreshold(group, host, "SWAPOUT", Float.parseFloat(req.getParameter("swapout")), true);
 			  as.updateAlertThreshold(group, host, "CONNECT_FAILURE", Float.parseFloat(req.getParameter("aborted_cc")), true);
 			  as.updateAlertNotification(group, host, req.getParameter("emails"), true);
 			  message = "alert settings have been updated. ";

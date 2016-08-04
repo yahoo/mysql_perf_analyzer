@@ -92,6 +92,9 @@ public class MyPerfContext implements java.io.Serializable, InitializingBean,Dis
   //hold alerts for notification
   private Alerts alerts = new Alerts();
   
+  //attach HipchatIntegration to email alert
+  private HipchatIntegration hipchat = new HipchatIntegration();
+  
   public MyPerfContext()
   {
     DEBUG.set(false);
@@ -183,7 +186,8 @@ public class MyPerfContext implements java.io.Serializable, InitializingBean,Dis
 	  }
 	}
     this.instanceStatesManager.init(this);
-		
+	this.hipchat.init(this);
+	
 	autoScanner = new AutoScanner(this);
 	autoScanner.init();//it will update metricsDB
 	if(autoScanner.isInitialized())
@@ -616,6 +620,8 @@ public class MyPerfContext implements java.io.Serializable, InitializingBean,Dis
 	{
 		String subject = this.getAlertEmailSubject(alert);
 		String msg = this.getAlertMessage(alert);
+		//send alert to hipchat room if enabled
+		this.hipchat.sendMessage(msg);
 		MailUtil.sendMail(receiver, subject, msg);
 	}
 		
@@ -725,5 +731,10 @@ public class MyPerfContext implements java.io.Serializable, InitializingBean,Dis
 			this.dbInfoManager.getMyDatabases(cred2.getAppUser(), false).addDb(cred2.getDbGroupName());				
 		}
 
+  }
+  
+  public HipchatIntegration getHipchat()
+  {
+	  return this.hipchat;
   }
 }
