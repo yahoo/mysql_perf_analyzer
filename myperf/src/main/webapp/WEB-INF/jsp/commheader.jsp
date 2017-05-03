@@ -5,13 +5,17 @@
    Copyrights licensed under the Apache License.
    See the accompanying LICENSE file for terms.
 --%>
-<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
-<script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+<%
+  String protocol = System.getProperty("url_protocl", "http");
+  if(!"https".equalsIgnoreCase(protocol))protocol="http";
+%>
+<script src="<%= protocol%>://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="<%= protocol%>://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
 <script src="jquery/js/jquery.ui-contextmenu.min.js"></script>
 <script src="jquery/datatables/js/jquery.dataTables.min.js"></script>
 <script src="jquery/js/jquery.tooltipster.js"></script>
 <script src="js/ui.js"></script>
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css" />
+<link rel="stylesheet" href="<%= protocol%>://code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css" />
 <link rel="stylesheet" href="jquery/css/tooltipster.css" />
 <link rel="stylesheet" type="text/css" href="jquery/datatables/css/jquery.dataTables.css" />
 <style>

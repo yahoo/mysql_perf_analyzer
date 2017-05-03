@@ -86,6 +86,7 @@ public class AlertReportRunner implements Runnable{
 		java.util.LinkedHashMap<String, String> repMap = new java.util.LinkedHashMap<String, String>();
 		String innodbStatus = null;
 		ResultList rList = null;
+		ResultList trxList = null;
 		ResultList clientList = null;
 		try
 		{
@@ -126,13 +127,21 @@ public class AlertReportRunner implements Runnable{
 					innodbStatus = rs.getString("Status");
 				}
 				
-				DBUtils.close(rs);
+				DBUtils.close(rs); rs = null;
 				rs = stmt.executeQuery("select * from information_schema.innodb_locks");
 				if(rs!=null)
 				{
 					rList = ResultListUtil.fromSqlResultSet(rs, 5000);
 					
 				}
+				DBUtils.close(rs); rs = null;
+				rs = stmt.executeQuery("select * from information_schema.INNODB_TRX where to_seconds(now()) - to_seconds(trx_started) > 60");
+				if(rs!=null)
+				{
+					trxList = ResultListUtil.fromSqlResultSet(rs, 5000);
+					
+				}
+				DBUtils.close(rs); rs = null;
 			}
 
 //TODO we need two snapshot to get useful data			
@@ -164,6 +173,7 @@ public class AlertReportRunner implements Runnable{
 			prSum.setProcessList(prList);
 			prSum.setInnodbStatus(innodbStatus);
 			prSum.setLockList(rList);
+			prSum.setTrxList(trxList);
 			//prSum.setClientList(clientList);
 			prSum.setReportTimestamp(reportTimestamp);
 			prSum.summarize();

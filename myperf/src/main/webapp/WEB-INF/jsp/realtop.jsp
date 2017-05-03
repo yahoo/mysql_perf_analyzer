@@ -121,7 +121,7 @@ caption {font-weight:bold; text-align: left;}
    <caption id="cap_mysql_tbl">MySQL Load</caption>
    <tr>
      <th class="cat">UPTIME</th>
-     <th colspan="10" class="cat">COMMAND/SEC</th>
+     <th colspan="11" class="cat">COMMAND/SEC</th>
      <th colspan="3" class="cat">REPLICATION</th>
    </tr>
    <tr>
@@ -136,6 +136,7 @@ caption {font-weight:bold; text-align: left;}
        <td class="cat">DELETE</td>
        <td class="cat">COMMIT</td>
        <td class="cat">ROLLBACK</td>
+       <td class="cat">SET</td>
        
        <td class="cat">SQL</td>
        <td class="cat">IO</td>
@@ -146,6 +147,7 @@ caption {font-weight:bold; text-align: left;}
        <td id="top_mysql_uptime">-</td>
        <td id="top_mysql_questions">-</td><td id="top_mysql_queries">-</td><td id="top_mysql_slow_queries">-</td><td id="top_mysql_select">-</td><td id="top_mysql_insert">-</td><td id="top_mysql_update">-</td><td id="top_mysql_replace">-</td>
            <td id="top_mysql_delete">-</td><td id="top_mysql_commit">-</td><td id="top_mysql_rollback">-</td>
+           <td id="top_mysql_set">-</td>
        <td id="top_mysql_repl_sql">-</td>
        <td id="top_mysql_repl_io">-</td>
        <td id="top_mysql_repl_lag">-</td>    
@@ -419,7 +421,7 @@ function retrieveTopSNMP(ts)
 }
 
 var TOP_STATUS_METRICS=["UPTIME","QUESTIONS","QUERIES","SLOW_QUERIES",
-  "COM_SELECT","COM_INSERT","COM_UPDATE","COM_REPLACE","COM_DELETE","COM_COMMIT","COM_ROLLBACK",
+  "COM_SELECT","COM_INSERT","COM_UPDATE","COM_REPLACE","COM_DELETE","COM_COMMIT","COM_ROLLBACK","COM_SET_OPTION",
   "CONNECTIONS","MAX_USED_CONNECTIONS","ABORTED_CONNECTS","ABORTED_CLIENTS",
   "THREADS_CONNECTED","THREADS_RUNNING","THREADS_CACHED","THREADS_CREATED",
   "INNODB_ROWS_READ","INNODB_ROWS_INSERTED","INNODB_ROWS_UPDATED","INNODB_ROWS_DELETED", "INNODB_DATA_FSYNCS",
@@ -476,6 +478,7 @@ function retrieveTopGlobalStatus(ts)
                fillSingleSNMP({domId:"top_mysql_delete", source:TOP_METRICS, tableName:"global_status", entryName:"COM_DELETE", diff:1, fixedPos: 2, formatNumber:1, adj:adj});
                fillSingleSNMP({domId:"top_mysql_commit", source:TOP_METRICS, tableName:"global_status", entryName:"COM_COMMIT", diff:1, fixedPos: 2, formatNumber:1, adj:adj});
                fillSingleSNMP({domId:"top_mysql_rollback", source:TOP_METRICS, tableName:"global_status", entryName:"COM_ROLLBACK", diff:1, fixedPos: 2, formatNumber:1, adj:adj});
+               fillSingleSNMP({domId:"top_mysql_set", source:TOP_METRICS, tableName:"global_status", entryName:"COM_SET_OPTION", diff:1, fixedPos: 2, formatNumber:1, adj:adj});
 
                fillSingleSNMP({domId:"top_mysql_connections", source:TOP_METRICS, tableName:"global_status", entryName:"CONNECTIONS", diff:1, fixedPos: 2, formatNumber:1, adj:adj});
                fillSingleSNMP({domId:"top_mysql_max_used_connections", source:TOP_METRICS, tableName:"global_status", entryName:"MAX_USED_CONNECTIONS",formatNumber:1});

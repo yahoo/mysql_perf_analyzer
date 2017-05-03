@@ -40,6 +40,7 @@ public class ProcessListSummary implements java.io.Serializable{
 	private String innodbStatus;
 	private int totalAccumultaedTime = 0;
 	private ResultList lockList;
+	private ResultList trxList;
 	private ResultList clientList;
 	
 	private List<ProcessListEntryProcessor> appProcessorList = new ArrayList<ProcessListEntryProcessor>();
@@ -514,6 +515,13 @@ public class ProcessListSummary implements java.io.Serializable{
 			AlertReport.printList(pw, this.clientList);			
 			
 		}
+		if(this.trxList!=null && this.trxList.getRows().size()>0)
+		{
+			pw.println();
+			pw.println("------ InnoDB TRX LONGER THAN 60 SECONDS ------");
+			AlertReport.printList(pw, this.trxList);			
+			
+		}
 	}
 	
 	
@@ -549,6 +557,14 @@ public class ProcessListSummary implements java.io.Serializable{
 
 	public void setClientList(ResultList clientList) {
 		this.clientList = clientList;
+	}
+
+	public ResultList getTrxList() {
+		return trxList;
+	}
+
+	public void setTrxList(ResultList trxList) {
+		this.trxList = trxList;
 	}
 	
 }

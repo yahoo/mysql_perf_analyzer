@@ -36,6 +36,20 @@
              <fileMode>0755</fileMode>
         </file>
         <file>
+             <source>src/main/assemble/scripts/jetty_ssl_sample.sh</source>
+             <outputDirectory></outputDirectory>
+             <lineEnding>lf</lineEnding>
+             <filtered>true</filtered>
+             <fileMode>0700</fileMode>
+        </file>
+        <file>
+             <source>src/main/assemble/scripts/config_sample.properties</source>
+             <outputDirectory></outputDirectory>
+             <lineEnding>lf</lineEnding>
+             <filtered>true</filtered>
+             <fileMode>0700</fileMode>
+        </file>
+        <file>
              <source>../myperf/target/myperf.war</source>
              <outputDirectory>webapps</outputDirectory>
              <filtered>true</filtered>

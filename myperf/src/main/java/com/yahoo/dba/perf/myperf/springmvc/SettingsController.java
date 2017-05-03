@@ -173,6 +173,14 @@ private ModelAndView handleUpdateSNMP(HttpServletRequest req,
 	  }catch(Exception ex){}
 	  if(scanInterval<1)scanInterval = 300;
 		config.setScannerIntervalSeconds(scanInterval);
+	  int alertScanInterval = 300;
+	  try
+	  {
+		  alertScanInterval = Integer.parseInt(req.getParameter("alertScanIntervalSeconds"));
+	  }catch(Exception ex){}
+	  if(alertScanInterval < 60)alertScanInterval = 300;
+	  config.setAlertScanIntervalSeconds(alertScanInterval);
+	  
 	  int threadCount = 4;
 	  try
 	  {

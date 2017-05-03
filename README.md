@@ -44,11 +44,26 @@ Installation and Usage Instructions
    * The above information will be required when you first login to the analyzer to setup metrics gathering.
 
 4. Review script start_myperf.sh to see if you need to modify any command line settings. Usually, port number is the only one you need change
+   * -f: config, configuration file path. If used, the values inside configuration file will be loaded first, but can be overwritten by command line agruments.
    * -j: jettyHome, leave it as it is
    * -p: http port to be used, 9092 by default
    * -w: war (web archive) file, has to be myperf.war
    * -k: working directory, if not specified, it will use ./work
    * -c: url context, default to /myperf, leave it as is. 
+   
+   The following are the list allowed in configuration file, which uses Java property file format (name=value pairs)
+      * jettyHome
+      * useHttps: value yes/y/no/n/true/false
+      * port
+      * webcontextroot
+      * workdir
+      * logpath
+      * warfile
+      * certKeyStorePath
+      * certKeyStorePassword
+
+   To support https, SSL certificate should be provided (either self signed or signed by third party) and stored in Java keystore using Java keytool 
+   (see https://wiki.eclipse.org/Jetty/Howto/Configure_SSL).    
    
    Modify java command path inside start_myperf.sh, if needed, for example, when there are multiple JDK packages installed.
 

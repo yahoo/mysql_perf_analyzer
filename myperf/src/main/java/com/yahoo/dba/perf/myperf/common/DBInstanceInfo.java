@@ -217,12 +217,13 @@ public class DBInstanceInfo implements java.io.Serializable{
 	
   public String getConnectionString()
   {
+	// Add allowPublicKeyRetrieval to support sha256 password
 	if("mysql".equalsIgnoreCase(this.dbType))
 	{
 	  if(!this.useTunneling)
-	    return "jdbc:mysql://"+this.hostName+":"+this.port+"/"+this.databaseName;
+	    return "jdbc:mysql://"+this.hostName+":"+this.port+"/"+this.databaseName+"?allowPublicKeyRetrieval=true";
 	  else
-		return "jdbc:mysql://"+this.localHostName+":"+this.localPort+"/"+this.databaseName;	    
+		return "jdbc:mysql://"+this.localHostName+":"+this.localPort+"/"+this.databaseName+"?allowPublicKeyRetrieval=true";	    
 	}
 	else if("oracle".equalsIgnoreCase(this.dbType))
 	{

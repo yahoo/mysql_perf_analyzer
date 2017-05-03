@@ -233,7 +233,7 @@
 	  <metric name="DBLWR_WRITES" sourceName="INNODB_DBLWR_WRITES" dataType="LONG"  incremental="y" />
 	  <metric name="DEADLOCKS" sourceName="INNODB_DEADLOCKS" dataType="LONG"  incremental="y" />
 	  <metric name="DESCRIPTORS_MEMORY" sourceName="INNODB_DESCRIPTORS_MEMORY" dataType="LONG"  incremental="n" />
-	  <metric name="HISTORY_LIST_LENGTH" sourceName="INNODB_HISTORY_LIST_LENGTH" dataType="LONG"  incremental="y" />
+	  <metric name="HISTORY_LIST_LENGTH" sourceName="INNODB_HISTORY_LIST_LENGTH" dataType="LONG"  incremental="n" />
 	  <metric name="IBUF_DISCARDED_DELETES" sourceName="INNODB_IBUF_DISCARDED_DELETES" dataType="LONG"  incremental="y" />
 	  <metric name="IBUF_DISCARDED_DELETE_MARKS" sourceName="INNODB_IBUF_DISCARDED_DELETE_MARKS" dataType="LONG"  incremental="y" />
 	  <metric name="IBUF_DISCARDED_INSERTS" sourceName="INNODB_IBUF_DISCARDED_INSERTS" dataType="LONG"  incremental="y" />

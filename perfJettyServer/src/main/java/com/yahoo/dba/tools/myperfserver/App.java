@@ -6,7 +6,9 @@
 package com.yahoo.dba.tools.myperfserver;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.lang.management.RuntimeMXBean;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -27,15 +29,21 @@ import org.eclipse.jetty.apache.jsp.JettyJasperInitializer;
 import org.eclipse.jetty.jsp.JettyJspServlet;
 import org.eclipse.jetty.plus.annotation.ContainerInitializer;
 import org.eclipse.jetty.server.ConnectionFactory;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 public class App {
 	public static String PID_FILE = "framework.pid";
 	private static int pid = -1;
 
+	private String configFilePath;
 	private int port = 9090;
 	private String contextPath = "/";
 	private String logDirectoryPath = "logs";
@@ -43,15 +51,31 @@ public class App {
 	private String workDirectoryPath = "work";
 	private String jettyHome; // it should have directory webapps which has our
 								// warFile
-
+	private boolean useHttps = false;
+	private String certKeyStorePath;
+	private String certKeyStorePassword;
+	
 	private Server jettyServer; // jetty server
 	private URI serverURI;
 	private String shutdownFile = "myserver.shutdown";
 
 	/* -p --port 9090 
-	 * -r --webcontextroot webapps 
+	 * -c --webcontextroot webapps 
 	 * -l --logpath logpath 
 	 * -w --war webapp war file name
+	 * -f --config config file path, if provided
+	 *     configuration file contains name=value pairs (java property file). If any configuration parameter is specified in command line,
+	 *     it will not be overwritten by the value in file. The main purpose to use file is to avoid ssl cert store password
+	 *     to be exposed in command line. The following list the configurations:
+	 *     jettyHome
+	 *     useHttps: value yes/y/no/n/true/false
+	 *     port
+	 *     webcontextroot
+	 *     workdir
+	 *     logpath
+	 *     warfile
+	 *     certKeyStorePath
+	 *     certKeyStorePassword
 	 */
 	public static void main(String[] args) throws Exception {
 		App myServer = new App();
@@ -59,7 +83,7 @@ public class App {
 		Options options = getAvaliableCommandLineOptions();
 		System.out
 				.println(new Date()
-						+ " Usage: java -classpath ... com.yahoo.dba.tools.myperfserver.App -j jettyhome "
+						+ " Usage: java -classpath ... com.yahoo.dba.tools.myperfserver.App -f config_file_path -j jettyhome "
 						+ "-p port -c webcontextroot -k workingDir -l logpath -w war_file");
 		readOptionsFromCommandLine(args, parser, options, myServer);
 		System.setProperty("logPath", myServer.getLogDirectoryPath());
@@ -67,6 +91,8 @@ public class App {
 				myServer.getWarFile().indexOf('.'))
 				+ ".pid";
 		checksRunningOfAnotherServerInstance();
+		//for https, we have to use https for jQuery
+		System.setProperty("url_protocl", myServer.useHttps?"https":"http");
 		runServer(myServer);
 	}
 
@@ -109,6 +135,19 @@ public class App {
 
 	private static void checkCommandLineContainAvaliableOptions(App myServer,
 			CommandLine line) {
+		if(line.hasOption("f")){
+			
+			String argument = line.getOptionValue("f");
+			if(argument != null  && !argument.trim().isEmpty())
+			{
+				System.out.println("Use configuration file: " + argument);
+				//if we have configuration file, load it first
+				//and allow command line to overwrite any specified
+				myServer.setConfigFilePath(argument.trim());
+				myServer.parseConfigurationFile();
+			}
+		}
+		
 		if (line.hasOption("p")) {
 			try {
 				myServer.setPort(Short.parseShort(line.getOptionValue("p")));
@@ -147,6 +186,7 @@ public class App {
 
 	private static Options getAvaliableCommandLineOptions() {
 		Options options = new Options();
+		options.addOption("f", "config", true, "Configuration file path, no default.");
 		options.addOption(
 				"j",
 				"jettyHome",
@@ -168,7 +208,66 @@ public class App {
 	public App() {
 		this.jettyHome = System.getProperty("jetty.home", "."); // set default jetty.home
 	}
+	// This should be invoked before using command line options
+	public void parseConfigurationFile() throws RuntimeException{
+		String path = this.getConfigFilePath();
+		if(path == null || path.isEmpty())
+		{
+			System.out.println(new Date() + ": No configuration file specified, use command line only.");
+			return;
+		}
+		
+		try{
+			java.util.Properties props = new java.util.Properties();
+			props.load(new FileInputStream(path));
+			String useHttpsStr = props.getProperty("useHttps", "no");
+			useHttpsStr = useHttpsStr.trim().toLowerCase();
+			if(useHttpsStr.equals("yes") || useHttpsStr.equals("y") || useHttpsStr.equals("true"))
+				this.setUseHttps(true);
+			else
+				this.setUseHttps(false);
+			if(this.useHttps){
+				this.setCertKeyStorePath(props.getProperty("certKeyStorePath", null));
+				this.setCertKeyStorePassword(props.getProperty("certKeyStorePassword", null));
+			}
+			String prop = props.getProperty("jettyHome", null);
+			if(prop!=null && !prop.isEmpty())
+				this.setJettyHome(prop.trim());
+			prop  = props.getProperty("port", null);
+			if(prop!=null && !prop.isEmpty())
+			{
+				try{this.setPort(Integer.parseInt(prop.trim()));}catch(Exception ex){}
+			}
+			prop = props.getProperty("webcontextroot", null);
+			if(prop!=null && !prop.isEmpty())
+			{
+				this.setContextPath(prop.trim());
+			}
+			
+			prop = props.getProperty("workdir", null);
+			if(prop!=null && !prop.isEmpty())
+			{
+				this.setWorkDirectoryPath(prop.trim());
+			}
 
+			prop = props.getProperty("warfile", null);
+			if(prop!=null && !prop.isEmpty())
+			{
+				this.setWarFile(prop.trim());
+			}
+			
+			prop = props.getProperty("logpath", null);
+			if(prop!=null && !prop.isEmpty())
+			{
+				this.setLogDirectoryPath(prop.trim());
+			}
+		}catch(Exception ex)
+		{
+			System.out.println(new Date() + ": Failed to load configuration file " + path);
+			ex.printStackTrace();
+			throw new RuntimeException(ex);
+		}
+	}
 	public boolean startServer() throws Exception {
 		removeShutdownFile();
 		File workDirectory = new File(this.getWorkDirectoryPath());
@@ -184,7 +283,7 @@ public class App {
 
 		// server = new Server(port);
 		jettyServer = new Server();
-		ServerConnector connector = connector();
+		ServerConnector connector = this.isUseHttps()?this.sslConnector():connector();
 		jettyServer.addConnector(connector);
 		jettyServer.setHandler(deployedApplication);
 		jettyServer.start();
@@ -278,18 +377,50 @@ public class App {
 		return connector;
 	}
 
+	/**
+	 * Create ssl connector if https is used
+	 * @return
+	 */
+	private ServerConnector sslConnector() {
+		HttpConfiguration http_config = new HttpConfiguration();
+		http_config.setSecureScheme("https");
+		http_config.setSecurePort(this.getPort());
+		
+		HttpConfiguration https_config = new HttpConfiguration(http_config);
+		https_config.addCustomizer(new SecureRequestCustomizer());
+		
+		SslContextFactory sslContextFactory = new SslContextFactory(this.getCertKeyStorePath());
+		sslContextFactory.setKeyStorePassword(this.getCertKeyStorePassword());
+		//exclude weak ciphers
+		sslContextFactory.setExcludeCipherSuites("^.*_(MD5|SHA|SHA1)$");
+		//only support tlsv1.2
+		sslContextFactory.addExcludeProtocols("SSL", "SSLv2", "SSLv2Hello", "SSLv3", "TLSv1", "TLSv1.1");
+		
+		ServerConnector connector = new ServerConnector(jettyServer, 
+				new SslConnectionFactory(sslContextFactory, "http/1.1"),
+				new HttpConnectionFactory(https_config));
+		connector.setPort(this.getPort());
+		connector.setIdleTimeout(50000);
+		return connector;
+	}
+	
 	private URI getServerUri(ServerConnector connector)
 			throws URISyntaxException {
 		String scheme = "http";
 		for (ConnectionFactory connectFactory : connector
 				.getConnectionFactories()) {
-			if (connectFactory.getProtocol().equals("SSL-http")) {
+			if (connectFactory.getProtocol().startsWith("SSL-http")) {
 				scheme = "https";
 			}
 		}
 		String host = connector.getHost();
 		if (host == null) {
-			host = "localhost";
+			try{
+				host = InetAddress.getLocalHost().getHostName();
+			}catch(Exception ex){}
+		}
+		if (host == null){
+			host = "localhost";			
 		}
 		int myport = connector.getLocalPort();
 		serverURI = new URI(String.format("%s://%s:%d", scheme, host, myport));
@@ -466,5 +597,37 @@ public class App {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public String getConfigFilePath() {
+		return configFilePath;
+	}
+
+	public void setConfigFilePath(String configFilePath) {
+		this.configFilePath = configFilePath;
+	}
+
+	public boolean isUseHttps() {
+		return useHttps;
+	}
+
+	public void setUseHttps(boolean useHttps) {
+		this.useHttps = useHttps;
+	}
+
+	public String getCertKeyStorePath() {
+		return certKeyStorePath;
+	}
+
+	public void setCertKeyStorePath(String certKeyStorePath) {
+		this.certKeyStorePath = certKeyStorePath;
+	}
+
+	public String getCertKeyStorePassword() {
+		return certKeyStorePassword;
+	}
+
+	public void setCertKeyStorePassword(String certKeyStorePassword) {
+		this.certKeyStorePassword = certKeyStorePassword;
 	}
 }
