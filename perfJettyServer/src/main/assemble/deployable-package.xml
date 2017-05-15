@@ -50,6 +50,13 @@
              <fileMode>0700</fileMode>
         </file>
         <file>
+             <source>src/main/assemble/scripts/config_default.properties</source>
+             <outputDirectory></outputDirectory>
+             <lineEnding>lf</lineEnding>
+             <filtered>true</filtered>
+             <fileMode>0700</fileMode>
+        </file>
+        <file>
              <source>../myperf/target/myperf.war</source>
              <outputDirectory>webapps</outputDirectory>
              <filtered>true</filtered>

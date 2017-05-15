@@ -63,7 +63,8 @@ Installation and Usage Instructions
       * certKeyStorePassword
 
    To support https, SSL certificate should be provided (either self signed or signed by third party) and stored in Java keystore using Java keytool 
-   (see https://wiki.eclipse.org/Jetty/Howto/Configure_SSL).    
+   (see https://wiki.eclipse.org/Jetty/Howto/Configure_SSL). If encounter login issue when switch between SSL and non SSL, you have to remove
+   the browser cookie originated from the server host this application, using any cookie tool provided by the browser.
    
    Modify java command path inside start_myperf.sh, if needed, for example, when there are multiple JDK packages installed.
 
@@ -80,7 +81,8 @@ Installation and Usage Instructions
 
 7. First time Login and Setup
  
-  After startup, point your browser to http://your_host:9092/myperf (or the port number you changed).
+  After startup, point your browser to http://your_host:9092/myperf (or the port number you changed). 
+  Or  https://your_host:9092/myperf if https is correctly configured.
   
   The initial login user and credential are myperf/change.
   
