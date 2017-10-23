@@ -222,8 +222,9 @@ public class StateSnapshot implements java.io.Serializable{
 				  +CommonUtils.getMapValueLong(snmpMap,"ssCpuRawWait",-1L)
 				  +CommonUtils.getMapValueLong(snmpMap,"ssCpuRawIdle",-1L)
 				  +CommonUtils.getMapValueLong(snmpMap,"ssCpuRawNice",-1L)
-				  +CommonUtils.getMapValueLong(snmpMap,"ssCpuRawSoftIRQ",0L));
-		  this.setSwapout(CommonUtils.getMapValueLong(snmpMap,"ssRawSwapOut",0L));
+				  +CommonUtils.getMapValueLong(snmpMap,"ssCpuRawSoftIRQ",-1L));
+		  if(this.getTotalcputime()<0L)this.setTotalcputime(-1L);
+		  this.setSwapout(CommonUtils.getMapValueLong(snmpMap,"ssRawSwapOut",-1L));
 		  
 	}
 

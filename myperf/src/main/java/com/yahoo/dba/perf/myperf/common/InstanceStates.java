@@ -130,6 +130,7 @@ public class InstanceStates implements java.io.Serializable{
       	  {
       		  alertType = "SWAPOUT";
       		  alertValue = String.valueOf(swapout);
+      		  logger.info("DEBUG_SWAPOUT, "+ (new java.util.Date()) + " value: " + swapout +", prev: " + this.prevSnapshot.getSwapout()+", new: " + this.currSnapshot.getSwapout());
       	  }
     	  else if(slowCount>=thresholds.get("SLOW"))
       	  {

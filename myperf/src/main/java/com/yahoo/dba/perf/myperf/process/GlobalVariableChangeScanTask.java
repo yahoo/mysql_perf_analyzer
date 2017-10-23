@@ -121,15 +121,15 @@ public class GlobalVariableChangeScanTask implements Runnable{
 			  logger.info("Failed to access "+dbinfo+", skip it");
 		    return null;
 		  }
-		  String sqlText = "select variable_name, variable_value from information_schema.global_variables";
+		  String sqlText = "show global variables";
 		  stmt = conn.getConnection().createStatement();
 		  rs = stmt.executeQuery(sqlText);
 		  cb = new ConfigBlock();
 		  while(rs!=null&&rs.next())
 		  {
-			  String key = rs.getString("variable_name");
+			  String key = rs.getString("VARIABLE_NAME").toUpperCase();
 			  if("TIMESTAMP".equalsIgnoreCase(key))continue;//exclude a timestamp variable
-			  cb.addVariable(key, rs.getString("variable_value"));
+			  cb.addVariable(key, rs.getString("VARIABLE_VALUE"));
 		  }
 		  Calendar c = Calendar.getInstance();
 		  Date dt = c.getTime();			
