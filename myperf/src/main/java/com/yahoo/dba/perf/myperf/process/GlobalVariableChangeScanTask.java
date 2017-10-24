@@ -101,7 +101,6 @@ public class GlobalVariableChangeScanTask implements Runnable{
 	  }
 	  private ConfigBlock scanHost(DBInstanceInfo dbinfo)
 	  {
-	    boolean status = false;
 		DBCredential cred = DBUtils.findDBCredential(context, dbinfo.getDbGroupName(), appUser);
 		if(cred==null)
 		{
@@ -129,7 +128,7 @@ public class GlobalVariableChangeScanTask implements Runnable{
 		  {
 			  String key = rs.getString("VARIABLE_NAME").toUpperCase();
 			  if("TIMESTAMP".equalsIgnoreCase(key))continue;//exclude a timestamp variable
-			  cb.addVariable(key, rs.getString("VARIABLE_VALUE"));
+			  cb.addVariable(key, rs.getString("VALUE"));
 		  }
 		  Calendar c = Calendar.getInstance();
 		  Date dt = c.getTime();			
@@ -137,6 +136,8 @@ public class GlobalVariableChangeScanTask implements Runnable{
 		}catch(Exception ex)
 		{
 		  logger.log(Level.WARNING, "exception", ex);
+		  //we should not used failed data
+		  return null;
 		}finally
 		{
 			DBUtils.close(rs);
