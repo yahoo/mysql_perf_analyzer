@@ -384,7 +384,7 @@ public class ResultListUtil {
 				{
 					if(!first)sb.append(",");
 					first = false;
-					sb.append("\"").append(cols.get(i).getName()+"\"");
+					sb.append("\"").append(cols.get(i).getName().toUpperCase()+"\"");
 				}
 			}
 			sb.append("],\r\n");
@@ -408,7 +408,7 @@ public class ResultListUtil {
 				for(int i=0;i<len;i++)
 				{
 					if(!first)sb.append(",");
-					sb.append("\"").append(escapeJson(cols.get(i).getName())).append("\":");
+					sb.append("\"").append(escapeJson(cols.get(i).getName().toUpperCase())).append("\":");
 					if(cols.get(i).isNumberType())
 					{
 						if(row.getColumns().get(i)==null||row.getColumns().get(i).trim().length()==0)

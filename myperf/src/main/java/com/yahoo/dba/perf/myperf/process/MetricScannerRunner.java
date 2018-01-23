@@ -890,15 +890,18 @@ public class MetricScannerRunner implements Runnable
 	  }
 	  
 	  this.frameworkContext.getMetricDb().addNewAlert(Long.parseLong(sdf.format(timestamp)), dbinfo.getDbid(), alertType,  alertValue);
-	  AlertReportRunner arr = new AlertReportRunner(this.frameworkContext, dbinfo, timestamp, appUser );
-	  arr.setConnection(conn);
-	  arr.setAlertReason( alertType);
-	  arr.setAlertValue(alertValue);
-	  //move to start of AlertReportRunner
-	  //this.frameworkContext.getAlerts().addAlert(new AlertEntry(timestamp, alertType, alertValue, dbinfo.getDbGroupName(), dbinfo.getHostName()));
+	  if(this.frameworkContext.getInstanceStatesManager().getStates(dbinfo.getDbid()).canRunReport())
+      {
+	      AlertReportRunner arr = new AlertReportRunner(this.frameworkContext, dbinfo, timestamp, appUser );
+	      arr.setConnection(conn);
+	      arr.setAlertReason( alertType);
+	      arr.setAlertValue(alertValue);
+	      //move to start of AlertReportRunner
+	      //this.frameworkContext.getAlerts().addAlert(new AlertEntry(timestamp, alertType, alertValue, dbinfo.getDbGroupName(), dbinfo.getHostName()));
 	  
-	  //new Thread(arr).start();//TODO need some control	  
-	  arr.run();
+	      //new Thread(arr).start();//TODO need some control	  
+	      arr.run();
+      }
   }
   public void setBuffer(Map<String, Map<String, MetricsBuffer>> buffer) 
   {

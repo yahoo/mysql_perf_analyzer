@@ -826,7 +826,7 @@ function query_hostlist_main(dbgrpId, hostField, emptyLine, CB)
          }
          for(var i = 0; i< res.length; i++)
          {
-           var val = res[i].host;
+           var val = res[i].HOST;
            document.getElementById(hostField).options[document.getElementById(hostField).options.length] = new Option(val, val);          
          }//for
        } //if res

@@ -221,9 +221,9 @@ public class DBInstanceInfo implements java.io.Serializable{
 	if("mysql".equalsIgnoreCase(this.dbType))
 	{
 	  if(!this.useTunneling)
-	    return "jdbc:mysql://"+this.hostName+":"+this.port+"/"+this.databaseName+"?allowPublicKeyRetrieval=true";
+	    return "jdbc:mysql://"+this.hostName+":"+this.port+"/"+this.databaseName+"?allowPublicKeyRetrieval=true&useLocalSessionState=true&dbcCompliantTruncation=false&characterSetResults=UTF-8";
 	  else
-		return "jdbc:mysql://"+this.localHostName+":"+this.localPort+"/"+this.databaseName+"?allowPublicKeyRetrieval=true";	    
+		return "jdbc:mysql://"+this.localHostName+":"+this.localPort+"/"+this.databaseName+"?allowPublicKeyRetrieval=true&useLocalSessionState=true&dbcCompliantTruncation=false&characterSetResults=UTF-8";	    
 	}
 	else if("oracle".equalsIgnoreCase(this.dbType))
 	{

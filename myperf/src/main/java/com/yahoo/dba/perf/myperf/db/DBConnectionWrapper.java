@@ -179,7 +179,7 @@ public class DBConnectionWrapper implements Comparable<DBConnectionWrapper>
     if("oracle".equalsIgnoreCase(this.db.getDbType()))
       sql = "select instance_number, version from v$instance";
     else if("mysql".equalsIgnoreCase(this.db.getDbType()))
-      sql = "show variables like 'version'";
+      sql = "select @@global.version as version";
     else 
       return;
     
@@ -199,7 +199,7 @@ public class DBConnectionWrapper implements Comparable<DBConnectionWrapper>
     	  }
     	  else if("mysql".equalsIgnoreCase(this.db.getDbType()))        	  
     	  {
-    	    this.version = rs.getString("value");	  
+    	    this.version = rs.getString(1);	  
     	  }
     	}
     }catch(Exception ex)

@@ -42,6 +42,11 @@ public class InstanceStates implements java.io.Serializable{
 	private long lastWebAlertTime = -1L;
 	private String lastWebAlertReason  = null;
 	
+	//work in progress reports. We don't want to run limited report runners
+	//in case some SQL query hangs because of network or mysql server bugs.
+	private int reportsWIP = 0;
+	public final static int REPORTS_WIP_THRESHOLDS = 2; //no more than 2
+	
 	public InstanceStates()
 	{
 		
@@ -171,8 +176,10 @@ public class InstanceStates implements java.io.Serializable{
       	  {
       		  alertType = "THREAD";      		        		  
       		  alertValue = String.valueOf(this.currSnapshot.getActiveThreads());
-      	  }else if(this.currSnapshot.getReplLag()>thresholds.get("REPLLAG"))
-      	  {
+      	  }else if(this.currSnapshot.getReplLag()>thresholds.get("REPLLAG") 
+      	      && this.currSnapshot.getReplLag() - this.prevSnapshot.getReplLag()<3600)
+      	  {	  //note since we check either 1 minutes or 5 minutes, it does not make sense
+      		  //if repl lag suddenly jumps for more than 1 hr except parallel slave worker bugs
       		  alertType = "REPLLAG";      		  
       		  alertValue = String.valueOf(this.currSnapshot.getReplLag());
       	  }
@@ -476,4 +483,23 @@ public class InstanceStates implements java.io.Serializable{
 		return toSend;
 	}
 	
+	//Check if we can run a new report
+	//Return true if we can
+	//Otherwise slots full
+	synchronized public boolean canRunReport() {
+		boolean canRun = false;
+		if(this.reportsWIP < REPORTS_WIP_THRESHOLDS)
+		{
+			this.reportsWIP++;
+			canRun = true;
+		}
+		return canRun;
+	}
+	
+	/**
+	 * Free report slot
+	 */
+	synchronized public void reportDone() {
+		if(this.reportsWIP>0)this.reportsWIP--;		
+	}
 }

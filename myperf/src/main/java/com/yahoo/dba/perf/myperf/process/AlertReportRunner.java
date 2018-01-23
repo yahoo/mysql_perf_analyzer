@@ -131,14 +131,14 @@ public class AlertReportRunner implements Runnable{
 				rs = stmt.executeQuery("select * from information_schema.innodb_locks");
 				if(rs!=null)
 				{
-					rList = ResultListUtil.fromSqlResultSet(rs, 5000);
+					rList = ResultListUtil.fromSqlResultSet(rs, 0);
 					
 				}
 				DBUtils.close(rs); rs = null;
 				rs = stmt.executeQuery("select * from information_schema.INNODB_TRX where to_seconds(now()) - to_seconds(trx_started) > 60");
 				if(rs!=null)
 				{
-					trxList = ResultListUtil.fromSqlResultSet(rs, 5000);
+					trxList = ResultListUtil.fromSqlResultSet(rs, 0);
 					
 				}
 				DBUtils.close(rs); rs = null;
@@ -153,7 +153,7 @@ public class AlertReportRunner implements Runnable{
 				rs = stmt.executeQuery(sql);
 				if(rs!=null)
 				{
-					clientList = ResultListUtil.fromSqlResultSet(rs, 5000);					
+					clientList = ResultListUtil.fromSqlResultSet(rs, 0);					
 				}
 				
 				DBUtils.close(rs);
@@ -165,6 +165,8 @@ public class AlertReportRunner implements Runnable{
 		{
 			DBUtils.close(rs);
 			DBUtils.close(stmt);
+			//release pending report count
+			this.context.getInstanceStatesManager().getStates(this.dbInfo.getDbid()).reportDone();
 		}
 		if(prList.size()>0||repMap.size()>0)
 		{
