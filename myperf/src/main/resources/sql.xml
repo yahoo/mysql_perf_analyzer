@@ -119,8 +119,9 @@
   <sql handle="mysql_repl_slave" paramCount="0" expandRow="y" comments="Display MySQL slave status">
     <text>show slave status</text>
   </sql>
-  <sql handle="mysql_show_global_status_ps" paramCount="0" comments="Display MySQL global status">
+  <sql handle="mysql_show_global_status_ps" paramCount="1" comments="Display MySQL global status">
     <queryProcessor>MySQLStatusQueryProcessor</queryProcessor>
+    <param name="keyword" dataType="non_breakable_string"/>
   </sql>
   <sql handle="mysql_show_global_status" paramCount="0" comments="Display MySQL global status">
     <text>show global status</text>
@@ -143,15 +144,13 @@
   <sql handle="mysql_global_status_metrics" paramCount="1" replace="y" comments="Display MySQL global status">
     <text>select variable_name, variable_value from information_schema.global_status 
     where upper(variable_name) like '%&amp;p_1%'</text>
-    <vsql minVersion="5.7">select UPPER(variable_name) VARIABLE_NAME, variable_value from performance_schema.global_status 
-    where upper(variable_name) like '%&amp;p_1%'</vsql>    
+    <vsql minVersion="5.7">show global status like '%&amp;p_1%'</vsql>    
     <param name="keyword" dataType="non_breakable_string"/>
   </sql>
   <sql handle="mysql_global_variables" paramCount="1" replace="y" comments="Display MySQL global variables">
     <text>select variable_name, variable_value from information_schema.global_variables 
       where variable_name like '%&amp;p_1%'</text>
-    <vsql minVersion="5.7">select variable_name, variable_value from performance_schema.global_variables 
-      where variable_name like '%&amp;p_1%'</vsql>
+    <vsql minVersion="5.7">show global status like '%&amp;p_1%'</vsql>
     <param name="filter_keyword" dataType="non_breakable_string"/>
   </sql>
   <sql handle="mysql_all_global_variables"  paramCount="0" comments="Retrieve MySQL global variables">

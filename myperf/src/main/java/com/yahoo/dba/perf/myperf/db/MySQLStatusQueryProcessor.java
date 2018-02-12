@@ -28,7 +28,12 @@ public class MySQLStatusQueryProcessor implements CustomQueryProcessor
 			DBConnectionWrapper connWrapper, QueryParameters qps)
 			throws SQLException {
 		  QueryParameters qps2 = new QueryParameters();
-		  qps2.setSql("mysql_show_global_status");
+		  qps2.setSql("mysql_global_status_metrics");
+		  for(String key: qps.getSqlParams().keySet()){
+			  qps2.getSqlParams().put(key, qps.getSqlParams().get(key));
+		  }
+		  //mysql_global_status_metrics
+		  //mysql_show_global_status
 		  ResultList rList = null;
 		  rList = context.getQueryEngine().executeQueryGeneric(qps2, connWrapper, qps.getMaxRows());
 		  if(rList != null)

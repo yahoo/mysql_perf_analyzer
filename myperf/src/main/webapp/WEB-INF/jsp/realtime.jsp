@@ -415,7 +415,7 @@ var mysql_global_status_metricsTable = new JSTable({
    	   name: "mysql_global_status_metrics",
    	   query:{
    	     queryURL: "query.html",
-   	     sqlId: "mysql_global_status_metrics",
+   	     sqlId: "mysql_show_global_status_ps",
    	     paramFields:[{name:"p_1", valueField:"status_keyword"}]
    	   }, 
    	   db: {dbGroupId: "dbgroup", dbHost: "host"},
