@@ -32,6 +32,10 @@ public class MySQLStatusQueryProcessor implements CustomQueryProcessor
 		  for(String key: qps.getSqlParams().keySet()){
 			  qps2.getSqlParams().put(key, qps.getSqlParams().get(key));
 		  }
+		  if(!qps2.getSqlParams().containsKey("p_1")) {
+			  
+			  qps2.getSqlParams().put("p_1", "");
+		  }
 		  //mysql_global_status_metrics
 		  //mysql_show_global_status
 		  ResultList rList = null;

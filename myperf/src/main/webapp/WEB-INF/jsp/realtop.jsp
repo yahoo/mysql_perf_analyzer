@@ -433,7 +433,7 @@ function retrieveTopGlobalStatus(ts)
 {
    var mydata =  "group="+escape(mydomval("dbgroup"));
        mydata += "&host="+ escape(mydomval("host"));
-       mydata += "&sql=mysql_show_global_status_ps&rf=VARIABLE_NAME&seed=" + Math.random();
+       mydata += "&sql=mysql_show_global_status_ps&p_1=&rf=VARIABLE_NAME&seed=" + Math.random();
        for(var i=0; i<TOP_STATUS_METRICS.length; i++)
          mydata += "&rfv="+TOP_STATUS_METRICS[i];
    
