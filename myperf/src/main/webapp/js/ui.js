@@ -877,8 +877,8 @@ function breakLongLineFmt(ov, maxSize, lineSize)
   var len = 0;
 
   if( maxSize> 0 && ov.length > maxSize )ov = ov.substring(0,maxSize);
-  ov = ov.replace('<','&lt;');
-  ov = ov.replace('>','&gt;'); 
+  ov = ov.replace(/</g,'&lt;');
+  ov = ov.replace(/>/g,'&gt;'); 
   while(i<ov.length)
   {
 	len = ov.length - i;
