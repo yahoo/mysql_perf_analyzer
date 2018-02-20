@@ -150,7 +150,7 @@
   <sql handle="mysql_global_variables" paramCount="1" replace="y" comments="Display MySQL global variables">
     <text>select variable_name, variable_value from information_schema.global_variables 
       where variable_name like '%&amp;p_1%'</text>
-    <vsql minVersion="5.7">show global status like '%&amp;p_1%'</vsql>
+    <vsql minVersion="5.7">show global variables like '%&amp;p_1%'</vsql>
     <param name="filter_keyword" dataType="non_breakable_string"/>
   </sql>
   <sql handle="mysql_all_global_variables"  paramCount="0" comments="Retrieve MySQL global variables">
