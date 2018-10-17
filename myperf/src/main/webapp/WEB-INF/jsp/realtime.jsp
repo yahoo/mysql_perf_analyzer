@@ -950,6 +950,7 @@ function traversePlanObj(curSrcObj, curTgtObj, query_block_id)
 {
     
       if(curSrcObj==null||curTgtObj==null)return;//we are done
+      var query_block_cost;
       
       for (var key in curSrcObj)
       {
@@ -1010,6 +1011,39 @@ function traversePlanObj(curSrcObj, curTgtObj, query_block_id)
             child.label = key+": "+ s;
             child.name = key +": " + s;
           }
+        }else if(key=='used_columns')
+        {
+          var child = new Object();
+          //child.label = label;          
+          curTgtObj.children[curTgtObj.children.length] = child;  
+          var val = curSrcObj[key];
+          if(val!=null)
+          {
+            var s =  JSON.stringify(curSrcObj[key]);
+            if(s!=null)
+            s = s.replace("<","&lt;").replace(">","&gt;");            
+            child.label = key+": "+ s;
+            child.name = key +": " + s;
+          }
+        }else if(key=='cost_info' && query_block_id != null )
+        {
+          var val = curSrcObj[key];
+          query_block_cost = val['query_cost'];
+        }else if(key=='cost_info')
+        {
+          var child = new Object();
+          //child.label = label;          
+          curTgtObj.children[curTgtObj.children.length] = child;  
+          var val = curSrcObj[key];
+          if(val!=null)
+          {
+            child.label = key+": "
+              + "read_cost: " + nullToEmpty(val['read_cost'])
+              + ", eval_cost: " + nullToEmpty(val['eval_cost'])
+              + ", prefix_cost: " + nullToEmpty(val['prefix_cost'])
+              + ", data_read_per_join: " + nullToEmpty(val['data_read_per_join']);
+            child.name = child.label;
+          }
         }
         else if(key=='partitions')
         {
@@ -1033,8 +1067,11 @@ function traversePlanObj(curSrcObj, curTgtObj, query_block_id)
         {
           var val = curSrcObj[key];
           var child = new Object();
-          child.label = 'table: '+ val['table_name'] + ' (access_type: ' + val['access_type'] + ', rows: '
-            + nullToEmpty(val['rows']) + ', filtered: ' + nullToEmpty(val['filtered']) + ')'; 
+          child.label = 'table: '+ val['table_name'] + ' (access_type: ' + val['access_type'] 
+            + ', rows: ' + nullToEmpty(val['rows']) 
+            + ', rows_examined_per_scan: ' + nullToEmpty(val['rows_examined_per_scan']) 
+            + ', rows_produced_per_join: ' + nullToEmpty(val['rows_produced_per_join']) 
+            + ', filtered: ' + nullToEmpty(val['filtered']) + ')'; 
           child.name = child.label;
           if(query_block_id!=null)
           {
@@ -1065,6 +1102,9 @@ function traversePlanObj(curSrcObj, curTgtObj, query_block_id)
              child.label += 'using_temporary_table:'+val['using_temporary_table']+', ';
           if(val['using_filesort']!=null) 
              child.label +=  'using_filesort: '+val['using_filesort'];
+          if(query_block_cost != null){
+            child.label += ", query_cost: " + query_block_cost;
+          }          
            child.label += ')'; 
            child.name = child.label;
           if(query_block_id!=null)
@@ -1141,7 +1181,11 @@ function traversePlanObj(curSrcObj, curTgtObj, query_block_id)
             {
               var nextObj = val[i]["table"];
               var obj = new Object();
-              obj.label = 'table: '+ nextObj['table_name'] +' (access_type:'+nextObj['access_type']+', rows: '+nullToEmpty(nextObj['rows'])+', filtered: ' + nullToEmpty(nextObj['filtered'])+')'; 
+              obj.label = 'table: '+ nextObj['table_name'] +' (access_type:'+nextObj['access_type']
+                           +', rows: '+nullToEmpty(nextObj['rows'])
+                           +', rows_examined_per_scan: '+nullToEmpty(nextObj['rows_examined_per_scan'])
+                           +', rows_produced_per_join: '+nullToEmpty(nextObj['rows_produced_per_join'])
+                           +', filtered: ' + nullToEmpty(nextObj['filtered'])+')'; 
               obj.name = obj.label;
               obj.children = new Array();
               child.children[i] = obj;

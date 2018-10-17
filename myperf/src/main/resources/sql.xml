@@ -230,7 +230,12 @@
     <text>select * from performance_schema.rwlock_instances where write_locked_by_thread_id is not null or read_locked_by_count&gt;0</text>
   </sql>
   <sql handle="mysql_perf_filesum_inst" paramCount="0" comments="Display MySQL file summary by instance">
-    <text>select * from performance_schema.file_summary_by_instance where count_read &gt; 0 or count_write &gt;0</text>
+    <text>select FILE_NAME, EVENT_NAME, OBJECT_INSTANCE_BEGIN,
+          COUNT_STAR, SUM_TIMER_WAIT/1000000000 TIMER_WAIT_MS,
+          COUNT_READ, SUM_TIMER_READ/1000000000 TIMER_READ_MS, SUM_NUMBER_OF_BYTES_READ BYTES_READ,
+          COUNT_WRITE, SUM_TIMER_WRITE/1000000000 TIMER_WRITE_MS, SUM_NUMBER_OF_BYTES_WRITE BYTES_WRITE ,
+          COUNT_MISC, SUM_TIMER_MISC/1000000000 TIMER_MISC_MS
+    from performance_schema.file_summary_by_instance where count_read &gt; 0 or count_write &gt;0 or COUNT_MISC &gt; 0</text>
   </sql>
   <sql handle="mysql_perf_threads" paramCount="0" comments="Display MySQL thread and processlist">
     <text>select t.thread_id, t.name, t.processlist_id, p.user processlist_user, p.host processlist_host, p.db processlist_db,

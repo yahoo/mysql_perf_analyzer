@@ -449,7 +449,7 @@ public class SNMPClient
 			PDU resp = event.getResponse();
 			if(resp == null)
 			{
-				logger.info("Unexpected snmp response: "+event+", request size " + reqSize );
+				logger.info(this.address + ": Unexpected snmp response: "+event+", request size " + reqSize );
 				return resMap;
 			}
 			VariableBinding[] binds = resp.toArray();
@@ -480,7 +480,7 @@ public class SNMPClient
 
          for (TableEvent event : events) {
            if(event.isError()) {
-          	 logger.warning("SNMP event error: "+event.getErrorMessage());
+          	 logger.warning(this.address + ": SNMP event error: "+event.getErrorMessage());
           	 continue;
                 //throw new RuntimeException(event.getErrorMessage());
            }
@@ -513,7 +513,7 @@ public class SNMPClient
 
          for (TableEvent event : events) {
            if(event.isError()) {
-          	 logger.warning("SNMP event error: "+event.getErrorMessage());
+          	 logger.warning(this.address + ": SNMP event error: "+event.getErrorMessage());
           	 continue;
                 //throw new RuntimeException(event.getErrorMessage());
            }
@@ -582,7 +582,7 @@ public class SNMPClient
 
          for (TableEvent event : events) {
            if(event.isError()) {
-          	 logger.warning("SNMP event error: "+event.getErrorMessage());
+          	 logger.warning(this.address + ": SNMP event error: "+event.getErrorMessage());
           	 continue;
                 //throw new RuntimeException(event.getErrorMessage());
            }
@@ -620,7 +620,7 @@ public class SNMPClient
 
          for (TableEvent event : events) {
            if(event.isError()) {
-          	 logger.warning("SNMP event error: "+event.getErrorMessage()+", already returned: "+ifMaps);
+          	 logger.warning(this.address + ": SNMP event error: "+event.getErrorMessage()+", already returned: "+ifMaps);
           	 continue;
                 //throw new RuntimeException(event.getErrorMessage());
            }
@@ -779,7 +779,7 @@ public class SNMPClient
        
        for (TableEvent event : events) {
          if(event.isError()) {
-        	 logger.warning("SNMP event error: "+event.getErrorMessage());
+        	 logger.warning(this.address + ": SNMP event error: "+event.getErrorMessage());
         	 continue;
               //throw new RuntimeException(event.getErrorMessage());
          }
@@ -813,7 +813,7 @@ public class SNMPClient
 
         for (TableEvent event : events) {
           if(event.isError()) {
-         	 logger.warning("SNMP event error: "+event.getErrorMessage());
+         	 logger.warning(this.address + ": SNMP event error: "+event.getErrorMessage());
          	 continue;
                //throw new RuntimeException(event.getErrorMessage());
           }
