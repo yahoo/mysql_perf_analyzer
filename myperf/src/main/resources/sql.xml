@@ -459,4 +459,10 @@
     </vsql>
      <param name="thread_id" dataType="non_breakable_string"/> 
   </sql>
+  <sql handle="mysql_metadata_lock" comments="Display MySQL metadata locks">
+    <text>select "NOT SUPPORTED" AS ERROR</text>
+    <vsql minVersion="5.7">
+      select th.PROCESSLIST_ID, th.PROCESSLIST_USER, th.PROCESSLIST_HOST, th.PROCESSLIST_COMMAND, th.PROCESSLIST_STATE, th.PROCESSLIST_TIME, ml.object_type, ml.object_schema, ml.object_name, ml.LOCK_TYPE,ml.LOCK_STATUS, ml.LOCK_DURATION, th.PROCESSLIST_INFO from performance_schema.threads th, performance_schema.metadata_locks ml where ml.OWNER_THREAD_ID=th.thread_id
+    </vsql>
+  </sql>
 </sqls>

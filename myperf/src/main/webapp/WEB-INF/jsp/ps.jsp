@@ -55,6 +55,7 @@
           <option value="mysql_perf_table_lock_summary">Table Lock Summary</option>
           <option value="mysql_perf_mutex">Mutex</option>
           <option value="mysql_perf_rwlock">RW Locks</option>
+          <option value="mysql_metadata_lock">Metadata Locks</option>
           <option value="mysql_perf_memory_summary_global_by_event_name">Global Memory</option>
           <option value="mysql_perf_memory_summary_by_thread_by_event_name">Thread Memory</option>          
           <option value="digest">Top Queries</option>
@@ -76,6 +77,7 @@
         <li><a href="#mysql_table_tab_div" title="Table and file IO">Table/File IO</a></li>
         <li><a href="#mysql_perf_mutex_tbl_div" title="MySQL Performance schema currently locked mutex">Mutex</a></li>
         <li><a href="#mysql_perf_rwlock_tbl_div" title="MySQL Performance schema RW Locks">RW Locks</a></li>
+        <li><a href="#mysql_metadata_lock" title="MySQL Metadata Lock">Metadata Locks</a></li>
         <li><a href="#mysql_mem_tab_div" title="MySQL memory allocation">Memory</a></li>
         <li><a href="#top_query" title="MySQL Performance schema top queries">Top Queries</a></li>
     </ul>
@@ -195,6 +197,10 @@
 	  </div>
 	  <div id="mysql_perf_rwlock_tbl_div" class="datatableContainer">
          <table id="mysql_perf_rwlock_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
+	  </div>
+
+	  <div id="mysql_metadata_lock_tbl_div" class="datatableContainer">
+         <table id="mysql_metadata_lock_tbl" cellpadding="0" cellspacing="0" border="0" class="display"></table>
 	  </div>
       
       <div id="mysql_mem_tab_div" class="clearTabView">
@@ -718,6 +724,20 @@ var mysql_perf_rwlockTable = new JSTable({
    	   showRowDataOnClick:"y"
    	});//TODO format number
 
+var mysql_metadata_lockTable = new JSTable({
+   	   name: "mysql_metadata_lock",
+   	   query:{
+   	     queryURL: "query.html",
+   	     sqlId: "mysql_metadata_lock",
+   	     paramFields:[]
+   	   }, 
+   	   db: {dbGroupId: "dbgroup", dbHost: "host"},
+   	   handlers: {jquery:1, statusMessageHandler:messagehandler},
+   	   searchable: 'y',
+   	   showRowDataOnClick:"y"
+   	});//TODO format number
+
+
 var mysql_perf_digestsTable = new JSTable({
    	   name: "mysql_perf_digests",
    	   query:{
@@ -846,17 +866,21 @@ $('#btn_ps_activity').click(function()
   {
     mysql_perf_rwlockTable.sendQuery();
     $('#pstabs').tabs("option", "active", 6); 
+  }else if(act=='mysql_metadata_lock')
+  {
+    mysql_metadata_lockTable.sendQuery();
+    $('#pstabs').tabs("option", "active", 7); 
   }else if(act=='mysql_perf_memory_summary_global_by_event_name')
   {
     mysql_perf_memory_summary_global_by_event_nameTable.baseDataObj['mysql_perf_memory_summary_global_by_event_name'] = null;
     mysql_perf_memory_summary_global_by_event_nameTable.sendQuery();
-    $('#pstabs').tabs("option", "active", 7); 
+    $('#pstabs').tabs("option", "active", 8); 
     $('#mysql_mem_tab_div').tabs("option", "active", 0);
   }else if(act=='mysql_perf_memory_summary_by_thread_by_event_name')
   {
     mysql_perf_memory_summary_by_thread_by_event_nameTable.baseDataObj['mysql_perf_memory_summary_by_thread_by_event_name'] = null;
     mysql_perf_memory_summary_by_thread_by_event_nameTable.sendQuery();
-    $('#pstabs').tabs("option", "active", 7); 
+    $('#pstabs').tabs("option", "active", 8); 
     $('#mysql_mem_tab_div').tabs("option", "active", 1);
   }
   else if(act=='digest')
