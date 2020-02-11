@@ -68,7 +68,7 @@
 		<repository>
 			<id>central-maven</id>
 			<name>Central Maven</name>
-			<url>http://central.maven.org/maven2</url>
+			<url>https://central.maven.org/maven2</url>
 		</repository>
 		<repository>
 			<id>thirdparty-releases</id>
@@ -78,12 +78,12 @@
 		<repository>
 			<id>maven2-repository.dev.java.net</id>
 			<name>Java.net Maven 2 Repository</name>
-			<url>http://download.java.net/maven/2/</url>
+			<url>https://download.java.net/maven/2/</url>
 		</repository>
 		<repository>
 			<id>jboss-repository.maven2</id>
 			<name>JBoss Maven 2 Repository</name>
-			<url>http://repository.jboss.com/maven2/</url>
+			<url>https://repository.jboss.com/maven2/</url>
 		</repository>
 	</repositories>
   <build>
