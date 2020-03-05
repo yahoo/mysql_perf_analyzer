@@ -19,6 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.yahoo.dba.perf.myperf.common.*;
+import com.yahoo.dba.perf.myperf.common.SNMPSettings.SNMPSetting;
 import com.yahoo.dba.perf.myperf.db.DBConnectionWrapper;
 import com.yahoo.dba.perf.myperf.db.InnoDbMutexPostProccessor;
 import com.yahoo.dba.perf.myperf.db.UserDBConnections;
@@ -751,22 +752,27 @@ public class MetricScannerRunner implements Runnable
 					dbinfo.getDbGroupName(), dbinfo.getHostName(), mg.getGroupName(), null))
 				continue;
 		  }
+		  SNMPSetting snmpSetting = this.frameworkContext.getSnmpSettings()
+				  .getHostSetting(dbinfo.getDbGroupName(), dbinfo.getHostName()); 
+	  
+		  String snmpEnabled = snmpSetting != null? snmpSetting.getEnabled():"yes";
+		  boolean toScanSnmp = !"no".equalsIgnoreCase(snmpEnabled);
 		  if("mysql_snmp_sda".equalsIgnoreCase(mg.getSql()))
 		  {
-			  scanSnmpDisk( scanData,  mg);
+			 if(toScanSnmp) scanSnmpDisk( scanData,  mg);
 		  }else if("snmp_storage".equalsIgnoreCase(mg.getSql()))
 		  {
-			  scanSnmpStorage( scanData,  mg);
-		  }else if("snmp_net_eth0".equalsIgnoreCase(mg.getSql()))
+			  if(toScanSnmp)  scanSnmpStorage( scanData,  mg);
+		  }else if( "snmp_net_eth0".equalsIgnoreCase(mg.getSql()))
 		  {
-			  scanSnmpNet( scanData,  mg);
+			  if(toScanSnmp)  scanSnmpNet( scanData,  mg);
 		  }
-		  else if("mysql_snmp".equalsIgnoreCase(mg.getSql()))//hard wired
+		  else if( "mysql_snmp".equalsIgnoreCase(mg.getSql()))//hard wired
 		  {
-			  scanSnmpSys( scanData,  mg);
+			  if(toScanSnmp) scanSnmpSys( scanData,  mg);
 		  }	else if("mysql_snmp_mysqld".equalsIgnoreCase(mg.getSql()))//hard wired
 		  {
-			  scanSnmpMysqld( scanData,  mg);
+			  if(toScanSnmp)  scanSnmpMysqld( scanData,  mg);
 		  }else if("mysql_repl".equalsIgnoreCase(mg.getSql()))//replication
 		  {
 			  scanRepl( scanData,  mg);

@@ -92,9 +92,11 @@ public class SettingsController extends MyPerfBaseController
 	String ver = snmpSetting == null? SNMPSettings.SNMPSetting.DEFAULT_VERSION: snmpSetting.getVersion();
 	if(community == null || community.isEmpty())community = SNMPSettings.SNMPSetting.DEFAULT_COMMUNITY;
 	if(ver == null || ver.isEmpty())ver = SNMPSettings.SNMPSetting.DEFAULT_VERSION;
+	String enabled = snmpSetting == null? "yes":snmpSetting.getEnabled();
 	StringBuilder sb = new StringBuilder();
 	sb.append("{\"status\":0,\"message\":\"OK\", \"community\":\"").append(community)
-	  .append("\",\"version\":\"").append(ver).append("\"");
+	  .append("\",\"version\":\"").append(ver)
+	  .append("\",\"enabled\":\"").append(enabled).append("\"");
 	if("3".equals(ver))
 	{
 		if(snmpSetting.getUsername()!=null)
@@ -124,7 +126,8 @@ private ModelAndView handleUpdateSNMP(HttpServletRequest req,
 			req.getParameter("authprotocol"),
 			req.getParameter("privacypassphrase"),
 			req.getParameter("privacyprotocol"),
-			req.getParameter("context")			
+			req.getParameter("context"),
+			req.getParameter("enabled")
 			);
 	if(successful)
 		return this.respondSuccess("SNMP settings have been updated", req);
@@ -208,7 +211,7 @@ private ModelAndView handleUpdateSNMP(HttpServletRequest req,
 	  {
 		  boolean hipchatChanged = false;
 		  String hipchatUrl = req.getParameter("hipchatUrl");
-		  if(hipchatUrl != null){
+		  if(hipchatUrl != null && !hipchatUrl.isEmpty()){
 			  hipchatUrl = hipchatUrl.trim();
 			  if(!hipchatUrl.endsWith("?"))
 				  hipchatUrl += "?";

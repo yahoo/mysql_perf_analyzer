@@ -749,10 +749,7 @@ public abstract class MetricsDbBase implements  Runnable
 	          }catch(Exception ex)
 	          {
 	    	      logger.log(Level.WARNING, "Exception when store metrics: " + s, ex);
-	        	  if(ex instanceof com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException)
-	        	  {
-	        		  //constraint error, skip
-	        	  }
+	        	  
 	          }
 	            //try{
 	        	//  stmt.executeBatch();
@@ -770,11 +767,6 @@ public abstract class MetricsDbBase implements  Runnable
 	    }catch(Exception ex)
 	    {
 	      logger.log(Level.WARNING, "Exception when store metrics", ex);
-	      if(ex instanceof com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException)
-	      {
-	    	  DBUtils.close(storeConnection);
-	    	  storeConnection = null;
-	      }
 	      if(storeConnection!=null){try{storeConnection.rollback();}catch(Exception iex){}}
 	    }
 		finally

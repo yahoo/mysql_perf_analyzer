@@ -613,7 +613,7 @@ var mysql_innodb_trxTable = new JSTable({
    	});//TODO formatter
 
 topTabTableMapping["mysql_innodb_trx"] = {table: mysql_innodb_trxTable, tab:6, subtab:"innodbtab", subidx:0};
-topTabActionMapping[6] = {table: mysql_innodb_trxTable, index:8};
+topTabActionMapping[6] = {table: mysql_innodb_trxTable, index:9};
 innoStatusTabActionMapping[0] = {table: mysql_innodb_trxTable, index:9};
 
 var mysql_innodb_mutexTable = new JSTable({
@@ -690,7 +690,7 @@ var mysql_user_statisticsTable = new JSTable({
    	   handlers: {jquery:1,statusMessageHandler:messagehandler}
    	});//TODO formatter
 topTabTableMapping["mysql_user_statistics"] = {table: mysql_user_statisticsTable, tab:7, subtab:"userstatstab", subidx:0};
-topTabActionMapping[7] = {table: mysql_user_statisticsTable, index:13};
+topTabActionMapping[7] = {table: mysql_user_statisticsTable, index:14};
 userStatusTabActionMapping[0] = {table: mysql_user_statisticsTable, index:14};
 
 var mysql_user_timeTable = new JSTable({
