@@ -308,7 +308,7 @@ public class QueryExecutor
 	}
 	catch(SQLException sqlEx)
 	{
-	  logger.info("Failed to execute "+actualSql);
+	  logger.info("Failed to execute: " + qps.getSql()+": "+actualSql);
 	  throw sqlEx;
 	}
 	finally

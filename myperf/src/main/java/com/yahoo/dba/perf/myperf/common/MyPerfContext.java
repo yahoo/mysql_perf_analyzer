@@ -526,7 +526,7 @@ public class MyPerfContext implements java.io.Serializable, InitializingBean,Dis
 		    + getMyperfConfig().getMetricsDbHost()+":"
 			+ getMyperfConfig().getMetricsDbPort()+"/"
 		    + getMyperfConfig().getMetricsDbName()
-			+ "?allowPublicKeyRetrieval=true");
+			+ "?useSSL=true&enabledTLSProtocols=TLSv1.2&verifyServerCertificate=false");
 	}
 	this.metricDb.setFrameworkContext(this);
 	this.metricDb.setMetricsGroups(this.getMetricsDef());

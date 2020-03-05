@@ -77,7 +77,7 @@
         <li><a href="#mysql_table_tab_div" title="Table and file IO">Table/File IO</a></li>
         <li><a href="#mysql_perf_mutex_tbl_div" title="MySQL Performance schema currently locked mutex">Mutex</a></li>
         <li><a href="#mysql_perf_rwlock_tbl_div" title="MySQL Performance schema RW Locks">RW Locks</a></li>
-        <li><a href="#mysql_metadata_lock" title="MySQL Metadata Lock">Metadata Locks</a></li>
+        <li><a href="#mysql_metadata_lock_tbl_div" title="MySQL Metadata Lock">Metadata Locks</a></li>
         <li><a href="#mysql_mem_tab_div" title="MySQL memory allocation">Memory</a></li>
         <li><a href="#top_query" title="MySQL Performance schema top queries">Top Queries</a></li>
     </ul>
@@ -309,10 +309,10 @@ $('#pstabs').tabs(
      var idx = $('#pstabs').tabs("option", "active");
      if(idx <= 4)
 	     mydom('ps_activity').selectedIndex = idx;
-	 else if(idx >= 5 && idx <= 7)
+	 else if(idx >= 5 && idx <= 8)
 	     mydom('ps_activity').selectedIndex =  idx + 4;   
 	 else
-	     mydom('ps_activity').selectedIndex =  13;   
+	     mydom('ps_activity').selectedIndex =  14;   
    }   
  }
 );
@@ -343,7 +343,7 @@ $('#mysql_mem_tab_div').tabs
    activate: function( event, ui ) 
    {
      var idx = $('#mysql_mem_tab_div').tabs("option", "active");
-     mydom('ps_activity').selectedIndex = 11 + idx;
+     mydom('ps_activity').selectedIndex = 12 + idx;
    }   
  }
 );
@@ -886,7 +886,7 @@ $('#btn_ps_activity').click(function()
   else if(act=='digest')
   {
   	mysql_perf_digestsTable.sendQuery();
-    $('#pstabs').tabs("option", "active", 8);
+    $('#pstabs').tabs("option", "active", 9);
     $('#digest_tab').tabs("option", "active", 0);
   }
   

@@ -217,6 +217,7 @@
         <fieldset style="width:600px;">
           <legend>SNMP Community/Version Settings</legend>
             <table id="snmp_info_tbl">
+              <tr><td>Enabled? </td><td><input type="checkbox" name="snmp_settings_enabled" id = "snmp_settings_enabled" value="yes"/></td></tr>
               <tr><td>Community: </td><td><input name="snmp_settings_community" id="snmp_settings_community" size="20" /></td></tr>
               <tr><td>Version: </td><td><select name="snmp_settings_version" id="snmp_settings_version">
                 <option value="1">1</option>
@@ -359,6 +360,8 @@ function retrieveSnmpSettings()
          	reportStatus(true, 'common_msg', 'Failed to retrieve snmp settings.');
         }else
         {
+          var snmp_enabled = jsonObj.enabled;
+          mydom("snmp_settings_enabled").checked = snmp_enabled=="yes"?true:false;
           mydom("snmp_settings_community").value = jsonObj.community;
           setSelect("snmp_settings_version", jsonObj.version);
           if(jsonObj.version == "3")
@@ -427,6 +430,7 @@ function updateSnmpSettings()
       var mydata = "group="+escape(mydomval("snmp_dbgroup"))+"&host="+escape(mydomval("snmp_host")) + "&task=updatesnmp";
    		  mydata += "&community="+ escape(mydomval("snmp_settings_community"));
    		  mydata += "&version="+ mydomval("snmp_settings_version");
+   		  mydata += mydom("snmp_settings_enabled").checked?"&enabled=yes":"&enabled=no";
    		  if(mydomval("snmp_settings_version") == "3")
    		  {
    		    mydata += "&username="+ escape(mydomval("snmp_settings_username"));

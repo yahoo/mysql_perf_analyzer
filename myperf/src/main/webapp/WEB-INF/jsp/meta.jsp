@@ -244,6 +244,11 @@ function selectRow_mysql_meta_table_names(obj)
 {
   if(obj == null || obj.datatable == null)return;
   var val = obj.datatable.getCellValueByColumnName(obj.row, 'TABLE_NAME');
+  if (val == null){ //mysql8
+    var schema_name = mydomval("schema_name");
+    if ( schema_name != null) schema_name = schema_name.toUpperCase();
+    val = obj.datatable.getCellValueByColumnName(obj.row, 'TABLES_IN_' + schema_name);
+  }
   mydom('table_name').value = val != null? val: "";
   mydom("schema_name2").value = mydomval("schema_name");
   //TODO hightlight selected row
@@ -253,6 +258,11 @@ function contextmenu_mysql_meta_table_names(obj)
 {
   if(obj == null || obj.datatable == null)return;
   var val = obj.datatable.getCellValueByColumnName(obj.row, 'TABLE_NAME');
+  if (val == null){ //mysql8
+    var schema_name = mydomval("schema_name");
+    if ( schema_name != null) schema_name = schema_name.toUpperCase();
+    val = obj.datatable.getCellValueByColumnName(obj.row, 'TABLES_IN_' + schema_name);
+  }
   mydom('table_name').value = val != null? val: "";
   mydom("schema_name2").value = mydomval("schema_name");
   //TODO hightlight selected row
@@ -326,6 +336,11 @@ function selectRow_mysql_meta_view_names(obj)
 {
   if(obj == null || obj.datatable == null)return;
   var val = obj.datatable.getCellValueByColumnName(obj.row, 'TABLE_NAME');
+  if (val == null){ //mysql8
+    var schema_name = mydomval("schema_name");
+    if ( schema_name != null) schema_name = schema_name.toUpperCase();
+    val = obj.datatable.getCellValueByColumnName(obj.row, 'TABLES_IN_' + schema_name);
+  }
   mydom('view_name').value = val != null? val: "";
   mydom("schema_name2").value = mydomval("schema_name");
   //TODO hightlight selected row
@@ -335,6 +350,11 @@ function contextmenu_mysql_meta_view_names(obj)
 {
   if(obj == null || obj.datatable == null)return;
   var val = obj.datatable.getCellValueByColumnName(obj.row, 'TABLE_NAME');
+  if (val == null){ //mysql8
+    var schema_name = mydomval("schema_name");
+    if ( schema_name != null) schema_name = schema_name.toUpperCase();
+    val = obj.datatable.getCellValueByColumnName(obj.row, 'TABLES_IN_' + schema_name);
+  }
   mydom('view_name').value = val != null? val: "";
   mydom("schema_name3").value = mydomval("schema_name");
   //TODO hightlight selected row

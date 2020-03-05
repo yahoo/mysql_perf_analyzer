@@ -35,6 +35,7 @@ public class SNMPSettings implements java.io.Serializable{
 		public static final String DEFAULT_VERSION = "2c";
 		public static final String COMMUNITY = "community";
 		public static final String VERSION = "version";		
+		public static final String ENABLEED = "enabled";		
 		public static final String V3_USERNAME = "username";
 		public static final String V3_PASSWORD = "password";
 		public static final String V3_AUTHPROTOCOL = "authprotocol";
@@ -50,6 +51,8 @@ public class SNMPSettings implements java.io.Serializable{
 		private String privacyPassphrase;//v3
 		private String privacyProtocol;//v3
 		private String context;//v3
+		private String enabled = "yes";
+		
 		public SNMPSetting()
 		{
 			
@@ -111,6 +114,12 @@ public class SNMPSettings implements java.io.Serializable{
 		}
 		public void setContext(String context) {
 			this.context = context;
+		}
+		public String getEnabled() {
+			return enabled;
+		}
+		public void setEnabled(String enabled) {
+			this.enabled = enabled;
 		}
 	}
 	
@@ -177,7 +186,7 @@ public class SNMPSettings implements java.io.Serializable{
 	
 	public boolean updateSnmpSetting(String dbgroup, String host, String community, String ver,
 			String username, String password, String authprotocol, String privacypassphrase,
-			String privacyprotocol, String context			
+			String privacyprotocol, String context, String enabled		
 			)
 	{
 		SNMPSetting setting = new SNMPSetting(community, ver);
@@ -190,6 +199,7 @@ public class SNMPSettings implements java.io.Serializable{
 			setting.setPrivacyProtocol(privacyprotocol);
 			setting.setContext(context);
 		}
+		setting.setEnabled("no".equalsIgnoreCase(enabled)? "no": "yes");
 		if((dbgroup == null || dbgroup.isEmpty() ) && (host == null || host.isEmpty()))
 		{
 			this.siteSetting = setting;
@@ -297,11 +307,13 @@ public class SNMPSettings implements java.io.Serializable{
 		{
 			String version = jobj.getString(SNMPSetting.VERSION, null);
 			String community = jobj.getString(SNMPSetting.COMMUNITY, null);
+			String enabled = jobj.getString(SNMPSetting.ENABLEED, "yes");
 			if((version != null && !version.isEmpty()) || (community != null && !community.isEmpty()))
 			{
 				snmp = new SNMPSetting();
 				snmp.setVersion(version);
 				snmp.setCommunity(community);
+				snmp.setEnabled(enabled);
 				if("3".equals(version))
 				{
 					snmp.setUsername(jobj.getString(SNMPSetting.V3_USERNAME, null));
@@ -395,6 +407,7 @@ public class SNMPSettings implements java.io.Serializable{
 				if(setting.getContext() != null && !setting.getContext().isEmpty())
 					sb.add(SNMPSetting.V3_CONTEXT, setting.getContext());
 			}
+			sb.add(SNMPSetting.ENABLEED, setting.getEnabled());
 			
 		}
 		return sb;

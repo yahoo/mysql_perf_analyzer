@@ -42,13 +42,13 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<version>4.3.18.RELEASE</version>
+			<version>4.3.26.RELEASE</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
-			<version>4.3.18.RELEASE</version>
+			<version>4.3.26.RELEASE</version>
 		</dependency>
 
 		<dependency>
@@ -92,7 +92,7 @@
 	    <dependency>
 		  <groupId>mysql</groupId>
 		  <artifactId>mysql-connector-java</artifactId>
-		  <version>5.1.36</version>
+		  <version>8.0.19</version>
 		</dependency>
     </dependencies>
 	<repositories>
@@ -109,7 +109,7 @@
 		<repository>
 			<id>jboss-repository.maven2</id>
 			<name>JBoss Maven 2 Repository</name>
-			<url>http://repository.jboss.com/maven2/</url>
+			<url>https://repository.jboss.org/maven2/</url>
 		</repository>
 	</repositories>
   <build>
