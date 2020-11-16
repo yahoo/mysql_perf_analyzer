@@ -21,7 +21,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-       <jetty-version>9.2.7.v20150116</jetty-version>
+       <jetty-version>9.4.34.v20201102</jetty-version>
   </properties>
 
   <dependencies>
