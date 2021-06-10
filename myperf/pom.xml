@@ -87,7 +87,7 @@
         <dependency>
           <groupId>org.eclipse.jetty</groupId>
           <artifactId>jetty-servlets</artifactId>
-          <version>9.2.7.v20150116</version>
+          <version>9.4.41.v20210516</version>
         </dependency>        
 	    <dependency>
 		  <groupId>mysql</groupId>
