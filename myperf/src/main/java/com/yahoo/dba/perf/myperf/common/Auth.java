@@ -65,20 +65,26 @@ public class Auth {
   	    	if(sess.getAttribute(AppUser.RANDOM_SEED)!=null)
   	    		stored_seed = (Integer)sess.getAttribute(AppUser.RANDOM_SEED);	  	    	
 	  	    boolean authed = appUser.match(request.getParameter("s"), stored_server_ts, stored_seed);
-	  	    if(authed)
+	  	    if(!authed)
 	  	    {
-	  	      String user = null;
-			  try{user = WebAppUtil.findUserFromRequest(request);}catch(Exception ex){};
-			  if(!appUser.getName().equalsIgnoreCase(user))
-			  {
-			    sess.invalidate();
-			    sess = request.getSession(true);//get a new session
-			  }
-		    }
-		    sess.setAttribute(AppUser.SESSION_ATTRIBUTE, appUser);
-		    sess.removeAttribute(AppUser.SERVER_TS);
-		    sess.removeAttribute(AppUser.RANDOM_SEED);
-	  	    return authed;
+	  	      //authentication failed: never store the user in the session,
+	  	      //and discard the one-time challenge values
+	  	      sess.removeAttribute(AppUser.SESSION_ATTRIBUTE);
+	  	      sess.removeAttribute(AppUser.SERVER_TS);
+	  	      sess.removeAttribute(AppUser.RANDOM_SEED);
+	  	      return false;
+	  	    }
+	  	    String user = null;
+	  	    try{user = WebAppUtil.findUserFromRequest(request);}catch(Exception ex){};
+	  	    if(!appUser.getName().equalsIgnoreCase(user))
+	  	    {
+	  	      sess.invalidate();
+	  	      sess = request.getSession(true);//get a new session
+	  	    }
+	  	    sess.setAttribute(AppUser.SESSION_ATTRIBUTE, appUser);
+	  	    sess.removeAttribute(AppUser.SERVER_TS);
+	  	    sess.removeAttribute(AppUser.RANDOM_SEED);
+	  	    return true;
   	    }
 		return false;
 	}
